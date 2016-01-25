@@ -1,0 +1,75 @@
+                             Nomenclature
+
+Consistent nomenclature helps with making the work and coding easier
+to understand and to use in applications. The definitions of terms and
+variable names are given here and code will try to be consistent in
+using these. These terms are for a cell-based Adaptive Mesh Refinement (AMR) using
+rectangular elements.
+
+AMR Mesh terminology:
+
+Mesh Size -- coarse level of the mesh has dimensions:
+   ibasesize, jbasesize -- number of cells at the coarsest level of the mesh. This
+      is usually the way it is specified in the problem input -- 10x10 mesh with
+      two additional levels of refinement
+levels -- 0 is at the coarsest level and each increment from there
+   will be a factor of two smaller in each dimension
+levmax -- maximum levels of refinement
+i, j -- i and j index for each level, starting with zero and incrementing by
+   one at that level along the axis. Example:
+      0        1        2        3        4         5        6       7
+          0                  1                 2                 3
+                    0                                    1
+
+Two cells at the coarsest level of the mesh and two levels of refinement. Each cell
+divides into two cells giving four cells at the next level and eight cells at the 
+finest level. For this mesh, ibasesize is 2, levels is 0 to 2, levmax is 2 (could be 3 if we define it that way).
+
+The input mesh is called input_mesh and the output mesh is output_mesh. The data structure for each
+of the meshes is called cell_list and is composed of 
+
+cell_list
+   ncells
+   ibasesize, jbasesize
+   levmax
+   *i
+   *j
+   *level
+   *values
+
+A difference between levels will be called lev_diff. When expanded by two_to_the, it will
+be called ???. The power function is expensive, so calculations of index numbering between
+levels will be done with shift operations or table lookups. In the coding, this will be done
+with the functions TWO_TO_THE and FOUR_TO_THE operators. For this example mesh:
+
+lev_diff           TWO_TO_THE    FOUR_TO_THE     EIGHT_TO_THE
+   0                    1             1               1
+   1                    2             4               8
+   2                    4            16              64
+
+Sparsity is the number of AMR cells (ncells) divided by the number of cells at the finest 
+level of the mesh -- ncells /(ibasesize*two_to_the(levmax)*jbasesize*two_to_the(levmax) ). This is
+usually given as a percentage or a straight fraction.
+
+Mesh Compressibility is the inverse of the sparsity or the number of cells at the finest level of the mesh
+divided by the number of AMR cells (ncells)
+   (ibasesize*two_to_the(levmax)*jbasesize*two_to_the(levmax) )/ ncells 
+
+A perfect hash table will need memory for the finest level of the mesh -- (ibasesize*two_to_the(levmax)*
+jbasesize*two_to_the(levmax) ) * 4 bytes. Compressing the hash table through a compact hash will require
+some extra space to reduce the frequency of collisions (called hash_mult with a default of three), plus it will
+need to store the key as well as the value, giving memory requirements of ncells * hash_mult * 2 * 4 bytes. This
+gives a Hash Compressibility of 
+   (ibasesize*two_to_the(levmax)*jbasesize*two_to_the(levmax) )/ (ncells * hash_mult * 2 * 4 bytes).
+Generally there will need to be a Mesh Compressibility of greater than 6 to give a Hash Compressibility larger
+than one or the breakeven point when a compact hash will use less memory than a perfect hash.
+
+
+Quad-tree mesh generation
+
+From a quad-tree perspective, the terminology is naturally different. This terminology is used in the mesh_maker
+routines and will be translated to the AMR terminology when returning to the main routine.
+
+max_lev
+min_lev
+lev_diff

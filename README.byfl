@@ -1,0 +1,77 @@
+I just tested this on Mustang, and it does seem to work.  I started by
+loading a few modules:
+
+    $ module load user_contrib
+    $ module load clang
+    $ module load byfl
+
+Then, I build with bf-clang and bf-clang++ as the C and C++ compilers,
+respectively:
+
+    $ cmake . -DCMAKE_C_COMPILER=bf-clang -DCMAKE_CXX_COMPILER=bf-clang++ -DCMAKE_CXX_FLAGS="-I$LLVMROOT/include" -DCMAKE_C_FLAGS="-I$LLVMROOT/include"
+
+Include -bf-include=<comma-separated list of functions> in your C and
+C++ flags.  You'll have to use the mangled names for C++ functions,
+though, hence -bf-include=_Z7h_remap9cell_listS_ to instrument only
+h_remap().  This saves a lot of time:
+
+  Byfl, h_remap() only: 0:08.64
+  Slowdown:             1.0x
+
+_Z17brute_force_remap9cell_listS_
+_Z14remap_kDtree2d9cell_listS_
+_Z18full_perfect_remap9cell_listS_
+_Z17singlewrite_remap9cell_listS_
+_Z25singlewrite_remap_compact9cell_listS_
+_Z7h_remap9cell_listS_
+_Z15h_remap_compact9cell_listS_P19intintHash_Factory_
+
+FYI, here's what gets written to standard output:
+
+    $ AMR_remap/AMR_remap 128 8 0.30 220217 1 -adapt-meshgen -no-brute
+                          Input mesh                       Output mesh
+               --------------------------------  --------------------------------
+    run num    sparsity percent compressibility  sparsity percent compressibility
+    -------    ---------------- ---------------  ---------------- ---------------
+    run #0         99.979496         4876.521973         99.979562         4892.787598 fine cells 1073741824 ncells in 220186 ncells out 219454
+    ~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+    sparsity percent compressibility    cells in fine mesh average ncells
+    ---------------- ---------------      --------------     ----------
+         99.979526     4884.641113            1073741824                219820
+     --------------------------------------------------------------------
+    KD Tree Remap:                                469.6670 ms
+    Full Perfect Remap:                  5523.1830 ms
+    Singlewrite Remap:                   2229.3260 ms Speedup relative to full hash     2.48
+    Hierarchical Remap:                    54.8600 ms Speedup relative to full hash   100.68
+    Compact Singlewrite Remap:             83.7680 ms
+    Compact Hierarchical Remap:            67.0180 ms
+    BYFL_INFO: Byfl command line: -bf-include=_Z7h_remap9cell_listS_
+    BYFL_SUMMARY: -----------------------------------------------------------------
+    BYFL_SUMMARY:                  17838524 bytes (14930340 loaded + 2908184 stored)
+    BYFL_SUMMARY:                         0 flops
+    BYFL_SUMMARY:                  14171108 integer ops
+    BYFL_SUMMARY:                   3200208 memory ops (2692625 loads + 507583 stores)
+    BYFL_SUMMARY:                   2094599 branch ops (659128 unconditional and direct + 1425036 conditional or indirect + 10435 function calls or returns + 0 other)
+    BYFL_SUMMARY:                  19465915 TOTAL OPS
+    BYFL_SUMMARY: -----------------------------------------------------------------
+    BYFL_SUMMARY:                 142708192 bits (119442720 loaded + 23265472 stored)
+    BYFL_SUMMARY:                         0 flop bits
+    BYFL_SUMMARY:                1829370882 op bits (excluding memory ops)
+    BYFL_SUMMARY: -----------------------------------------------------------------
+    BYFL_SUMMARY:                    5.1339 bytes loaded per byte stored
+    BYFL_SUMMARY:                    7.2255 ops per load instruction
+    BYFL_SUMMARY:                   44.5934 bits loaded/stored per memory op
+    BYFL_SUMMARY:                   13.6526 ops per conditional/indirect branch
+    BYFL_SUMMARY: -----------------------------------------------------------------
+    BYFL_SUMMARY:                    0.9169 bytes per op
+    BYFL_SUMMARY:                    0.0780 bits per (non-memory) op bit
+    BYFL_SUMMARY: -----------------------------------------------------------------
+
+Full information is written to AMR_remap.byfl.  The various bfbin2*
+postprocessors convert that to common formats.  See the attached for
+an example.
+
+Run "man bf-clang++" for explanations of all the instrumentations that
+can be enabled.
+
+-- Scott

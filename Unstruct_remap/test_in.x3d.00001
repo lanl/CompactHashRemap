@@ -1,0 +1,85 @@
+x3dtoflag ascii
+header
+   process                         1
+   numdim                          2
+   materials                       3
+   nodes                           8
+   faces                          18
+   elements                        5
+   ghost_nodes                     0
+   slaved_nodes                    1
+   nodes_per_slave                 2
+   nodes_per_face                  2
+   faces_per_cell                  5
+   node_data_fields                0
+   cell_data_fields                2
+end_header
+matnames
+            1   top
+            2   bot
+            3   none
+end_matnames
+mateos
+            1   -1
+            2   -1
+            3   -1
+end_mateos
+matopc
+            1   -1
+            2   -1
+            3   -1
+end_matopc
+nodes
+         1  2.800000000000000e+00  7.990000000000000e+00  0.000000000000000e+00
+         2  6.500000000000000e+00  7.990000000000000e+00  0.000000000000000e+00
+         3  1.500000000000000e+00  5.500000000000000e+00  0.000000000000000e+00
+         4  4.000000000000000e+00  5.500000000000000e+00  0.000000000000000e+00
+         5  1.500000000000000e+00  2.500000000000000e+00  0.000000000000000e+00
+         6  4.000000000000000e+00  2.500000000000000e+00  0.000000000000000e+00
+         7  6.500000000000000e+00  2.500000000000000e+00  0.000000000000000e+00
+         8  4.000000000000000e+00  0.000000000000000e+00  0.000000000000000e+00
+end_nodes
+faces
+         1         2         3         1         1         0         0         1         1         1         1         1
+         2         2         1         4         1         1        17         1         1         1         1         1
+         3         2         3         4         1         1         5         1         1         1         1         1
+         4         2         1         4         1         0         0         1         1         1         1         1
+         5         2         1         2         1         1         3         1         1         1         1         1
+         6         2         4         2         1         1        16         1         1         1         1         1
+         7         2         3         5         1         1         9         1         1         1         1         1
+         8         2         3         4         1         0         0         1         1         1         1         1
+         9         2         4         6         1         1         7         1         1         1         1         1
+        10         2         5         6         1         1        21         1         1         1         1         1
+        11         2         4         6         1         0         0         1         1         1         1         1
+        12         2         4         2         1         0         0         1         1         1         1         1
+        13         2         2         7         1         0         0         1         1         1         1         1
+        14         2         6         7         1         1        25         1         1         1         1         1
+        15         2         5         8         1         1        18         1         1         1         1         1
+        16         2         5         6         1         1         6         1         1         1         1         1
+        17         2         6         7         1         1         2         1         1         1         1         1
+        18         2         8         7         1         1        15         1         1         1         1         1
+end_faces
+cells
+         1         3         1         2         3         
+         2         3         4         5         6         
+         3         4         7         8         9        10
+         4         4        11        12        13        14
+         5         4        15        16        17        18
+end_cells
+slaved_nodes         0
+end_slaved_nodes
+ghost_nodes          0
+end_ghost_nodes
+cell_data
+matid
+      none      none      none      none      none      none      none       top       top       top
+       top
+end_matid
+partelm
+         1         1         1         1         1         1         1         1         1         1
+         1
+end_partelm
+end_cell_data
+node_data
+end_node_data
+end_dump
