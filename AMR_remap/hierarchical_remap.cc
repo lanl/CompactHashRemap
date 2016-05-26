@@ -51,65 +51,145 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
 
     int probe;
     double sum = 0.0;
+    
+    uint key_new[4];
+    
+    int startlev = lev;
+    
+    char queue[32];
 
+    queue[startlev+1] = 0;
+    
     lev++;
     i *= 2;
     j *= 2;
-    uint istride = ibasesize*two_to_the(lev);
-    uint key = j*istride + i;
-
-    uint key_new[4];
-    key_new[0] = key;
-    key_new[1] = key + 1;
-    key_new[2] = key + istride;
-    key_new[3] = key + istride + 1;
     
-    for (int ic = 0; ic < 4; ic++){
-        key = key_new[ic];
-        probe = h_hash[lev][key];
-        if (probe >= 0) {
-            sum += icells.values[probe];
-        } else {
-            i = key % istride;
-            j = key / istride;
-            sum += avg_sub_cells_h(icells, i, j, lev, h_hash, ibasesize);
+    
+    while (lev > startlev) {
+    
+        i-=i%2;
+        j-=j%2;
+    
+        if (queue[lev]>3){
+                lev--;
+                i/=2;
+                j/=2;
+                continue;
+        }
+        
+        uint istride = ibasesize*two_to_the(lev);
+        uint key = j*istride + i;
+        
+
+        key_new[0] = key;
+        key_new[1] = key + 1;
+        key_new[2] = key + istride;
+        key_new[3] = key + istride + 1;
+        
+        
+        
+        for (int ic = queue[lev]; ic < 4; ic++){
+            
+            key = key_new[ic];
+            
+            probe = h_hash[lev][key];
+            if (probe >= 0) {
+                //TODO: try to move this division so we have fewer computations
+                sum += icells.values[probe]/four_to_the(lev-startlev);
+            } else {
+                // When the sentinal value is set, setup the queue for our
+                // return and move down a level.
+                queue[lev] = ic+1;
+                i = key % istride;
+                j = key / istride;
+                lev++;
+                i *= 2;
+                j *= 2;
+                // Setup the next level to begin at the right point
+                queue[lev] = 0;
+                break;
+            }
+            if (ic==3){
+                lev--;
+                i/=2;
+                j/=2;
+            }
         }
     }
 
-    return sum/4.0;
+    return sum;
 }
 
 double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, intintHash_Table** h_hashTable, uint ibasesize) {
-
+    
     int probe;
     double sum = 0.0;
+    
+    uint key_new[4];
+    
+    int startlev = lev;
+    
+    char queue[32];
 
+    queue[startlev+1] = 0;
+    
     lev++;
     i *= 2;
     j *= 2;
-    uint istride = ibasesize*two_to_the(lev);
-    uint key = j*istride + i;
     
-    uint key_new[4];
-    key_new[0] = key;
-    key_new[1] = key + 1;
-    key_new[2] = key + istride;
-    key_new[3] = key + istride + 1;
     
-    for (int ic = 0; ic < 4; ic++){
-        key = key_new[ic];
-        //probe = read_hash(key, h_hash[lev]);
-        intintHash_QuerySingle(h_hashTable[lev], key, &probe);
-        if (probe >= 0) {
-            sum += icells.values[probe];
-        } else {
-            i = key % istride;
-            j = key / istride;
-            sum += avg_sub_cells_h_compact(icells, i, j, lev, h_hashTable, ibasesize);
+    while (lev > startlev) {
+    
+        i-=i%2;
+        j-=j%2;
+    
+        if (queue[lev]>3){
+                lev--;
+                i/=2;
+                j/=2;
+                continue;
+        }
+        
+        uint istride = ibasesize*two_to_the(lev);
+        uint key = j*istride + i;
+        
+
+        key_new[0] = key;
+        key_new[1] = key + 1;
+        key_new[2] = key + istride;
+        key_new[3] = key + istride + 1;
+        
+        
+        
+        for (int ic = queue[lev]; ic < 4; ic++){
+            
+            key = key_new[ic];
+            
+            intintHash_QuerySingle(h_hashTable[lev], key, &probe);
+            if (probe >= 0) {
+                //TODO: try to move this division so we have fewer computations
+                sum += icells.values[probe]/four_to_the(lev-startlev);
+            } else {
+                // When the sentinal value is set, setup the queue for our
+                // return and move down a level.
+                queue[lev] = ic+1;
+                i = key % istride;
+                j = key / istride;
+                lev++;
+                i *= 2;
+                j *= 2;
+                // Setup the next level to begin at the right point
+                queue[lev] = 0;
+                break;
+            }
+            if (ic==3){
+                lev--;
+                i/=2;
+                j/=2;
+            }
         }
     }
-
-    return sum/4.0;
+    return sum;
 }
 
 void h_remap (cell_list icells, cell_list ocells) {
@@ -121,7 +201,6 @@ void h_remap (cell_list icells, cell_list ocells) {
     for (uint i = 0; i <= icells.levmax; i++) {
         size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
         h_hash[i] = (int *) malloc(hash_size*sizeof(uint));
-        //memset(h_hash[i], -2, hash_size*sizeof(uint));
     }
     
     //place the cells and their breadcrumbs 

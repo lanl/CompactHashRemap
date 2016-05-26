@@ -21,8 +21,8 @@ add_subdirectory(KDTree)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -bf-include=_Z25singlewrite_remap_compact9cell_listS_")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -bf-include=_Z7h_remap9cell_listS_")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -bf-include=_Z7h_remap9cell_listS_")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -bf-include=_Z15h_remap_compact9cell_listS_P19intintHash_Factory_")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -bf-include=_Z15h_remap_compact9cell_listS_P19intintHash_Factory_")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -bf-include=_Z15h_remap_compact9cell_listS_P19intintHash_Factory_")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -bf-include=_Z15h_remap_compact9cell_listS_P19intintHash_Factory_")
 
 ########### global settings ###############
 
