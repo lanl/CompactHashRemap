@@ -64,12 +64,24 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
     i *= 2;
     j *= 2;
     
-    
+    // The premise of this loop is that we descend to finer levels of the mesh,
+    // for each of which we loop through the square of four hash values that
+    // were below our previous position in the hash hierarchy. The 'queue'
+    // tracks where our probe was on the previous levels, allowing us to return
+    // to the levels above and continue once we have completed averaging the
+    // sub-cells of a flagged hash value.
     while (lev > startlev) {
     
+        // Make sure that when returning from a finer level we are on even
+        // numbered coordinates, so that we maintain the same reference for the
+        // queue.
         i-=i%2;
         j-=j%2;
     
+        // If the final hash value read at a level was a sentinal value, the 
+        // queue at that level will be set to 4 before moving down to the finer
+        // level of the hash. In those cases, when we return we should move up
+        // another level immediately.
         if (queue[lev]>3){
                 lev--;
                 i/=2;
@@ -137,12 +149,24 @@ double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, inti
     i *= 2;
     j *= 2;
     
-    
+    // The premise of this loop is that we descend to finer levels of the mesh,
+    // for each of which we loop through the square of four hash values that
+    // were below our previous position in the hash hierarchy. The 'queue'
+    // tracks where our probe was on the previous levels, allowing us to return
+    // to the levels above and continue once we have completed averaging the
+    // sub-cells of a flagged hash value.
     while (lev > startlev) {
     
+        // Make sure that when returning from a finer level we are on even
+        // numbered coordinates, so that we maintain the same reference for the
+        // queue.
         i-=i%2;
         j-=j%2;
     
+        // If the final hash value read at a level was a sentinal value, the 
+        // queue at that level will be set to 4 before moving down to the finer
+        // level of the hash. In those cases, when we return we should move up
+        // another level immediately.
         if (queue[lev]>3){
                 lev--;
                 i/=2;
