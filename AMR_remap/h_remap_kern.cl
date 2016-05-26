@@ -412,33 +412,75 @@ inline uint translate_cell (uint i, uint j, uint lev, uint newLev) {
 inline double avg_sub_cells_h (__constant double* icellsVal, uint i, uint j, uint lev,
       __const uint mesh_size, __constant uint *hhash, __constant uint* hash_memory_indices) {
 
+    int probe;
     double sum = 0.0;
+    
+    uint key_new[4];
+    
+    int startlev = lev;
+    
+    char queue[32];
 
+    queue[startlev+1] = 0;
+    
     lev++;
     i *= 2;
     j *= 2;
-    uint istride = mesh_size*two_to_the(lev);
-    uint key = j*istride + i;
+    
+    
+    while (lev > startlev) {
+    
+        i-=i%2;
+        j-=j%2;
+    
+        if (queue[lev]>3){
+                lev--;
+                i/=2;
+                j/=2;
+                continue;
+        }
+        
+        uint istride = mesh_size*two_to_the(lev);
+        uint key = j*istride + i;
+        
 
-    uint key_new[4];
-    key_new[0] = key;
-    key_new[1] = key + 1;
-    key_new[2] = key + istride;
-    key_new[3] = key + istride + 1;
-
-    for (int ic = 0; ic < 4; ic++){
-        key = key_new[ic];
-        int probe = hhash[hash_memory_indices[lev]+key];
-        if (probe >= 0) {
-            sum += icellsVal[probe];
-        } else {
-            i = key % istride;
-            j = key / istride;
-            sum += avg_sub_cells_h(icellsVal, i, j, lev, mesh_size, hhash, hash_memory_indices);
+        key_new[0] = key;
+        key_new[1] = key + 1;
+        key_new[2] = key + istride;
+        key_new[3] = key + istride + 1;
+        
+        
+        
+        for (int ic = queue[lev]; ic < 4; ic++){
+            
+            key = key_new[ic];
+            
+            probe = hhash[hash_memory_indices[lev]+key];
+            if (probe >= 0) {
+                //TODO: try to move this division so we have fewer computations
+                sum += icellsVal[probe]/four_to_the(lev-startlev);
+            } else {
+                // When the sentinal value is set, setup the queue for our
+                // return and move down a level.
+                queue[lev] = ic+1;
+                i = key % istride;
+                j = key / istride;
+                lev++;
+                i *= 2;
+                j *= 2;
+                // Setup the next level to begin at the right point
+                queue[lev] = 0;
+                break;
+            }
+            if (ic==3){
+                lev--;
+                i/=2;
+                j/=2;
+            }
         }
     }
 
-    return sum/4.0;
+    return sum;
 }
 
 __kernel void hierarchical_hash_probe (__constant uint* hhash,
@@ -714,21 +756,6 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
         __global       char   *h_hashTable7,
         __global       char   *h_hashTable8)
 {
-   int probe;
-   double sum = 0.0;
-
-   lev++;
-   i *= 2;
-   j *= 2;
-   uint istride = ibasesize*two_to_the(lev);
-   uint key = j*istride + i;
-
-   uint key_new[4];
-   key_new[0] = key;
-   key_new[1] = key + 1;
-   key_new[2] = key + istride;
-   key_new[3] = key + istride + 1;
-
    __global char *hashtable = h_hashTable0;
    switch (lev) {
    case 0:
@@ -760,21 +787,75 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
       break;
    }
 
-   for (int ic = 0; ic < 4; ic++){
-       key = key_new[ic];
-       probe = intintHash_QuerySingle(hashtable, key, ierr);
-       if (probe >= 0) {
-           sum += icells_values[probe];
-       } else {
-           i = key % istride;
-           j = key / istride;
-           sum += avg_sub_cells_h_compact (icells_values, i, j, lev, ibasesize, ierr,
-                     h_hashTable0, h_hashTable1, h_hashTable2, h_hashTable3, h_hashTable4, h_hashTable5,
-                     h_hashTable6, h_hashTable7, h_hashTable8);
-       }
-   }
+    int probe;
+    double sum = 0.0;
+    
+    uint key_new[4];
+    
+    int startlev = lev;
+    
+    char queue[8];
 
-   return sum/4.0;
+    queue[startlev+1] = 0;
+    
+    lev++;
+    i *= 2;
+    j *= 2;
+    
+    
+    while (lev > startlev) {
+    
+        i-=i%2;
+        j-=j%2;
+    
+        if (queue[lev]>3){
+                lev--;
+                i/=2;
+                j/=2;
+                continue;
+        }
+        
+        uint istride = ibasesize*two_to_the(lev);
+        uint key = j*istride + i;
+        
+
+        key_new[0] = key;
+        key_new[1] = key + 1;
+        key_new[2] = key + istride;
+        key_new[3] = key + istride + 1;
+        
+        
+        
+        for (int ic = queue[lev]; ic < 4; ic++){
+            
+            key = key_new[ic];
+            
+            probe = intintHash_QuerySingle(hashtable, key, ierr);;
+            if (probe >= 0) {
+                //TODO: try to move this division so we have fewer computations
+                sum += icells_values[probe]/four_to_the(lev-startlev);
+            } else {
+                // When the sentinal value is set, setup the queue for our
+                // return and move down a level.
+                queue[lev] = ic+1;
+                i = key % istride;
+                j = key / istride;
+                lev++;
+                i *= 2;
+                j *= 2;
+                // Setup the next level to begin at the right point
+                queue[lev] = 0;
+                break;
+            }
+            if (ic==3){
+                lev--;
+                i/=2;
+                j/=2;
+            }
+        }
+    }
+
+    return sum;
 }
 
 __kernel void hierarchical_compact_probe(
