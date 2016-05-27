@@ -674,11 +674,16 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     cl_mem icellj_buffer = ezcl_device_memory_malloc(context, NULL, "icellj", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
     cl_mem ilevel_buffer = ezcl_device_memory_malloc(context, NULL, "ilevel", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
     cl_mem ival_buffer   = ezcl_device_memory_malloc(context, NULL, "ival",   icells.ncells, sizeof(double), CL_MEM_READ_WRITE, 0);
+    // TODO: ierr should be moved to local memory if possible; a buffer of this size is not necessary,
+    // and should not be accessed through global memory
+    cl_mem ierr_buffer = ezcl_device_memory_malloc(context, NULL, "ierr", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
 
     ezcl_enqueue_write_buffer(queue, icelli_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.i,      NULL);
     ezcl_enqueue_write_buffer(queue, icellj_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.j,      NULL);
     ezcl_enqueue_write_buffer(queue, ilevel_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.level,  NULL);
     ezcl_enqueue_write_buffer(queue, ival_buffer,   CL_TRUE,  0, icells.ncells*sizeof(double), icells.values, NULL);
+    
+    
     
     // The output mesh
     cl_mem ocelli_buffer = ezcl_device_memory_malloc(context, NULL, "ocelli", ocells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
@@ -742,20 +747,24 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
        uint lev = icells.level[n];
        num_at_level[lev]++;
     }
-
+/*
     for (uint i = 0; i <= icells.levmax; i++) {
        printf("DEBUG -- levsum for lev %u is %u\n",i,num_at_level[i]);
     }
+*/    
 // This is temporary for checking -- above
+
 
 // Needed to allocate the hash tables
     ezcl_enqueue_read_buffer(queue, num_at_level_buffer, CL_TRUE, 0, (icells.levmax+1)*sizeof(uint), num_at_level, NULL);
 
+/*
 // This is temporary for checking -- below
     for (uint i = 0; i <= icells.levmax; i++) {
        printf("DEBUG -- levsum for lev %u is %u\n",i,num_at_level[i]);
     }
 // This is temporary for checking -- above
+*/
 
     // Every fourth cell will write a breadcrumb to the level above
     // lev must be int (not uint) to allow -1 for exit
@@ -817,6 +826,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     for (int ilev = icells.levmax+1; ilev <= 10; ilev++){
        ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 5+ilev, sizeof(cl_mem), NULL);
     }
+    
 
     ezcl_enqueue_ndrange_kernel(queue, hierarchical_compact_insert_kernel, 1, 0, global_work_size, local_work_size, NULL);
 
@@ -837,6 +847,9 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     for (int ilev = ocells.levmax+1; ilev <= 8; ilev++){
        ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 7+ilev, sizeof(cl_mem), NULL);
     }
+    
+    //TODO: See todo above. This should be local memory.
+    ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 16, sizeof(cl_mem), &ierr_buffer);
 
     ezcl_enqueue_ndrange_kernel(queue, hierarchical_compact_probe_kernel, 1, 0, global_work_size, local_work_size, NULL);
 
@@ -854,6 +867,8 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     ezcl_device_memory_delete(ocellj_buffer);
     ezcl_device_memory_delete(olevel_buffer);
     ezcl_device_memory_delete(oval_buffer);
+    
+    ezcl_device_memory_delete(ierr_buffer);
     
     return time;
 }

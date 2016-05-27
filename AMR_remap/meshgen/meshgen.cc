@@ -102,7 +102,7 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
         num_cells /= 3;
         num_cells *= 3;
         num_cells ++;
-        printf("Impossible number of cells, using %u instead\n", num_cells);
+        printf("\nImpossible number of cells, using %u instead\n", num_cells);
     }
     
     if (num_cells < levels_diff * 3 + 1) {

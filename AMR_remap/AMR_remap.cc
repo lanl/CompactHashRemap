@@ -173,7 +173,7 @@ int main (int argc, char** argv) {
     double gpu_singlewrite_remap_time = 0.0; 
     double gpu_compact_singlewrite_remap_time = 0.0; 
     double gpu_hierarchical_remap_time = 0.0; 
-    //double gpu_compact_hierarchical_remap_time = 0.0; 
+    double gpu_compact_hierarchical_remap_time = 0.0; 
 #endif
     
     uint ilength = atoi (argv[2]);
@@ -623,11 +623,11 @@ int main (int argc, char** argv) {
         if (run_tests) check_output("GPU Compact Singlewrite Remap", ocells.ncells, ocells.values, val_test_answer);
 
 // Compact Hierarchical Remap GPU
-        //memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
+        memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
-        //gpu_compact_hierarchical_remap_time+=cl_compact_hierarchical_remap(icells, ocells, CLFactory, run_tests);
+        gpu_compact_hierarchical_remap_time+=cl_compact_hierarchical_remap(icells, ocells, CLFactory, run_tests);
 
-        //if (run_tests) check_output("GPU Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
+        if (run_tests) check_output("GPU Compact Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
 
 #endif
 
@@ -725,7 +725,7 @@ int main (int argc, char** argv) {
     printf("GPU Singlewrite Remap:\t\t\t%10.4f ms\n", gpu_singlewrite_remap_time/num_rep*1000);
     printf("GPU Hierarchical Remap:\t\t\t%10.4f ms\n", gpu_hierarchical_remap_time/num_rep*1000);
     printf("GPU Compact Singlewrite Remap:\t\t%10.4f ms\n", gpu_compact_singlewrite_remap_time/num_rep*1000);
-    //printf("GPU Compact Hierarchical Remap:\t\t%10.4f ms\n", gpu_compact_hierarchical_remap_time/num_rep*1000);
+    printf("GPU Compact Hierarchical Remap:\t\t%10.4f ms\n", gpu_compact_hierarchical_remap_time/num_rep*1000);
 
     hash_lib_terminate();
     cleanup_cl();

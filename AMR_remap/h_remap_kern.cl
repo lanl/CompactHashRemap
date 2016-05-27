@@ -769,44 +769,17 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
         __global       char   *h_hashTable8)
 {
    __global char *hashtable = h_hashTable0;
-   switch (lev) {
-   case 0:
-      hashtable = h_hashTable0;
-      break;
-   case 1:
-      hashtable = h_hashTable1;
-      break;
-   case 2:
-      hashtable = h_hashTable2;
-      break;
-   case 3:
-      hashtable = h_hashTable3;
-      break;
-   case 4:
-      hashtable = h_hashTable4;
-      break;
-   case 5:
-      hashtable = h_hashTable5;
-      break;
-   case 6:
-      hashtable = h_hashTable6;
-      break;
-   case 7:
-      hashtable = h_hashTable7;
-      break;
-   case 8:
-      hashtable = h_hashTable8;
-      break;
-   }
+   
+   
+    uint gidx = get_global_id(0);
 
-    int probe;
     double sum = 0.0;
     
     uint key_new[4];
     
     int startlev = lev;
     
-    char queue[8];
+    char queue[32];
 
     queue[startlev+1] = 0;
     
@@ -822,6 +795,8 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
     // sub-cells of a flagged hash value.
     while (lev > startlev) {
     
+        
+        
         // Make sure that when returning from a finer level we are on even
         // numbered coordinates, so that we maintain the same reference for the
         // queue.
@@ -839,6 +814,36 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
                 continue;
         }
         
+        switch (lev) {
+        case 0:
+            hashtable = h_hashTable0;
+            break;
+        case 1:
+            hashtable = h_hashTable1;
+            break;
+        case 2:
+            hashtable = h_hashTable2;
+            break;
+        case 3:
+            hashtable = h_hashTable3;
+            break;
+        case 4:
+            hashtable = h_hashTable4;
+            break;
+        case 5:
+            hashtable = h_hashTable5;
+            break;
+        case 6:
+            hashtable = h_hashTable6;
+            break;
+        case 7:
+            hashtable = h_hashTable7;
+            break;
+        case 8:
+            hashtable = h_hashTable8;
+            break;
+        }
+        
         uint istride = ibasesize*two_to_the(lev);
         uint key = j*istride + i;
         
@@ -854,10 +859,10 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
             
             key = key_new[ic];
             
-            probe = intintHash_QuerySingle(hashtable, key, ierr);;
-            if (probe >= 0) {
+            intintHash_QuerySingle(hashtable, key, &ierr[gidx]);
+            if (ierr[gidx] >= 0) {
                 //TODO: try to move this division so we have fewer computations
-                sum += icells_values[probe]/four_to_the(lev-startlev);
+                sum += icells_values[ierr[gidx]]/four_to_the(lev-startlev);
             } else {
                 // When the sentinal value is set, setup the queue for our
                 // return and move down a level.
@@ -910,9 +915,10 @@ __kernel void hierarchical_compact_probe(
     uint olev = ocells_level[idx];
 
     __global char *hashtable = h_hashTable0;
+    
+    ierr[idx] = -1;
 
-    int probe = -1;
-    for (uint probe_lev = 0; probe < 0 && probe_lev <= olev; probe_lev++){
+    for (uint probe_lev = 0; ierr[idx] < 0 && probe_lev <= olev; probe_lev++){
         switch (probe_lev) {
         case 0:
            hashtable = h_hashTable0;
@@ -925,7 +931,7 @@ __kernel void hierarchical_compact_probe(
            break;
         case 3:
            hashtable = h_hashTable3;
-           break;
+           break; 
         case 4:
            hashtable = h_hashTable4;
            break;
@@ -944,12 +950,15 @@ __kernel void hierarchical_compact_probe(
         }
         int levdiff = olev - probe_lev;
         uint key = (oj >> levdiff)*ibasesize*two_to_the(probe_lev) + (oi >> levdiff);
-        probe = intintHash_QuerySingle(hashtable, key, ierr);
+        intintHash_QuerySingle(hashtable, key, &ierr[idx]);
     }
-
-    if (probe >= 0) {
-        ocells_values[idx] = icells_values[probe];
+        
+    
+    if (ierr[idx] >= 0) {
+        ocells_values[idx] = icells_values[ierr[idx]];
     } else {
+        //ocells_values[idx] = ierr[idx];
+        //return;
         ocells_values[idx] = avg_sub_cells_h_compact (icells_values, oi, oj, olev, ibasesize, ierr,
             h_hashTable0, h_hashTable1, h_hashTable2, h_hashTable3, h_hashTable4, h_hashTable5,
             h_hashTable6, h_hashTable7, h_hashTable8);
