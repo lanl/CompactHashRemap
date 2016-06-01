@@ -677,7 +677,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     cl_mem ival_buffer   = ezcl_device_memory_malloc(context, NULL, "ival",   icells.ncells, sizeof(double), CL_MEM_READ_WRITE, 0);
     // TODO: ierr should be moved to local memory if possible; a buffer of this size is not necessary,
     // and should not be accessed through global memory
-    cl_mem ierr_buffer = ezcl_device_memory_malloc(context, NULL, "ierr", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
+    cl_mem ierr_buffer = ezcl_device_memory_malloc(context, NULL, "ierr", ocells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
 
     ezcl_enqueue_write_buffer(queue, icelli_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.i,      NULL);
     ezcl_enqueue_write_buffer(queue, icellj_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.j,      NULL);
@@ -834,7 +834,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     /*
     * Query hash
     */
-
+    
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 0, sizeof(uint),   &ocells.ncells);
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 1, sizeof(uint),   &ocells.ibasesize);
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 2, sizeof(cl_mem), &ocelli_buffer);
@@ -851,8 +851,13 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     
     //TODO: See todo above. This should be local memory.
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 16, sizeof(cl_mem), &ierr_buffer);
+    
+    // adjust work size to be based off output cells
+    global_work_size[0] = ((local_work_size[0]+ocells.ncells-1)/local_work_size[0])*local_work_size[0];
 
     ezcl_enqueue_ndrange_kernel(queue, hierarchical_compact_probe_kernel, 1, 0, global_work_size, local_work_size, NULL);
+    
+    ezcl_finish(queue);
 
     //END TIMER
     double time = cpu_timer_stop(timer);
