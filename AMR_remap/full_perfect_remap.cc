@@ -31,6 +31,7 @@
 #include "meshgen/meshgen.h"
 #include "genmalloc/genmalloc.h"
 #include "full_perfect_remap.h"
+#include "stdio.h"
 
 void full_perfect_remap (cell_list icells, cell_list ocells) {
 

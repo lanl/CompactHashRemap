@@ -285,13 +285,16 @@ int main (int argc, char** argv) {
            icells.levmax    = i_max_level - i_min_level;
 
            ocells.ncells    = olength;
-           ocells.ibasesize = two_to_the(i_min_level);
-           ocells.jbasesize = two_to_the(i_min_level);
-           ocells.levmax    = i_max_level - i_min_level;
+           ocells.ibasesize = two_to_the(o_min_level);
+           ocells.jbasesize = two_to_the(o_min_level);
+           ocells.levmax    = o_max_level - o_min_level;
 
            for (uint ic=0; ic < olength; ic++){
-              icells.level[ic] -= i_min_level;
-              ocells.level[ic] -= i_min_level;
+                ocells.level[ic] -= o_min_level;
+           }
+           
+           for (uint ic=0; ic < ilength; ic++){
+                icells.level[ic] -= i_min_level;
            }
 
 #ifdef _OPENMP
@@ -301,9 +304,9 @@ int main (int argc, char** argv) {
            icells_openmp.levmax    = i_max_level - i_min_level;
 
            ocells_openmp.ncells    = olength;
-           ocells_openmp.ibasesize = two_to_the(i_min_level);
-           ocells_openmp.jbasesize = two_to_the(i_min_level);
-           ocells_openmp.levmax    = i_max_level - i_min_level;
+           ocells_openmp.ibasesize = two_to_the(o_min_level);
+           ocells_openmp.jbasesize = two_to_the(o_min_level);
+           ocells_openmp.levmax    = o_max_level - o_min_level;
 #endif
         } else if (meshgen == SPARSE_MESHGEN){
         } else if (meshgen == ADAPT_MESHGEN){

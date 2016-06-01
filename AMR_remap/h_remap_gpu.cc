@@ -558,8 +558,9 @@ double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests)
     /*
     * initialize array
     */
-    // This is a simple prefix scan - it is done on the cpu because it also determines the amount of memory that needs to be alloc'd,
-    // so the memory would have to be moved cpu/gpu anyway. Should not be many operations.
+    // This is a simple prefix scan - it is done on the cpu because it also 
+    // determines the amount of memory that needs to be alloc'd, so the memory
+    // would have to be moved cpu/gpu anyway. Should not be many operations.
     uint index_cume = 0;
     uint* hash_memory_indices = (uint*)malloc((icells.levmax+2)*sizeof(uint));
     memset (hash_memory_indices,0,(icells.levmax+2)*sizeof(uint));
