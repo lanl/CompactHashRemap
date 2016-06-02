@@ -437,7 +437,7 @@ int main (int argc, char** argv) {
         if (run_tests) check_output("Single-write Remap", olength, ocells.values, val_test_answer);
         
 // Hierarchical Remap
-
+        
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
         
         cpu_timer_start(&timer);
@@ -445,6 +445,7 @@ int main (int argc, char** argv) {
         h_remap_time += cpu_timer_stop(timer);
         
         if (run_tests) check_output("Hierarchical Remap", olength, ocells.values, val_test_answer);
+        
 
 // Compact Single-write Remap
         
@@ -457,7 +458,7 @@ int main (int argc, char** argv) {
         if (run_tests) check_output("Compact Single-write Remap", olength, ocells.values, val_test_answer);
         
 // Compact Hierarchical Remap
-
+        
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
         cpu_timer_start(&timer);
@@ -465,6 +466,7 @@ int main (int argc, char** argv) {
         compact_h_remap_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Compact Hierarchical Remap", olength, ocells.values, val_test_answer);
+        
 
 #ifdef _OPENMP
 
@@ -603,6 +605,7 @@ int main (int argc, char** argv) {
         gpu_full_perfect_remap_time+=cl_full_perfect_remap(icells, ocells, run_tests);
 
         if (run_tests) check_output("GPU Full Perfect Remap", ocells.ncells, ocells.values, val_test_answer);
+        
 
 // Single-write Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
@@ -610,28 +613,28 @@ int main (int argc, char** argv) {
         gpu_singlewrite_remap_time+=cl_singlewrite_remap(icells, ocells, run_tests);
 
         if (run_tests) check_output("GPU Singlewrite Remap", ocells.ncells, ocells.values, val_test_answer);
-
+        
 // Hierarchical Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
         gpu_hierarchical_remap_time+=cl_hierarchical_remap(icells, ocells, run_tests);
 
         if (run_tests) check_output("GPU Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
-
+        
 // Compact Single-write Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
         gpu_compact_singlewrite_remap_time+=cl_compact_singlewrite_remap(icells, ocells, run_tests);
 
         if (run_tests) check_output("GPU Compact Singlewrite Remap", ocells.ncells, ocells.values, val_test_answer);
-
+        
 // Compact Hierarchical Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
         gpu_compact_hierarchical_remap_time+=cl_compact_hierarchical_remap(icells, ocells, CLFactory, run_tests);
 
         if (run_tests) check_output("GPU Compact Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
-
+        
 #endif
 
         if (run_brute)  free(val_test_brute);
