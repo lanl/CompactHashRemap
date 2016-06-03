@@ -799,9 +799,6 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
               printf("Type of hash for lev %d is %s\n",i,"LCG_QUADRATIC_OPEN_COMPACT_CL_HASH_ID");
            }
         }
-
-        //Empty Hash Table
-        intintHash_EmptyTable(h_hashTable[i]);
     }
 
     ezcl_device_memory_delete(num_at_level_buffer);

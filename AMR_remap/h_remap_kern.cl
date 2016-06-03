@@ -957,8 +957,6 @@ __kernel void hierarchical_compact_probe(
     if (ierr[idx] >= 0) {
         ocells_values[idx] = icells_values[ierr[idx]];
     } else {
-        //ocells_values[idx] = ierr[idx];
-        //return;
         ocells_values[idx] = avg_sub_cells_h_compact (icells_values, oi, oj, olev, ibasesize, ierr,
             h_hashTable0, h_hashTable1, h_hashTable2, h_hashTable3, h_hashTable4, h_hashTable5,
             h_hashTable6, h_hashTable7, h_hashTable8);
