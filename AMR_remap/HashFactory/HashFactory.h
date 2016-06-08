@@ -123,8 +123,6 @@ int clFinish(int command_queue);
 #include "CLHash_Utilities.h"
 //
 //
-#include "HashFactory.hm"
-#include "HashFactory.cm"
 //
 #define HASH_REPORT_NEVER /**/ 0
 #define HASH_REPORT_CYCLE /**/ 1
@@ -258,647 +256,615 @@ extern "C" {
 	const char *Hash_GetKernelSourceString();
 	int smallestProthPrimeAbove(int N);
 	int largestProthPrimeUnder(int N);
-	typedef struct intintHash_Table_ intintHash_Table;
-	typedef struct intintCLHash_Table_ intintCLHash_Table;
-	typedef struct intintHash_Factory_ intintHash_Factory;
-	typedef struct intintCLHash_Factory_ intintCLHash_Factory;
-	intintHash_Factory *intintHash_CreateFactory(int HashTypes,
-						     int *emptyValue,
-						     size_t localWorkSize,
-						     cl_context * context,
-						     cl_command_queue * queue);
-	int intintHash_DestroyFactory(intintHash_Factory * factory);
-	intintHash_Table *intintHash_CreateTable(intintHash_Factory * factory,
-						 int hashTypes, size_t keyRange,
-						 size_t numEntries,
-						 float loadFactor);
-	int intintHash_SetupTable(intintHash_Table * table);
-	int intintHash_EmptyTable(intintHash_Table * table);
-	int intintHash_DestroyTable(intintHash_Table * table);
-	cl_mem intintHash_GetTableDataBuffer(intintHash_Table * table);
-	cl_mem *intintHash_GetTableDataBufferPtr(intintHash_Table * table);
-	int intintHash_GetTableType(intintHash_Table * table);
-	int intintHash_Query(intintHash_Table * table, size_t numKeys,
-			     int *keys, int *valuesOutput);
-	int intintHash_QuerySingle(intintHash_Table * table, int key,
-				   int *valueOutput);
-	int intintHash_Insert(intintHash_Table * table, size_t numEntries,
-			      int *keys, int *values);
-	int intintHash_InsertSingle(intintHash_Table * table, int key,
-				    int value);
-	int intintHash_InsertNoOverwrite(intintHash_Table * table,
-					 size_t numEntries, int *keys,
-					 int *values);
-	int intintHash_InsertSingleNoOverwrite(intintHash_Table * table,
-					       int key, int value);
-	int intintHash_BufferQuery(intintHash_Table * table, size_t numKeys,
-				   cl_mem keys, cl_mem valuesOutput);
-	int intintHash_BufferInsert(intintHash_Table * table, size_t numEntries,
-				    cl_mem keys, cl_mem values);
-	int intintHash_BufferInsertNoOverwrite(intintHash_Table * table,
-					       size_t numEntries, cl_mem keys,
-					       cl_mem values);
-	static inline unsigned int intintHash_CompressIdentity(char data,
-							       int hashCode) {
+	typedef struct uintuintHash_Table_ uintuintHash_Table;
+	typedef struct uintuintCLHash_Table_ uintuintCLHash_Table;
+	typedef struct uintuintHash_Factory_ uintuintHash_Factory;
+	typedef struct uintuintCLHash_Factory_ uintuintCLHash_Factory;
+	uintuintHash_Factory *uintuintHash_CreateFactory(int HashTypes,
+							 uint * emptyValue,
+							 size_t localWorkSize,
+							 cl_context * context,
+							 cl_command_queue *
+							 queue);
+	int uintuintHash_DestroyFactory(uintuintHash_Factory * factory);
+	uintuintHash_Table *uintuintHash_CreateTable(uintuintHash_Factory *
+						     factory, int hashTypes,
+						     size_t keyRange,
+						     size_t numEntries,
+						     float loadFactor);
+	int uintuintHash_SetupTable(uintuintHash_Table * table);
+	int uintuintHash_EmptyTable(uintuintHash_Table * table);
+	int uintuintHash_DestroyTable(uintuintHash_Table * table);
+	cl_mem uintuintHash_GetTableDataBuffer(uintuintHash_Table * table);
+	cl_mem *uintuintHash_GetTableDataBufferPtr(uintuintHash_Table * table);
+	int uintuintHash_GetTableType(uintuintHash_Table * table);
+	int uintuintHash_Query(uintuintHash_Table * table, size_t numKeys,
+			       uint * keys, uint * valuesOutput);
+	int uintuintHash_QuerySingle(uintuintHash_Table * table, uint key,
+				     uint * valueOutput);
+	int uintuintHash_Insert(uintuintHash_Table * table, size_t numEntries,
+				uint * keys, uint * values);
+	int uintuintHash_InsertSingle(uintuintHash_Table * table, uint key,
+				      uint value);
+	int uintuintHash_InsertNoOverwrite(uintuintHash_Table * table,
+					   size_t numEntries, uint * keys,
+					   uint * values);
+	int uintuintHash_InsertSingleNoOverwrite(uintuintHash_Table * table,
+						 uint key, uint value);
+	int uintuintHash_BufferQuery(uintuintHash_Table * table, size_t numKeys,
+				     cl_mem keys, cl_mem valuesOutput);
+	int uintuintHash_BufferInsert(uintuintHash_Table * table,
+				      size_t numEntries, cl_mem keys,
+				      cl_mem values);
+	int uintuintHash_BufferInsertNoOverwrite(uintuintHash_Table * table,
+						 size_t numEntries, cl_mem keys,
+						 cl_mem values);
+	static inline unsigned int uintuintHash_CompressIdentity(char data,
+								 int hashCode) {
 		return hashCode;
 	}
-	typedef struct intintHash_CompressLCGData {
+	typedef struct uintuintHash_CompressLCGData {
 		long unsigned int a;
 		long unsigned int c;
 		unsigned int m;
 		unsigned int n;
-	} intintHash_CompressLCGData;
+	} uintuintHash_CompressLCGData;
 	static inline unsigned int
-	    intintHash_CompressLCG(intintHash_CompressLCGData compressLCGData,
-				   int hashCode) {
+	    uintuintHash_CompressLCG(uintuintHash_CompressLCGData
+				     compressLCGData, int hashCode) {
 		return ((compressLCGData.a * hashCode +
 			 compressLCGData.c) % compressLCGData.m) %
 		    compressLCGData.n;
 	}
-	int intintIdentityPerfectHash_CreateFactory(intintHash_Factory *
-						    factory, int hashIndex);
-	int intintIdentityPerfectHash_DestroyFactory(intintHash_Factory *
-						     factory, int hashIndex);
-	intintHash_Table
-	    *intintIdentityPerfectHash_CreateTable(intintHash_Factory * factory,
-						   int hashIndex,
-						   size_t keyRange,
-						   size_t numEntries,
-						   float loadFactor);
-	int intintIdentityPerfectHash_InitTable(intintHash_Table * table,
-						va_list args);
-	int intintIdentityPerfectHash_DestroyTable(intintHash_Table * table);
-	char *intintIdentityPerfectHash_Report(intintHash_Table * table);
-	int intintIdentityPerfectHash_SetupTable(intintHash_Table * table);
-	int intintIdentityPerfectHash_EmptyTable(intintHash_Table * table);
-	int intintIdentityPerfectHash_Query(intintHash_Table * table,
-					    size_t numKeys, int *keys,
-					    int *valuesOutput);
-	int intintIdentityPerfectHash_QuerySingle(intintHash_Table * table,
-						  int key, int *valueOutput);
-	int intintIdentityPerfectHash_Insert(intintHash_Table * table,
-					     size_t numEntries, int *keys,
-					     int *values);
-	int intintIdentityPerfectHash_InsertSingle(intintHash_Table * table,
-						   int key, int value);
-	int intintIdentityPerfectHash_InsertNoOverwrite(intintHash_Table *
-							table,
-							size_t numEntries,
-							int *keys, int *values);
-	int intintIdentityPerfectHash_InsertSingleNoOverwrite(intintHash_Table *
-							      table, int key,
-							      int value);
-	int intintIdentityPerfectCLHash_CreateFactory(intintHash_Factory *
+	int uintuintIdentityPerfectHash_CreateFactory(uintuintHash_Factory *
 						      factory, int hashIndex);
-	int intintIdentityPerfectCLHash_DestroyFactory(intintHash_Factory *
+	int uintuintIdentityPerfectHash_DestroyFactory(uintuintHash_Factory *
 						       factory, int hashIndex);
-	intintHash_Table
-	    *intintIdentityPerfectCLHash_CreateTable(intintHash_Factory *
+	uintuintHash_Table
+	    *uintuintIdentityPerfectHash_CreateTable(uintuintHash_Factory *
 						     factory, int hashIndex,
 						     size_t keyRange,
 						     size_t numEntries,
 						     float loadFactor);
-	int intintIdentityPerfectCLHash_InitTable(intintHash_Table * table,
+	int uintuintIdentityPerfectHash_InitTable(uintuintHash_Table * table,
 						  va_list args);
-	int intintIdentityPerfectCLHash_DestroyTable(intintHash_Table * table);
-	char *intintIdentityPerfectCLHash_Report(intintHash_Table * table);
-	int intintIdentityPerfectCLHash_SetupTable(intintHash_Table * table);
-	int intintIdentityPerfectCLHash_EmptyTable(intintHash_Table * table);
-	int intintIdentityPerfectCLHash_Query(intintHash_Table * table,
-					      size_t numKeys, int *keys,
-					      int *valuesOutput);
-	int intintIdentityPerfectCLHash_QuerySingle(intintHash_Table * table,
-						    int key, int *valueOutput);
-	int intintIdentityPerfectCLHash_Insert(intintHash_Table * table,
-					       size_t numEntries, int *keys,
-					       int *values);
-	int intintIdentityPerfectCLHash_InsertSingle(intintHash_Table * table,
-						     int key, int value);
-	int intintIdentityPerfectCLHash_InsertNoOverwrite(intintHash_Table *
+	int uintuintIdentityPerfectHash_DestroyTable(uintuintHash_Table *
+						     table);
+	char *uintuintIdentityPerfectHash_Report(uintuintHash_Table * table);
+	int uintuintIdentityPerfectHash_SetupTable(uintuintHash_Table * table);
+	int uintuintIdentityPerfectHash_EmptyTable(uintuintHash_Table * table);
+	int uintuintIdentityPerfectHash_Query(uintuintHash_Table * table,
+					      size_t numKeys, uint * keys,
+					      uint * valuesOutput);
+	int uintuintIdentityPerfectHash_QuerySingle(uintuintHash_Table * table,
+						    uint key,
+						    uint * valueOutput);
+	int uintuintIdentityPerfectHash_Insert(uintuintHash_Table * table,
+					       size_t numEntries, uint * keys,
+					       uint * values);
+	int uintuintIdentityPerfectHash_InsertSingle(uintuintHash_Table * table,
+						     uint key, uint value);
+	int uintuintIdentityPerfectHash_InsertNoOverwrite(uintuintHash_Table *
 							  table,
 							  size_t numEntries,
-							  int *keys,
-							  int *values);
-	int intintIdentityPerfectCLHash_InsertSingleNoOverwrite(intintHash_Table
-								* table,
-								int key,
-								int value);
-	int intintIdentityPerfectCLHash_BufferQuery(intintHash_Table * table,
-						    size_t numKeys,
-						    cl_mem keysBuffer,
-						    cl_mem valuesOutputBuffer);
-	int intintIdentityPerfectCLHash_BufferInsert(intintHash_Table * table,
-						     size_t numEntries,
-						     cl_mem keysBuffer,
-						     cl_mem valuesBuffer);
-	int intintIdentityPerfectCLHash_BufferInsertNoOverwrite(intintHash_Table
-								* table,
-								size_t
-								numEntries,
-								cl_mem
-								keysBuffer,
-								cl_mem
-								valuesBuffer);
-	int intintIdentityPerfectOpenMPHash_CreateFactory(intintHash_Factory *
-							  factory,
-							  int hashIndex);
-	int intintIdentityPerfectOpenMPHash_DestroyFactory(intintHash_Factory *
-							   factory,
-							   int hashIndex);
-	intintHash_Table
-	    *intintIdentityPerfectOpenMPHash_CreateTable(intintHash_Factory *
-							 factory, int hashIndex,
-							 size_t keyRange,
-							 size_t numEntries,
-							 float loadFactor);
-	int intintIdentityPerfectOpenMPHash_InitTable(intintHash_Table * table,
-						      va_list args);
-	int intintIdentityPerfectOpenMPHash_DestroyTable(intintHash_Table *
-							 table);
-	char *intintIdentityPerfectOpenMPHash_Report(intintHash_Table * table);
-	int intintIdentityPerfectOpenMPHash_SetupTable(intintHash_Table *
+							  uint * keys,
+							  uint * values);
+	int uintuintIdentityPerfectHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentityPerfectCLHash_CreateFactory(uintuintHash_Factory *
+							factory, int hashIndex);
+	int uintuintIdentityPerfectCLHash_DestroyFactory(uintuintHash_Factory *
+							 factory,
+							 int hashIndex);
+	uintuintHash_Table
+	    *uintuintIdentityPerfectCLHash_CreateTable(uintuintHash_Factory *
+						       factory, int hashIndex,
+						       size_t keyRange,
+						       size_t numEntries,
+						       float loadFactor);
+	int uintuintIdentityPerfectCLHash_InitTable(uintuintHash_Table * table,
+						    va_list args);
+	int uintuintIdentityPerfectCLHash_DestroyTable(uintuintHash_Table *
 						       table);
-	int intintIdentityPerfectOpenMPHash_EmptyTable(intintHash_Table *
-						       table);
-	int intintIdentityPerfectOpenMPHash_Query(intintHash_Table * table,
-						  size_t numKeys, int *keys,
-						  int *valuesOutput);
-	int intintIdentityPerfectOpenMPHash_QuerySingle(intintHash_Table *
-							table, int key,
-							int *valueOutput);
-	int intintIdentityPerfectOpenMPHash_Insert(intintHash_Table * table,
-						   size_t numEntries, int *keys,
-						   int *values);
-	int intintIdentityPerfectOpenMPHash_InsertSingle(intintHash_Table *
-							 table, int key,
-							 int value);
-	int intintIdentityPerfectOpenMPHash_InsertNoOverwrite(intintHash_Table *
-							      table,
-							      size_t numEntries,
-							      int *keys,
-							      int *values);
-	int intintIdentityPerfectOpenMPHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintIdentityPerfectOpenMPHash_BufferQuery(intintHash_Table *
-							table, size_t numKeys,
-							cl_mem keysBuffer,
-							cl_mem
-							valuesOutputBuffer);
-	int intintIdentityPerfectOpenMPHash_BufferInsert(intintHash_Table *
-							 table,
-							 size_t numEntries,
-							 cl_mem keysBuffer,
-							 cl_mem valuesBuffer);
-	int intintIdentityPerfectOpenMPHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	char *uintuintIdentityPerfectCLHash_Report(uintuintHash_Table * table);
+	int uintuintIdentityPerfectCLHash_SetupTable(uintuintHash_Table *
+						     table);
+	int uintuintIdentityPerfectCLHash_EmptyTable(uintuintHash_Table *
+						     table);
+	int uintuintIdentityPerfectCLHash_Query(uintuintHash_Table * table,
+						size_t numKeys, uint * keys,
+						uint * valuesOutput);
+	int uintuintIdentityPerfectCLHash_QuerySingle(uintuintHash_Table *
+						      table, uint key,
+						      uint * valueOutput);
+	int uintuintIdentityPerfectCLHash_Insert(uintuintHash_Table * table,
+						 size_t numEntries, uint * keys,
+						 uint * values);
+	int uintuintIdentityPerfectCLHash_InsertSingle(uintuintHash_Table *
+						       table, uint key,
+						       uint value);
+	int uintuintIdentityPerfectCLHash_InsertNoOverwrite(uintuintHash_Table *
+							    table,
+							    size_t numEntries,
+							    uint * keys,
+							    uint * values);
+	int uintuintIdentityPerfectCLHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentityPerfectCLHash_BufferQuery(uintuintHash_Table *
+						      table, size_t numKeys,
+						      cl_mem keysBuffer,
+						      cl_mem
+						      valuesOutputBuffer);
+	int uintuintIdentityPerfectCLHash_BufferInsert(uintuintHash_Table *
+						       table, size_t numEntries,
+						       cl_mem keysBuffer,
+						       cl_mem valuesBuffer);
+	int uintuintIdentityPerfectCLHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
-	int intintIdentitySentinelPerfectHash_CreateFactory(intintHash_Factory *
-							    factory,
+	int uintuintIdentityPerfectOpenMPHash_CreateFactory(uintuintHash_Factory
+							    * factory,
 							    int hashIndex);
-	int intintIdentitySentinelPerfectHash_DestroyFactory(intintHash_Factory
-							     * factory,
-							     int hashIndex);
-	intintHash_Table
-	    *intintIdentitySentinelPerfectHash_CreateTable(intintHash_Factory *
-							   factory,
+	int uintuintIdentityPerfectOpenMPHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintIdentityPerfectOpenMPHash_CreateTable(uintuintHash_Factory
+							   * factory,
 							   int hashIndex,
 							   size_t keyRange,
 							   size_t numEntries,
 							   float loadFactor);
-	int intintIdentitySentinelPerfectHash_InitTable(intintHash_Table *
+	int uintuintIdentityPerfectOpenMPHash_InitTable(uintuintHash_Table *
 							table, va_list args);
-	int intintIdentitySentinelPerfectHash_DestroyTable(intintHash_Table *
+	int uintuintIdentityPerfectOpenMPHash_DestroyTable(uintuintHash_Table *
 							   table);
-	char *intintIdentitySentinelPerfectHash_Report(intintHash_Table *
+	char *uintuintIdentityPerfectOpenMPHash_Report(uintuintHash_Table *
 						       table);
-	int intintIdentitySentinelPerfectHash_SetupTable(intintHash_Table *
+	int uintuintIdentityPerfectOpenMPHash_SetupTable(uintuintHash_Table *
 							 table);
-	int intintIdentitySentinelPerfectHash_EmptyTable(intintHash_Table *
+	int uintuintIdentityPerfectOpenMPHash_EmptyTable(uintuintHash_Table *
 							 table);
-	int intintIdentitySentinelPerfectHash_Query(intintHash_Table * table,
-						    size_t numKeys, int *keys,
-						    int *valuesOutput);
-	int intintIdentitySentinelPerfectHash_QuerySingle(intintHash_Table *
-							  table, int key,
-							  int *valueOutput);
-	int intintIdentitySentinelPerfectHash_Insert(intintHash_Table * table,
+	int uintuintIdentityPerfectOpenMPHash_Query(uintuintHash_Table * table,
+						    size_t numKeys, uint * keys,
+						    uint * valuesOutput);
+	int uintuintIdentityPerfectOpenMPHash_QuerySingle(uintuintHash_Table *
+							  table, uint key,
+							  uint * valueOutput);
+	int uintuintIdentityPerfectOpenMPHash_Insert(uintuintHash_Table * table,
 						     size_t numEntries,
-						     int *keys, int *values);
-	int intintIdentitySentinelPerfectHash_InsertSingle(intintHash_Table *
-							   table, int key,
-							   int value);
-	int intintIdentitySentinelPerfectHash_InsertNoOverwrite(intintHash_Table
-								* table,
-								size_t
-								numEntries,
-								int *keys,
-								int *values);
-	int intintIdentitySentinelPerfectHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintIdentitySentinelPerfectCLHash_CreateFactory(intintHash_Factory
-							      * factory,
-							      int hashIndex);
-	int intintIdentitySentinelPerfectCLHash_DestroyFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	intintHash_Table
-	    *intintIdentitySentinelPerfectCLHash_CreateTable(intintHash_Factory
-							     * factory,
-							     int hashIndex,
-							     size_t keyRange,
-							     size_t numEntries,
-							     float loadFactor);
-	int intintIdentitySentinelPerfectCLHash_InitTable(intintHash_Table *
-							  table, va_list args);
-	int intintIdentitySentinelPerfectCLHash_DestroyTable(intintHash_Table *
-							     table);
-	char *intintIdentitySentinelPerfectCLHash_Report(intintHash_Table *
-							 table);
-	int intintIdentitySentinelPerfectCLHash_SetupTable(intintHash_Table *
-							   table);
-	int intintIdentitySentinelPerfectCLHash_EmptyTable(intintHash_Table *
-							   table);
-	int intintIdentitySentinelPerfectCLHash_Query(intintHash_Table * table,
-						      size_t numKeys, int *keys,
-						      int *valuesOutput);
-	int intintIdentitySentinelPerfectCLHash_QuerySingle(intintHash_Table *
-							    table, int key,
-							    int *valueOutput);
-	int intintIdentitySentinelPerfectCLHash_Insert(intintHash_Table * table,
-						       size_t numEntries,
-						       int *keys, int *values);
-	int intintIdentitySentinelPerfectCLHash_InsertSingle(intintHash_Table *
-							     table, int key,
-							     int value);
-	int intintIdentitySentinelPerfectCLHash_InsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, int *keys,
-	     int *values);
-	int intintIdentitySentinelPerfectCLHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintIdentitySentinelPerfectCLHash_BufferQuery(intintHash_Table *
-							    table,
-							    size_t numKeys,
-							    cl_mem keysBuffer,
-							    cl_mem
-							    valuesOutputBuffer);
-	int intintIdentitySentinelPerfectCLHash_BufferInsert(intintHash_Table *
-							     table,
-							     size_t numEntries,
-							     cl_mem keysBuffer,
-							     cl_mem
-							     valuesBuffer);
-	int intintIdentitySentinelPerfectCLHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
-	     cl_mem valuesBuffer);
-	int intintIdentitySentinelPerfectOpenMPHash_CreateFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	int intintIdentitySentinelPerfectOpenMPHash_DestroyFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	intintHash_Table
-	    *intintIdentitySentinelPerfectOpenMPHash_CreateTable
-	    (intintHash_Factory * factory, int hashIndex, size_t keyRange,
-	     size_t numEntries, float loadFactor);
-	int intintIdentitySentinelPerfectOpenMPHash_InitTable(intintHash_Table *
-							      table,
-							      va_list args);
-	int intintIdentitySentinelPerfectOpenMPHash_DestroyTable
-	    (intintHash_Table * table);
-	char *intintIdentitySentinelPerfectOpenMPHash_Report(intintHash_Table *
-							     table);
-	int intintIdentitySentinelPerfectOpenMPHash_SetupTable(intintHash_Table
-							       * table);
-	int intintIdentitySentinelPerfectOpenMPHash_EmptyTable(intintHash_Table
-							       * table);
-	int intintIdentitySentinelPerfectOpenMPHash_Query(intintHash_Table *
+						     uint * keys,
+						     uint * values);
+	int uintuintIdentityPerfectOpenMPHash_InsertSingle(uintuintHash_Table *
+							   table, uint key,
+							   uint value);
+	int uintuintIdentityPerfectOpenMPHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintIdentityPerfectOpenMPHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentityPerfectOpenMPHash_BufferQuery(uintuintHash_Table *
 							  table, size_t numKeys,
-							  int *keys,
-							  int *valuesOutput);
-	int intintIdentitySentinelPerfectOpenMPHash_QuerySingle(intintHash_Table
-								* table,
-								int key,
-								int
-								*valueOutput);
-	int intintIdentitySentinelPerfectOpenMPHash_Insert(intintHash_Table *
+							  cl_mem keysBuffer,
+							  cl_mem
+							  valuesOutputBuffer);
+	int uintuintIdentityPerfectOpenMPHash_BufferInsert(uintuintHash_Table *
 							   table,
 							   size_t numEntries,
-							   int *keys,
-							   int *values);
-	int intintIdentitySentinelPerfectOpenMPHash_InsertSingle
-	    (intintHash_Table * table, int key, int value);
-	int intintIdentitySentinelPerfectOpenMPHash_InsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, int *keys,
-	     int *values);
-	int intintIdentitySentinelPerfectOpenMPHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintIdentitySentinelPerfectOpenMPHash_BufferQuery(intintHash_Table
-								* table,
-								size_t numKeys,
-								cl_mem
-								keysBuffer,
-								cl_mem
-								valuesOutputBuffer);
-	int intintIdentitySentinelPerfectOpenMPHash_BufferInsert
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+							   cl_mem keysBuffer,
+							   cl_mem valuesBuffer);
+	int uintuintIdentityPerfectOpenMPHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
-	int intintIdentitySentinelPerfectOpenMPHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	int uintuintIdentitySentinelPerfectHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintIdentitySentinelPerfectHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintIdentitySentinelPerfectHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintIdentitySentinelPerfectHash_InitTable(uintuintHash_Table *
+							  table, va_list args);
+	int uintuintIdentitySentinelPerfectHash_DestroyTable(uintuintHash_Table
+							     * table);
+	char *uintuintIdentitySentinelPerfectHash_Report(uintuintHash_Table *
+							 table);
+	int uintuintIdentitySentinelPerfectHash_SetupTable(uintuintHash_Table *
+							   table);
+	int uintuintIdentitySentinelPerfectHash_EmptyTable(uintuintHash_Table *
+							   table);
+	int uintuintIdentitySentinelPerfectHash_Query(uintuintHash_Table *
+						      table, size_t numKeys,
+						      uint * keys,
+						      uint * valuesOutput);
+	int uintuintIdentitySentinelPerfectHash_QuerySingle(uintuintHash_Table *
+							    table, uint key,
+							    uint * valueOutput);
+	int uintuintIdentitySentinelPerfectHash_Insert(uintuintHash_Table *
+						       table, size_t numEntries,
+						       uint * keys,
+						       uint * values);
+	int uintuintIdentitySentinelPerfectHash_InsertSingle(uintuintHash_Table
+							     * table, uint key,
+							     uint value);
+	int uintuintIdentitySentinelPerfectHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintIdentitySentinelPerfectHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentitySentinelPerfectCLHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintIdentitySentinelPerfectCLHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintIdentitySentinelPerfectCLHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintIdentitySentinelPerfectCLHash_InitTable(uintuintHash_Table *
+							    table,
+							    va_list args);
+	int uintuintIdentitySentinelPerfectCLHash_DestroyTable
+	    (uintuintHash_Table * table);
+	char *uintuintIdentitySentinelPerfectCLHash_Report(uintuintHash_Table *
+							   table);
+	int uintuintIdentitySentinelPerfectCLHash_SetupTable(uintuintHash_Table
+							     * table);
+	int uintuintIdentitySentinelPerfectCLHash_EmptyTable(uintuintHash_Table
+							     * table);
+	int uintuintIdentitySentinelPerfectCLHash_Query(uintuintHash_Table *
+							table, size_t numKeys,
+							uint * keys,
+							uint * valuesOutput);
+	int uintuintIdentitySentinelPerfectCLHash_QuerySingle(uintuintHash_Table
+							      * table, uint key,
+							      uint *
+							      valueOutput);
+	int uintuintIdentitySentinelPerfectCLHash_Insert(uintuintHash_Table *
+							 table,
+							 size_t numEntries,
+							 uint * keys,
+							 uint * values);
+	int uintuintIdentitySentinelPerfectCLHash_InsertSingle
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentitySentinelPerfectCLHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintIdentitySentinelPerfectCLHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentitySentinelPerfectCLHash_BufferQuery(uintuintHash_Table
+							      * table,
+							      size_t numKeys,
+							      cl_mem keysBuffer,
+							      cl_mem
+							      valuesOutputBuffer);
+	int uintuintIdentitySentinelPerfectCLHash_BufferInsert
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
-	int intintLCGLinearOpenCompactHash_CreateFactory(intintHash_Factory *
-							 factory,
-							 int hashIndex);
-	int intintLCGLinearOpenCompactHash_DestroyFactory(intintHash_Factory *
-							  factory,
-							  int hashIndex);
-	intintHash_Table
-	    *intintLCGLinearOpenCompactHash_CreateTable(intintHash_Factory *
-							factory, int hashIndex,
-							size_t keyRange,
-							size_t numEntries,
-							float loadFactor);
-	int intintLCGLinearOpenCompactHash_InitTable(intintHash_Table * table,
-						     va_list args);
-	int intintLCGLinearOpenCompactHash_DestroyTable(intintHash_Table *
-							table);
-	char *intintLCGLinearOpenCompactHash_Report(intintHash_Table * table);
-	int intintLCGLinearOpenCompactHash_SetupTable(intintHash_Table * table);
-	int intintLCGLinearOpenCompactHash_EmptyTable(intintHash_Table * table);
-	int intintLCGLinearOpenCompactHash_Query(intintHash_Table * table,
-						 size_t numKeys, int *keys,
-						 int *valuesOutput);
-	int intintLCGLinearOpenCompactHash_QuerySingle(intintHash_Table * table,
-						       int key,
-						       int *valueOutput);
-	int intintLCGLinearOpenCompactHash_Insert(intintHash_Table * table,
-						  size_t numEntries, int *keys,
-						  int *values);
-	int intintLCGLinearOpenCompactHash_InsertSingle(intintHash_Table *
-							table, int key,
-							int value);
-	int intintLCGLinearOpenCompactHash_InsertNoOverwrite(intintHash_Table *
-							     table,
+	int uintuintIdentitySentinelPerfectCLHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintIdentitySentinelPerfectOpenMPHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintIdentitySentinelPerfectOpenMPHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintIdentitySentinelPerfectOpenMPHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintIdentitySentinelPerfectOpenMPHash_InitTable
+	    (uintuintHash_Table * table, va_list args);
+	int uintuintIdentitySentinelPerfectOpenMPHash_DestroyTable
+	    (uintuintHash_Table * table);
+	char *uintuintIdentitySentinelPerfectOpenMPHash_Report
+	    (uintuintHash_Table * table);
+	int uintuintIdentitySentinelPerfectOpenMPHash_SetupTable
+	    (uintuintHash_Table * table);
+	int uintuintIdentitySentinelPerfectOpenMPHash_EmptyTable
+	    (uintuintHash_Table * table);
+	int uintuintIdentitySentinelPerfectOpenMPHash_Query(uintuintHash_Table *
+							    table,
+							    size_t numKeys,
+							    uint * keys,
+							    uint *
+							    valuesOutput);
+	int uintuintIdentitySentinelPerfectOpenMPHash_QuerySingle
+	    (uintuintHash_Table * table, uint key, uint * valueOutput);
+	int uintuintIdentitySentinelPerfectOpenMPHash_Insert(uintuintHash_Table
+							     * table,
 							     size_t numEntries,
-							     int *keys,
-							     int *values);
-	int intintLCGLinearOpenCompactHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGLinearOpenCompactCLHash_CreateFactory(intintHash_Factory *
-							   factory,
+							     uint * keys,
+							     uint * values);
+	int uintuintIdentitySentinelPerfectOpenMPHash_InsertSingle
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentitySentinelPerfectOpenMPHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintIdentitySentinelPerfectOpenMPHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintIdentitySentinelPerfectOpenMPHash_BufferQuery
+	    (uintuintHash_Table * table, size_t numKeys, cl_mem keysBuffer,
+	     cl_mem valuesOutputBuffer);
+	int uintuintIdentitySentinelPerfectOpenMPHash_BufferInsert
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintIdentitySentinelPerfectOpenMPHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintLCGLinearOpenCompactHash_CreateFactory(uintuintHash_Factory
+							   * factory,
 							   int hashIndex);
-	int intintLCGLinearOpenCompactCLHash_DestroyFactory(intintHash_Factory *
-							    factory,
+	int uintuintLCGLinearOpenCompactHash_DestroyFactory(uintuintHash_Factory
+							    * factory,
 							    int hashIndex);
-	intintHash_Table
-	    *intintLCGLinearOpenCompactCLHash_CreateTable(intintHash_Factory *
+	uintuintHash_Table
+	    *uintuintLCGLinearOpenCompactHash_CreateTable(uintuintHash_Factory *
 							  factory,
 							  int hashIndex,
 							  size_t keyRange,
 							  size_t numEntries,
 							  float loadFactor);
-	int intintLCGLinearOpenCompactCLHash_InitTable(intintHash_Table * table,
-						       va_list args);
-	int intintLCGLinearOpenCompactCLHash_DestroyTable(intintHash_Table *
+	int uintuintLCGLinearOpenCompactHash_InitTable(uintuintHash_Table *
+						       table, va_list args);
+	int uintuintLCGLinearOpenCompactHash_DestroyTable(uintuintHash_Table *
 							  table);
-	char *intintLCGLinearOpenCompactCLHash_Report(intintHash_Table * table);
-	int intintLCGLinearOpenCompactCLHash_SetupTable(intintHash_Table *
+	char *uintuintLCGLinearOpenCompactHash_Report(uintuintHash_Table *
+						      table);
+	int uintuintLCGLinearOpenCompactHash_SetupTable(uintuintHash_Table *
 							table);
-	int intintLCGLinearOpenCompactCLHash_EmptyTable(intintHash_Table *
+	int uintuintLCGLinearOpenCompactHash_EmptyTable(uintuintHash_Table *
 							table);
-	int intintLCGLinearOpenCompactCLHash_Query(intintHash_Table * table,
-						   size_t numKeys, int *keys,
-						   int *valuesOutput);
-	int intintLCGLinearOpenCompactCLHash_QuerySingle(intintHash_Table *
-							 table, int key,
-							 int *valueOutput);
-	int intintLCGLinearOpenCompactCLHash_Insert(intintHash_Table * table,
+	int uintuintLCGLinearOpenCompactHash_Query(uintuintHash_Table * table,
+						   size_t numKeys, uint * keys,
+						   uint * valuesOutput);
+	int uintuintLCGLinearOpenCompactHash_QuerySingle(uintuintHash_Table *
+							 table, uint key,
+							 uint * valueOutput);
+	int uintuintLCGLinearOpenCompactHash_Insert(uintuintHash_Table * table,
 						    size_t numEntries,
-						    int *keys, int *values);
-	int intintLCGLinearOpenCompactCLHash_InsertSingle(intintHash_Table *
-							  table, int key,
-							  int value);
-	int intintLCGLinearOpenCompactCLHash_InsertNoOverwrite(intintHash_Table
-							       * table,
-							       size_t
-							       numEntries,
-							       int *keys,
-							       int *values);
-	int intintLCGLinearOpenCompactCLHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGLinearOpenCompactCLHash_BufferQuery(intintHash_Table *
-							 table, size_t numKeys,
-							 cl_mem keysBuffer,
-							 cl_mem
-							 valuesOutputBuffer);
-	int intintLCGLinearOpenCompactCLHash_BufferInsert(intintHash_Table *
-							  table,
-							  size_t numEntries,
-							  cl_mem keysBuffer,
-							  cl_mem valuesBuffer);
-	int intintLCGLinearOpenCompactCLHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
-	     cl_mem valuesBuffer);
-	int intintLCGLinearOpenCompactOpenMPHash_CreateFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	int intintLCGLinearOpenCompactOpenMPHash_DestroyFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	intintHash_Table
-	    *intintLCGLinearOpenCompactOpenMPHash_CreateTable(intintHash_Factory
-							      * factory,
-							      int hashIndex,
-							      size_t keyRange,
-							      size_t numEntries,
-							      float loadFactor);
-	int intintLCGLinearOpenCompactOpenMPHash_InitTable(intintHash_Table *
-							   table, va_list args);
-	int intintLCGLinearOpenCompactOpenMPHash_DestroyTable(intintHash_Table *
-							      table);
-	char *intintLCGLinearOpenCompactOpenMPHash_Report(intintHash_Table *
+						    uint * keys, uint * values);
+	int uintuintLCGLinearOpenCompactHash_InsertSingle(uintuintHash_Table *
+							  table, uint key,
+							  uint value);
+	int uintuintLCGLinearOpenCompactHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGLinearOpenCompactHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGLinearOpenCompactCLHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintLCGLinearOpenCompactCLHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintLCGLinearOpenCompactCLHash_CreateTable(uintuintHash_Factory
+							    * factory,
+							    int hashIndex,
+							    size_t keyRange,
+							    size_t numEntries,
+							    float loadFactor);
+	int uintuintLCGLinearOpenCompactCLHash_InitTable(uintuintHash_Table *
+							 table, va_list args);
+	int uintuintLCGLinearOpenCompactCLHash_DestroyTable(uintuintHash_Table *
+							    table);
+	char *uintuintLCGLinearOpenCompactCLHash_Report(uintuintHash_Table *
+							table);
+	int uintuintLCGLinearOpenCompactCLHash_SetupTable(uintuintHash_Table *
 							  table);
-	int intintLCGLinearOpenCompactOpenMPHash_SetupTable(intintHash_Table *
-							    table);
-	int intintLCGLinearOpenCompactOpenMPHash_EmptyTable(intintHash_Table *
-							    table);
-	int intintLCGLinearOpenCompactOpenMPHash_Query(intintHash_Table * table,
-						       size_t numKeys,
-						       int *keys,
-						       int *valuesOutput);
-	int intintLCGLinearOpenCompactOpenMPHash_QuerySingle(intintHash_Table *
-							     table, int key,
-							     int *valueOutput);
-	int intintLCGLinearOpenCompactOpenMPHash_Insert(intintHash_Table *
-							table,
-							size_t numEntries,
-							int *keys, int *values);
-	int intintLCGLinearOpenCompactOpenMPHash_InsertSingle(intintHash_Table *
-							      table, int key,
-							      int value);
-	int intintLCGLinearOpenCompactOpenMPHash_InsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, int *keys,
-	     int *values);
-	int intintLCGLinearOpenCompactOpenMPHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGLinearOpenCompactOpenMPHash_BufferQuery(intintHash_Table *
-							     table,
-							     size_t numKeys,
-							     cl_mem keysBuffer,
-							     cl_mem
-							     valuesOutputBuffer);
-	int intintLCGLinearOpenCompactOpenMPHash_BufferInsert(intintHash_Table *
-							      table,
-							      size_t numEntries,
-							      cl_mem keysBuffer,
-							      cl_mem
-							      valuesBuffer);
-	int intintLCGLinearOpenCompactOpenMPHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
-	     cl_mem valuesBuffer);
-	int intintLCGQuadraticOpenCompactHash_CreateFactory(intintHash_Factory *
-							    factory,
-							    int hashIndex);
-	int intintLCGQuadraticOpenCompactHash_DestroyFactory(intintHash_Factory
-							     * factory,
-							     int hashIndex);
-	intintHash_Table
-	    *intintLCGQuadraticOpenCompactHash_CreateTable(intintHash_Factory *
-							   factory,
-							   int hashIndex,
-							   size_t keyRange,
-							   size_t numEntries,
-							   float loadFactor);
-	int intintLCGQuadraticOpenCompactHash_InitTable(intintHash_Table *
-							table, va_list args);
-	int intintLCGQuadraticOpenCompactHash_DestroyTable(intintHash_Table *
-							   table);
-	char *intintLCGQuadraticOpenCompactHash_Report(intintHash_Table *
-						       table);
-	int intintLCGQuadraticOpenCompactHash_SetupTable(intintHash_Table *
-							 table);
-	int intintLCGQuadraticOpenCompactHash_EmptyTable(intintHash_Table *
-							 table);
-	int intintLCGQuadraticOpenCompactHash_Query(intintHash_Table * table,
-						    size_t numKeys, int *keys,
-						    int *valuesOutput);
-	int intintLCGQuadraticOpenCompactHash_QuerySingle(intintHash_Table *
-							  table, int key,
-							  int *valueOutput);
-	int intintLCGQuadraticOpenCompactHash_Insert(intintHash_Table * table,
-						     size_t numEntries,
-						     int *keys, int *values);
-	int intintLCGQuadraticOpenCompactHash_InsertSingle(intintHash_Table *
-							   table, int key,
-							   int value);
-	int intintLCGQuadraticOpenCompactHash_InsertNoOverwrite(intintHash_Table
-								* table,
-								size_t
-								numEntries,
-								int *keys,
-								int *values);
-	int intintLCGQuadraticOpenCompactHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGQuadraticOpenCompactCLHash_CreateFactory(intintHash_Factory
-							      * factory,
-							      int hashIndex);
-	int intintLCGQuadraticOpenCompactCLHash_DestroyFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	intintHash_Table
-	    *intintLCGQuadraticOpenCompactCLHash_CreateTable(intintHash_Factory
-							     * factory,
-							     int hashIndex,
-							     size_t keyRange,
-							     size_t numEntries,
-							     float loadFactor);
-	int intintLCGQuadraticOpenCompactCLHash_InitTable(intintHash_Table *
-							  table, va_list args);
-	int intintLCGQuadraticOpenCompactCLHash_DestroyTable(intintHash_Table *
-							     table);
-	char *intintLCGQuadraticOpenCompactCLHash_Report(intintHash_Table *
-							 table);
-	int intintLCGQuadraticOpenCompactCLHash_SetupTable(intintHash_Table *
-							   table);
-	int intintLCGQuadraticOpenCompactCLHash_EmptyTable(intintHash_Table *
-							   table);
-	int intintLCGQuadraticOpenCompactCLHash_Query(intintHash_Table * table,
-						      size_t numKeys, int *keys,
-						      int *valuesOutput);
-	int intintLCGQuadraticOpenCompactCLHash_QuerySingle(intintHash_Table *
-							    table, int key,
-							    int *valueOutput);
-	int intintLCGQuadraticOpenCompactCLHash_Insert(intintHash_Table * table,
-						       size_t numEntries,
-						       int *keys, int *values);
-	int intintLCGQuadraticOpenCompactCLHash_InsertSingle(intintHash_Table *
-							     table, int key,
-							     int value);
-	int intintLCGQuadraticOpenCompactCLHash_InsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, int *keys,
-	     int *values);
-	int intintLCGQuadraticOpenCompactCLHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGQuadraticOpenCompactCLHash_BufferQuery(intintHash_Table *
+	int uintuintLCGLinearOpenCompactCLHash_EmptyTable(uintuintHash_Table *
+							  table);
+	int uintuintLCGLinearOpenCompactCLHash_Query(uintuintHash_Table * table,
+						     size_t numKeys,
+						     uint * keys,
+						     uint * valuesOutput);
+	int uintuintLCGLinearOpenCompactCLHash_QuerySingle(uintuintHash_Table *
+							   table, uint key,
+							   uint * valueOutput);
+	int uintuintLCGLinearOpenCompactCLHash_Insert(uintuintHash_Table *
+						      table, size_t numEntries,
+						      uint * keys,
+						      uint * values);
+	int uintuintLCGLinearOpenCompactCLHash_InsertSingle(uintuintHash_Table *
+							    table, uint key,
+							    uint value);
+	int uintuintLCGLinearOpenCompactCLHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGLinearOpenCompactCLHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGLinearOpenCompactCLHash_BufferQuery(uintuintHash_Table *
+							   table,
+							   size_t numKeys,
+							   cl_mem keysBuffer,
+							   cl_mem
+							   valuesOutputBuffer);
+	int uintuintLCGLinearOpenCompactCLHash_BufferInsert(uintuintHash_Table *
 							    table,
-							    size_t numKeys,
+							    size_t numEntries,
 							    cl_mem keysBuffer,
 							    cl_mem
-							    valuesOutputBuffer);
-	int intintLCGQuadraticOpenCompactCLHash_BufferInsert(intintHash_Table *
-							     table,
-							     size_t numEntries,
-							     cl_mem keysBuffer,
-							     cl_mem
-							     valuesBuffer);
-	int intintLCGQuadraticOpenCompactCLHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+							    valuesBuffer);
+	int uintuintLCGLinearOpenCompactCLHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
-	int intintLCGQuadraticOpenCompactOpenMPHash_CreateFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	int intintLCGQuadraticOpenCompactOpenMPHash_DestroyFactory
-	    (intintHash_Factory * factory, int hashIndex);
-	intintHash_Table
-	    *intintLCGQuadraticOpenCompactOpenMPHash_CreateTable
-	    (intintHash_Factory * factory, int hashIndex, size_t keyRange,
+	int uintuintLCGLinearOpenCompactOpenMPHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintLCGLinearOpenCompactOpenMPHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintLCGLinearOpenCompactOpenMPHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
 	     size_t numEntries, float loadFactor);
-	int intintLCGQuadraticOpenCompactOpenMPHash_InitTable(intintHash_Table *
-							      table,
-							      va_list args);
-	int intintLCGQuadraticOpenCompactOpenMPHash_DestroyTable
-	    (intintHash_Table * table);
-	char *intintLCGQuadraticOpenCompactOpenMPHash_Report(intintHash_Table *
-							     table);
-	int intintLCGQuadraticOpenCompactOpenMPHash_SetupTable(intintHash_Table
-							       * table);
-	int intintLCGQuadraticOpenCompactOpenMPHash_EmptyTable(intintHash_Table
-							       * table);
-	int intintLCGQuadraticOpenCompactOpenMPHash_Query(intintHash_Table *
-							  table, size_t numKeys,
-							  int *keys,
-							  int *valuesOutput);
-	int intintLCGQuadraticOpenCompactOpenMPHash_QuerySingle(intintHash_Table
-								* table,
-								int key,
-								int
-								*valueOutput);
-	int intintLCGQuadraticOpenCompactOpenMPHash_Insert(intintHash_Table *
-							   table,
-							   size_t numEntries,
-							   int *keys,
-							   int *values);
-	int intintLCGQuadraticOpenCompactOpenMPHash_InsertSingle
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGQuadraticOpenCompactOpenMPHash_InsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, int *keys,
-	     int *values);
-	int intintLCGQuadraticOpenCompactOpenMPHash_InsertSingleNoOverwrite
-	    (intintHash_Table * table, int key, int value);
-	int intintLCGQuadraticOpenCompactOpenMPHash_BufferQuery(intintHash_Table
-								* table,
-								size_t numKeys,
-								cl_mem
-								keysBuffer,
-								cl_mem
-								valuesOutputBuffer);
-	int intintLCGQuadraticOpenCompactOpenMPHash_BufferInsert
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	int uintuintLCGLinearOpenCompactOpenMPHash_InitTable(uintuintHash_Table
+							     * table,
+							     va_list args);
+	int uintuintLCGLinearOpenCompactOpenMPHash_DestroyTable
+	    (uintuintHash_Table * table);
+	char *uintuintLCGLinearOpenCompactOpenMPHash_Report(uintuintHash_Table *
+							    table);
+	int uintuintLCGLinearOpenCompactOpenMPHash_SetupTable(uintuintHash_Table
+							      * table);
+	int uintuintLCGLinearOpenCompactOpenMPHash_EmptyTable(uintuintHash_Table
+							      * table);
+	int uintuintLCGLinearOpenCompactOpenMPHash_Query(uintuintHash_Table *
+							 table, size_t numKeys,
+							 uint * keys,
+							 uint * valuesOutput);
+	int uintuintLCGLinearOpenCompactOpenMPHash_QuerySingle
+	    (uintuintHash_Table * table, uint key, uint * valueOutput);
+	int uintuintLCGLinearOpenCompactOpenMPHash_Insert(uintuintHash_Table *
+							  table,
+							  size_t numEntries,
+							  uint * keys,
+							  uint * values);
+	int uintuintLCGLinearOpenCompactOpenMPHash_InsertSingle
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGLinearOpenCompactOpenMPHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGLinearOpenCompactOpenMPHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGLinearOpenCompactOpenMPHash_BufferQuery
+	    (uintuintHash_Table * table, size_t numKeys, cl_mem keysBuffer,
+	     cl_mem valuesOutputBuffer);
+	int uintuintLCGLinearOpenCompactOpenMPHash_BufferInsert
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
-	int intintLCGQuadraticOpenCompactOpenMPHash_BufferInsertNoOverwrite
-	    (intintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	int uintuintLCGLinearOpenCompactOpenMPHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintLCGQuadraticOpenCompactHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintLCGQuadraticOpenCompactHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintLCGQuadraticOpenCompactHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintLCGQuadraticOpenCompactHash_InitTable(uintuintHash_Table *
+							  table, va_list args);
+	int uintuintLCGQuadraticOpenCompactHash_DestroyTable(uintuintHash_Table
+							     * table);
+	char *uintuintLCGQuadraticOpenCompactHash_Report(uintuintHash_Table *
+							 table);
+	int uintuintLCGQuadraticOpenCompactHash_SetupTable(uintuintHash_Table *
+							   table);
+	int uintuintLCGQuadraticOpenCompactHash_EmptyTable(uintuintHash_Table *
+							   table);
+	int uintuintLCGQuadraticOpenCompactHash_Query(uintuintHash_Table *
+						      table, size_t numKeys,
+						      uint * keys,
+						      uint * valuesOutput);
+	int uintuintLCGQuadraticOpenCompactHash_QuerySingle(uintuintHash_Table *
+							    table, uint key,
+							    uint * valueOutput);
+	int uintuintLCGQuadraticOpenCompactHash_Insert(uintuintHash_Table *
+						       table, size_t numEntries,
+						       uint * keys,
+						       uint * values);
+	int uintuintLCGQuadraticOpenCompactHash_InsertSingle(uintuintHash_Table
+							     * table, uint key,
+							     uint value);
+	int uintuintLCGQuadraticOpenCompactHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGQuadraticOpenCompactHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGQuadraticOpenCompactCLHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintLCGQuadraticOpenCompactCLHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintLCGQuadraticOpenCompactCLHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintLCGQuadraticOpenCompactCLHash_InitTable(uintuintHash_Table *
+							    table,
+							    va_list args);
+	int uintuintLCGQuadraticOpenCompactCLHash_DestroyTable
+	    (uintuintHash_Table * table);
+	char *uintuintLCGQuadraticOpenCompactCLHash_Report(uintuintHash_Table *
+							   table);
+	int uintuintLCGQuadraticOpenCompactCLHash_SetupTable(uintuintHash_Table
+							     * table);
+	int uintuintLCGQuadraticOpenCompactCLHash_EmptyTable(uintuintHash_Table
+							     * table);
+	int uintuintLCGQuadraticOpenCompactCLHash_Query(uintuintHash_Table *
+							table, size_t numKeys,
+							uint * keys,
+							uint * valuesOutput);
+	int uintuintLCGQuadraticOpenCompactCLHash_QuerySingle(uintuintHash_Table
+							      * table, uint key,
+							      uint *
+							      valueOutput);
+	int uintuintLCGQuadraticOpenCompactCLHash_Insert(uintuintHash_Table *
+							 table,
+							 size_t numEntries,
+							 uint * keys,
+							 uint * values);
+	int uintuintLCGQuadraticOpenCompactCLHash_InsertSingle
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGQuadraticOpenCompactCLHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGQuadraticOpenCompactCLHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGQuadraticOpenCompactCLHash_BufferQuery(uintuintHash_Table
+							      * table,
+							      size_t numKeys,
+							      cl_mem keysBuffer,
+							      cl_mem
+							      valuesOutputBuffer);
+	int uintuintLCGQuadraticOpenCompactCLHash_BufferInsert
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintLCGQuadraticOpenCompactCLHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_CreateFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_DestroyFactory
+	    (uintuintHash_Factory * factory, int hashIndex);
+	uintuintHash_Table
+	    *uintuintLCGQuadraticOpenCompactOpenMPHash_CreateTable
+	    (uintuintHash_Factory * factory, int hashIndex, size_t keyRange,
+	     size_t numEntries, float loadFactor);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_InitTable
+	    (uintuintHash_Table * table, va_list args);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_DestroyTable
+	    (uintuintHash_Table * table);
+	char *uintuintLCGQuadraticOpenCompactOpenMPHash_Report
+	    (uintuintHash_Table * table);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_SetupTable
+	    (uintuintHash_Table * table);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_EmptyTable
+	    (uintuintHash_Table * table);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_Query(uintuintHash_Table *
+							    table,
+							    size_t numKeys,
+							    uint * keys,
+							    uint *
+							    valuesOutput);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_QuerySingle
+	    (uintuintHash_Table * table, uint key, uint * valueOutput);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_Insert(uintuintHash_Table
+							     * table,
+							     size_t numEntries,
+							     uint * keys,
+							     uint * values);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_InsertSingle
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_InsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, uint * keys,
+	     uint * values);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_InsertSingleNoOverwrite
+	    (uintuintHash_Table * table, uint key, uint value);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_BufferQuery
+	    (uintuintHash_Table * table, size_t numKeys, cl_mem keysBuffer,
+	     cl_mem valuesOutputBuffer);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_BufferInsert
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
+	     cl_mem valuesBuffer);
+	int uintuintLCGQuadraticOpenCompactOpenMPHash_BufferInsertNoOverwrite
+	    (uintuintHash_Table * table, size_t numEntries, cl_mem keysBuffer,
 	     cl_mem valuesBuffer);
 #ifdef __cplusplus
 }

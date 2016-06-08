@@ -35,8 +35,8 @@
 #include "HashFactory/HashFactory.h"
 
 void h_remap (cell_list icells, cell_list ocells);
-void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *factory);
+void h_remap_compact (cell_list icells, cell_list ocells, uintuintHash_Factory *factory);
 void h_remap_openMP (cell_list icells, cell_list ocells);
-void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Factory *factory);
+void h_remap_compact_openMP (cell_list icells, cell_list ocells, uintuintHash_Factory *factory);
 
 #endif

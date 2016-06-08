@@ -30,6 +30,8 @@
 
 #include <stdio.h>
 
+#include<climits>
+
 #include "simplehash/simplehash.h"
 #include "hierarchical_remap.h"
 #include "meshgen/meshgen.h"
@@ -45,7 +47,7 @@
 
 // Private functions to this routine
 double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash, uint ibasesize);
-double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, intintHash_Table** h_hashTable, uint ibasesize);
+double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, uintuintHash_Table** h_hashTable, uint ibasesize);
 
 double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash, uint ibasesize) {
 
@@ -54,7 +56,7 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
     
     uint key_new[4];
     
-    int startlev = lev;
+    uint startlev = lev;
     
     char queue[32];
 
@@ -132,14 +134,14 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
     return sum;
 }
 
-double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, intintHash_Table** h_hashTable, uint ibasesize) {
+double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, uintuintHash_Table** h_hashTable, uint ibasesize) {
     
-    int probe;
+    uint probe;
     double sum = 0.0;
     
     uint key_new[4];
     
-    int startlev = lev;
+    uint startlev = lev;
     
     char queue[32];
 
@@ -189,8 +191,8 @@ double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, inti
             
             key = key_new[ic];
             
-            intintHash_QuerySingle(h_hashTable[lev], key, &probe);
-            if (probe >= 0) {
+            uintuintHash_QuerySingle(h_hashTable[lev], key, &probe);
+            if (probe != UINT_MAX) {
                 //TODO: try to move this division so we have fewer computations
                 sum += icells.values[probe]/four_to_the(lev-startlev);
             } else {
@@ -285,7 +287,7 @@ void h_remap (cell_list icells, cell_list ocells) {
 //#define HASH_TYPE LCG_QUADRATIC_OPEN_COMPACT_HASH_ID
 #define HASH_LOAD_FACTOR 0.3333333
 
-void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *factory) {
+void h_remap_compact (cell_list icells, cell_list ocells, uintuintHash_Factory *factory) {
     
 #ifdef DETAILED_TIMING
     struct timeval timer;
@@ -293,7 +295,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
     cpu_timer_start(&timer);
 #endif
 
-    intintHash_Table** h_hashTable = (intintHash_Table **) malloc((icells.levmax+1)*sizeof(intintHash_Table *));
+    uintuintHash_Table** h_hashTable = (uintuintHash_Table **) malloc((icells.levmax+1)*sizeof(uintuintHash_Table *));
     
     uint *num_at_level = (uint *)malloc((icells.levmax+1)*sizeof(uint));
     uint *h_hashtype;
@@ -319,9 +321,9 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
         size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
-        h_hashTable[i] = intintHash_CreateTable(factory, HASH_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
+        h_hashTable[i] = uintuintHash_CreateTable(factory, HASH_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {
-           h_hashtype[i] = intintHash_GetTableType(h_hashTable[i]);
+           h_hashtype[i] = uintuintHash_GetTableType(h_hashTable[i]);
            if (h_hashtype[i] == IDENTITY_PERFECT_HASH_ID) {
               printf("Type of hash for lev %d is %s\n",i,"IDENTITY_PERFECT_HASH_ID");
            } else if (h_hashtype[i] == IDENTITY_SENTINEL_PERFECT_HASH_ID) {
@@ -334,7 +336,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
         }
 
         //Empty Hash Table
-        intintHash_SetupTable(h_hashTable[i]);
+        uintuintHash_SetupTable(h_hashTable[i]);
         //h_hash[i] = compact_hash_init(icells.ncells, hash_size, 1, 0);
         //memset(h_hash[i], -2, hash_size*sizeof(uint));
     }
@@ -358,7 +360,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
         int lev = icells.level[n];
 
         uint key = j * icells.ibasesize*two_to_the(lev) + i;
-        intintHash_InsertSingle(h_hashTable[lev], key, n);
+        uintuintHash_InsertSingle(h_hashTable[lev], key, n);
         //write_hash(n, key, h_hash[lev]);
 
         while (i%2 == 0 && j%2 == 0 && lev > 0) {
@@ -366,7 +368,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
             j /= 2;
             lev--;
             key = j * icells.ibasesize*two_to_the(lev) + i;
-            intintHash_InsertSingle(h_hashTable[lev], key, -1);
+            uintuintHash_InsertSingle(h_hashTable[lev], key, -1);
             //write_hash(-1, key, h_hash[lev]);
         }
     }
@@ -382,15 +384,15 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
         uint oj = ocells.j[n];
         uint olev = ocells.level[n];
         
-        int probe = -1;
-        for (uint probe_lev = 0; probe < 0 && probe_lev <= olev; probe_lev++){
+        uint probe = UINT_MAX;
+        for (uint probe_lev = 0; probe = UINT_MAX && probe_lev <= olev; probe_lev++){
             int levdiff = olev - probe_lev;
             uint key = (oj >> levdiff)*icells.ibasesize*two_to_the(probe_lev) + (oi >> levdiff);
             //probe = read_hash(key, h_hash[probe_lev]);
-            intintHash_QuerySingle(h_hashTable[probe_lev], key, &probe);
+            uintuintHash_QuerySingle(h_hashTable[probe_lev], key, &probe);
         }
 
-        if (probe >= 0) {
+        if (probe != UINT_MAX) {
             ocells.values[n] = icells.values[probe];
         } else {
             ocells.values[n] = avg_sub_cells_h_compact (icells, oi, oj, olev, h_hashTable, icells.ibasesize);
@@ -405,7 +407,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
 
     for (uint i = 0; i <= icells.levmax; i++) {
         //free(h_hash[i]);
-        intintHash_DestroyTable(h_hashTable[i]);
+        uintuintHash_DestroyTable(h_hashTable[i]);
     }
     free(h_hashTable);
 
@@ -483,7 +485,7 @@ void h_remap_openMP (cell_list icells, cell_list ocells) {
 //#define HASH_OPENMP_TYPE HASH_ALL_OPENMP_HASHES
 #define HASH_OPENMP_TYPE (LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID | IDENTITY_SENTINEL_PERFECT_OPENMP_HASH_ID)
 //#define HASH_OPENMP_TYPE LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID 
-void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Factory *factory) {
+void h_remap_compact_openMP (cell_list icells, cell_list ocells, uintuintHash_Factory *factory) {
     
 #ifdef DETAILED_TIMING
     struct timeval timer;
@@ -491,7 +493,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
     cpu_timer_start(&timer);
 #endif
 
-    intintHash_Table** h_hashTable = (intintHash_Table **) malloc((icells.levmax+1)*sizeof(intintHash_Table *));
+    uintuintHash_Table** h_hashTable = (uintuintHash_Table **) malloc((icells.levmax+1)*sizeof(uintuintHash_Table *));
     
     uint *num_at_level = (uint *)malloc((icells.levmax+1)*sizeof(uint));
     uint *h_hashtype;
@@ -518,10 +520,10 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
         size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
-        //h_hashTable[i] = intintHash_CreateTable(factory, LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
-        h_hashTable[i] = intintHash_CreateTable(factory, HASH_OPENMP_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
+        //h_hashTable[i] = uintuintHash_CreateTable(factory, LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
+        h_hashTable[i] = uintuintHash_CreateTable(factory, HASH_OPENMP_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {
-           h_hashtype[i] = intintHash_GetTableType(h_hashTable[i]);
+           h_hashtype[i] = uintuintHash_GetTableType(h_hashTable[i]);
            if (h_hashtype[i] == IDENTITY_SENTINEL_PERFECT_OPENMP_HASH_ID) {
               printf("Type of hash for lev %d is %s\n",i,"IDENTITY_SENTINEL_PERFECT_OPENMP_HASH_ID");
            } else if (h_hashtype[i] == LCG_LINEAR_OPEN_COMPACT_OPENMP_HASH_ID) {
@@ -534,7 +536,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
         }
 
         //Empty Hash Table
-        intintHash_SetupTable(h_hashTable[i]);
+        uintuintHash_SetupTable(h_hashTable[i]);
         //h_hash[i] = compact_hash_init(icells.ncells, hash_size, 1, 0);
         //memset(h_hash[i], -2, hash_size*sizeof(uint));
     }
@@ -567,7 +569,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
              int lev = icells.level[n];
 
              uint key = j * icells.ibasesize*two_to_the(lev) + i;
-             intintHash_InsertSingle(h_hashTable[lev], key, n);
+             uintuintHash_InsertSingle(h_hashTable[lev], key, n);
              //write_hash(n, key, h_hash[lev]);
 
              while (i%2 == 0 && j%2 == 0 && lev > 0) {
@@ -575,7 +577,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
                  j /= 2;
                  lev--;
                  key = j * icells.ibasesize*two_to_the(lev) + i;
-                 intintHash_InsertSingle(h_hashTable[lev], key, -1);
+                 uintuintHash_InsertSingle(h_hashTable[lev], key, UINT_MAX);
                  //write_hash(-1, key, h_hash[lev]);
              }
          }
@@ -595,15 +597,15 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
              uint oj = ocells.j[n];
              uint olev = ocells.level[n];
         
-             int probe = -1;
-             for (uint probe_lev = 0; probe < 0 && probe_lev <= olev; probe_lev++){
+             uint probe = UINT_MAX;
+             for (uint probe_lev = 0; probe == UINT_MAX && probe_lev <= olev; probe_lev++){
                  int levdiff = olev - probe_lev;
                  uint key = (oj >> levdiff)*icells.ibasesize*two_to_the(probe_lev) + (oi >> levdiff);
                  //probe = read_hash(key, h_hash[probe_lev]);
-                 intintHash_QuerySingle(h_hashTable[probe_lev], key, &probe);
+                 uintuintHash_QuerySingle(h_hashTable[probe_lev], key, &probe);
              }
 
-             if (probe >= 0) {
+             if (probe == UINT_MAX) {
                  ocells.values[n] = icells.values[probe];
              } else {
                  ocells.values[n] = avg_sub_cells_h_compact (icells, oi, oj, olev, h_hashTable, icells.ibasesize);
@@ -619,7 +621,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
 
     for (uint i = 0; i <= icells.levmax; i++) {
         //free(h_hash[i]);
-        intintHash_DestroyTable(h_hashTable[i]);
+        uintuintHash_DestroyTable(h_hashTable[i]);
     }
     free(h_hashTable);
     

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 project (CompactHashLib)
+
 # The version number.
 set (COMPACTHASHLIB_VERSION_MAJOR 2)
 set (COMPACTHASHLIB_VERSION_MINOR 0.7)

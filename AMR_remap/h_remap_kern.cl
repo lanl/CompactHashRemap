@@ -17,7 +17,7 @@ inline uint two_to_the(int i){
     if (i>=0){
         return 1<<i;
     }else{
-        return -1;
+        return UINT_MAX;
     }
 }
 
@@ -121,7 +121,7 @@ __kernel void singlewrite_hash_init (
 
     if (ic >= hash_size) return;
 
-    hash[ic] = -1;
+    hash[ic] = UINT_MAX;
 }
 
 __kernel void singlewrite_hash_setup (
@@ -386,7 +386,7 @@ __kernel void hierarchical_cell_insert (
         j/=2;
         lev--;
         key = j * mesh_size*two_to_the(lev) + i;
-        hhash[hash_memory_indices[lev]+key] = -1;
+        hhash[hash_memory_indices[lev]+key] = UINT_MAX;
     }
 }
 
@@ -523,16 +523,16 @@ __kernel void hierarchical_hash_probe (__constant uint* hhash,
     }
 #endif
 
-    int probe = -1;
+    uint probe = UINT_MAX;
     // loop until either we find a valid hash value or the probelev is the output cell level
-    for (uint probeLev = 0; probe == -1 && probeLev <= olev; probeLev++) {
+    for (uint probeLev = 0; probe == UINT_MAX && probeLev <= olev; probeLev++) {
         //uint key = translate_cell(oi,oj,olev,probeLev);
-        int levdiff = olev-probeLev;
+        uint levdiff = olev-probeLev;
         uint key = (oj >> levdiff)*mesh_size*two_to_the(probeLev) + (oi >> levdiff);
         probe = hhash[hash_memory_indices[probeLev]+key];
     }
 
-    if (probe != -1){
+    if (probe != UINT_MAX){
         ocellVal[idx] = icellVal[probe];
     }else{
         // the olev is incremented one because the top level of the average is one level finer
@@ -711,7 +711,7 @@ __kernel void hierarchical_compact_insert(
        hashtable = h_hashTable10;
        break;
     }
-    intintHash_InsertSingle(hashtable, key, idx);
+    uintuintHash_InsertSingle(hashtable, key, idx);
 
     while (i%2 == 0 && j%2 == 0 && lev > 0) {
         i /= 2;
@@ -753,11 +753,11 @@ __kernel void hierarchical_compact_insert(
            break;
         }
         key = j * ibasesize*two_to_the(lev) + i;
-        intintHash_InsertSingle(hashtable, key, -1);
+        uintuintHash_InsertSingle(hashtable, key, UINT_MAX);
     }
 }
 
-double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uint j, uint lev, uint ibasesize, __global int *ierr,
+double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uint j, uint lev, uint ibasesize, __local uint *ierr,
         __global       char   *h_hashTable0,
         __global       char   *h_hashTable1,
         __global       char   *h_hashTable2,
@@ -772,6 +772,8 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
    
    
     uint gidx = get_global_id(0);
+    
+    uint lidx = get_local_id(0);
 
     double sum = 0.0;
     
@@ -859,10 +861,10 @@ double avg_sub_cells_h_compact(__global const double *icells_values, uint i, uin
             
             key = key_new[ic];
             
-            intintHash_QuerySingle(hashtable, key, &ierr[gidx]);
-            if (ierr[gidx] >= 0) {
+            uintuintHash_QuerySingle(hashtable, key, &ierr[lidx]);
+            if (ierr[lidx] != UINT_MAX) {
                 //TODO: try to move this division so we have fewer computations
-                sum += icells_values[ierr[gidx]]/four_to_the(lev-startlev);
+                sum += icells_values[ierr[lidx]]/four_to_the(lev-startlev);
             } else {
                 // When the sentinal value is set, setup the queue for our
                 // return and move down a level.
@@ -904,9 +906,11 @@ __kernel void hierarchical_compact_probe(
         __global       char   *h_hashTable6,
         __global       char   *h_hashTable7,
         __global       char   *h_hashTable8,
-        __global       int    *ierr)
+        __local       uint    *ierr)
 {
     uint idx = get_global_id(0);
+    
+    uint lidx = get_local_id(0);
 
     if (idx >= ncells) return;
 
@@ -916,9 +920,9 @@ __kernel void hierarchical_compact_probe(
 
     __global char *hashtable = h_hashTable0;
     
-    ierr[idx] = -1;
+    ierr[lidx] = UINT_MAX;
 
-    for (uint probe_lev = 0; ierr[idx] < 0 && probe_lev <= olev; probe_lev++){
+    for (uint probe_lev = 0; ierr[lidx] == UINT_MAX && probe_lev <= olev; probe_lev++){
         switch (probe_lev) {
         case 0:
            hashtable = h_hashTable0;
@@ -947,15 +951,18 @@ __kernel void hierarchical_compact_probe(
         case 8:
            hashtable = h_hashTable8;
            break;
+        default:
+            ocells_values[idx] = probe_lev;
+            break;
         }
         int levdiff = olev - probe_lev;
         uint key = (oj >> levdiff)*ibasesize*two_to_the(probe_lev) + (oi >> levdiff);
-        intintHash_QuerySingle(hashtable, key, &ierr[idx]);
+        uintuintHash_QuerySingle(hashtable, key, &ierr[idx]);
     }
         
     
-    if (ierr[idx] >= 0) {
-        ocells_values[idx] = icells_values[ierr[idx]];
+    if (ierr[lidx] != UINT_MAX) {
+        ocells_values[idx] = icells_values[ierr[lidx]];
     } else {
         ocells_values[idx] = avg_sub_cells_h_compact (icells_values, oi, oj, olev, ibasesize, ierr,
             h_hashTable0, h_hashTable1, h_hashTable2, h_hashTable3, h_hashTable4, h_hashTable5,

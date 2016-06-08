@@ -41,6 +41,6 @@ double cl_singlewrite_remap (cell_list icells, cell_list ocells, int run_tests);
 double cl_compact_singlewrite_remap (cell_list icells, cell_list ocells, int run_tests);
 double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests);
 double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
-     intintHash_Factory *CLFactory, int run_tests);
+     uintuintHash_Factory *CLFactory, int run_tests);
 
 #endif

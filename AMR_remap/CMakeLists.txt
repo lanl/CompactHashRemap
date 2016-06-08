@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+SET ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
 add_subdirectory(genmalloc)
 add_subdirectory(meshgen)
 if (OPENCL_FOUND)
@@ -67,6 +69,10 @@ if (OPENMP_FOUND)
       add_dependencies(AMR_remap h_remap_kernel_source)
    endif(OPENCL_FOUND)
 endif (OPENMP_FOUND)
+
+if (OPENCL_FOUND)
+      include_directories(${OPENCL_INCLUDE_DIRS})
+   endif (OPENCL_FOUND)
 
 ########### clean files ################
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES

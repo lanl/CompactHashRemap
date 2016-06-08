@@ -61,9 +61,9 @@ enum meshgen_type {
 #include "HashFactory/HashFactory.h"
 
 int TILE_SIZE = 128;
-intintHash_Factory *factory;
-intintHash_Factory *OpenMPfactory;
-intintHash_Factory *CLFactory;
+uintuintHash_Factory *factory;
+uintuintHash_Factory *OpenMPfactory;
+uintuintHash_Factory *CLFactory;
 
 struct timeval timer;
 
@@ -184,8 +184,6 @@ int main (int argc, char** argv) {
     uint o_max_level;
     uint i_min_level;
     uint o_min_level;
-    double i_sparsity = 0.02;
-    double o_sparsity = 0.02;
     //i for in o for out
     cell_list icells;
     cell_list ocells;
@@ -217,11 +215,11 @@ int main (int argc, char** argv) {
     //srand (time(NULL));
     srand(0);
     
-    int emptyNeighborValue = -5;
-    factory = intintHash_CreateFactory(HASH_ALL_C_HASHES, &emptyNeighborValue, 0, NULL, NULL);
-    //OpenMPfactory = intintHash_CreateFactory(LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, &emptyNeighborValue, 0, NULL, NULL);
-    OpenMPfactory = intintHash_CreateFactory(HASH_ALL_OPENMP_HASHES, &emptyNeighborValue, 0, NULL, NULL);
-    //factory = intintHash_CreateFactory(HASH_ALL_C_HASHES, NULL, 0, NULL, NULL);
+    uint emptyNeighborValue = -5;
+    factory = uintuintHash_CreateFactory(HASH_ALL_C_HASHES, &emptyNeighborValue, 0, NULL, NULL);
+    //OpenMPfactory = uintuintHash_CreateFactory(LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, &emptyNeighborValue, 0, NULL, NULL);
+    OpenMPfactory = uintuintHash_CreateFactory(HASH_ALL_OPENMP_HASHES, &emptyNeighborValue, 0, NULL, NULL);
+    //factory = uintuintHash_CreateFactory(HASH_ALL_C_HASHES, NULL, 0, NULL, NULL);
 
 #ifdef HAVE_OPENCL
     int ierr = ezcl_devtype_init(CL_DEVICE_TYPE_GPU);
@@ -241,7 +239,7 @@ int main (int argc, char** argv) {
     cl_command_queue queue   = ezcl_get_command_queue();
     
     uint lws = TILE_SIZE;
-    CLFactory = intintHash_CreateFactory(HASH_ALL_CL_HASHES, &emptyNeighborValue, lws, &context, &queue);
+    CLFactory = uintuintHash_CreateFactory(HASH_ALL_CL_HASHES, &emptyNeighborValue, lws, &context, &queue);
 #endif
 
     
@@ -645,8 +643,8 @@ int main (int argc, char** argv) {
         destroy(ocells);
     }
 
-    intintHash_DestroyFactory(factory);
-    intintHash_DestroyFactory(OpenMPfactory);
+    uintuintHash_DestroyFactory(factory);
+    uintuintHash_DestroyFactory(OpenMPfactory);
     
     printf("~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~\n");
     size_t average_ncells = sum_ncells/num_rep/2;

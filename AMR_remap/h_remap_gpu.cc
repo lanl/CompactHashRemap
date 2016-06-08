@@ -89,6 +89,8 @@ void setup_cl (){
     strcat(all_sources, h_remap_kern_source);
     all_sources[all_sources_size] = '\0';
     
+    setenv("CUDA_CACHE_DISABLE", "1", 1);
+    
     cl_context context ezcl_get_context();
     cl_program program = ezcl_create_program_wsource(context, NULL, (const char *)all_sources);
 
@@ -516,6 +518,9 @@ double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests)
                  
     cl_context       context = ezcl_get_context();
     cl_command_queue queue   = ezcl_get_command_queue();
+    
+    //printf ("memory usage report before hieratchical:\n");
+    //system("nvidia-smi -q -d MEMORY");
 
     struct timeval timer;
 #ifdef DETAILED_TIMING
@@ -634,6 +639,9 @@ double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests)
     
     ezcl_finish(queue);
     
+    //printf ("memory usage report after hieratchical:\n");
+    //system("nvidia-smi -q -d MEMORY");
+    
     //END TIMER
     double time = cpu_timer_stop(timer);
     
@@ -660,7 +668,10 @@ double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests)
 
 // returns the timing and the results in oval if run_tests flag is set
 double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
-       intintHash_Factory *CLFactory, int run_tests){
+       uintuintHash_Factory *CLFactory, int run_tests){
+       
+    //printf ("memory usage report before compact hieratchical:\n");
+    //system("nvidia-smi -q -d MEMORY");
                  
     cl_context       context = ezcl_get_context();
     cl_command_queue queue   = ezcl_get_command_queue();
@@ -675,9 +686,6 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     cl_mem icellj_buffer = ezcl_device_memory_malloc(context, NULL, "icellj", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
     cl_mem ilevel_buffer = ezcl_device_memory_malloc(context, NULL, "ilevel", icells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
     cl_mem ival_buffer   = ezcl_device_memory_malloc(context, NULL, "ival",   icells.ncells, sizeof(double), CL_MEM_READ_WRITE, 0);
-    // TODO: ierr should be moved to local memory if possible; a buffer of this size is not necessary,
-    // and should not be accessed through global memory
-    cl_mem ierr_buffer = ezcl_device_memory_malloc(context, NULL, "ierr", ocells.ncells, sizeof(uint),   CL_MEM_READ_WRITE, 0);
 
     ezcl_enqueue_write_buffer(queue, icelli_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.i,      NULL);
     ezcl_enqueue_write_buffer(queue, icellj_buffer, CL_FALSE, 0, icells.ncells*sizeof(uint),   icells.j,      NULL);
@@ -773,10 +781,10 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
        num_at_level[lev] += num_at_level[lev+1]/4;
     }
 
-#define HASH_CL_TYPE (LCG_QUADRATIC_OPEN_COMPACT_CL_HASH_ID | IDENTITY_SENTINEL_PERFECT_CL_HASH_ID)
+#define HASH_CL_TYPE (LCG_QUADRATIC_OPEN_COMPACT_CL_HASH_ID)
 #define HASH_LOAD_FACTOR 0.3333333
 
-    intintHash_Table** h_hashTable = (intintHash_Table **) malloc((icells.levmax+1)*sizeof(intintHash_Table *));
+    uintuintHash_Table** h_hashTable = (uintuintHash_Table **) malloc((icells.levmax+1)*sizeof(uintuintHash_Table *));
 
     uint *h_hashtype;
     if (DEBUG >= 2) {
@@ -786,9 +794,9 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     //initialize 2d array
     for (uint i = 0; i <= icells.levmax; i++) {
         size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
-        h_hashTable[i] = intintHash_CreateTable(CLFactory, HASH_CL_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
+        h_hashTable[i] = uintuintHash_CreateTable(CLFactory, HASH_CL_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {
-           h_hashtype[i] = intintHash_GetTableType(h_hashTable[i]);
+           h_hashtype[i] = uintuintHash_GetTableType(h_hashTable[i]);
            if (h_hashtype[i] == IDENTITY_PERFECT_CL_HASH_ID) {
               printf("Type of hash for lev %d is %s\n",i,"IDENTITY_PERFECT_CL_HASH_ID");
            } else if (h_hashtype[i] == IDENTITY_SENTINEL_PERFECT_CL_HASH_ID) {
@@ -819,7 +827,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 3, sizeof(cl_mem), &icellj_buffer);
     ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 4, sizeof(cl_mem), &ilevel_buffer);
     for (int ilev = 0; ilev <= (int)icells.levmax; ilev++){
-       ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 5+ilev, sizeof(cl_mem), intintHash_GetTableDataBufferPtr(h_hashTable[ilev]));
+       ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 5+ilev, sizeof(cl_mem), uintuintHash_GetTableDataBufferPtr(h_hashTable[ilev]));
     }
     for (int ilev = icells.levmax+1; ilev <= 10; ilev++){
        ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 5+ilev, sizeof(cl_mem), NULL);
@@ -840,14 +848,13 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 5, sizeof(cl_mem), &ival_buffer);
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 6, sizeof(cl_mem), &oval_buffer);
     for (int ilev = 0; ilev <= (int)ocells.levmax; ilev++){
-       ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 7+ilev, sizeof(cl_mem), intintHash_GetTableDataBufferPtr(h_hashTable[ilev]));
+       ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 7+ilev, sizeof(cl_mem), uintuintHash_GetTableDataBufferPtr(h_hashTable[ilev]));
     }
     for (int ilev = ocells.levmax+1; ilev <= 8; ilev++){
        ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 7+ilev, sizeof(cl_mem), NULL);
     }
     
-    //TODO: See todo above. This should be local memory.
-    ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 16, sizeof(cl_mem), &ierr_buffer);
+    ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 16, sizeof(cl_uint)*local_work_size[0], NULL);
     
     // adjust work size to be based off output cells
     global_work_size[0] = ((local_work_size[0]+ocells.ncells-1)/local_work_size[0])*local_work_size[0];
@@ -855,6 +862,9 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     ezcl_enqueue_ndrange_kernel(queue, hierarchical_compact_probe_kernel, 1, 0, global_work_size, local_work_size, NULL);
     
     ezcl_finish(queue);
+    
+    //printf ("memory usage report after compact hieratchical:\n");
+    //system("nvidia-smi -q -d MEMORY");
 
     //END TIMER
     double time = cpu_timer_stop(timer);
@@ -871,10 +881,8 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     ezcl_device_memory_delete(olevel_buffer);
     ezcl_device_memory_delete(oval_buffer);
     
-    ezcl_device_memory_delete(ierr_buffer);
-    
-    for (int idx = 0; idx <= icells.levmax; idx ++){
-        intintHash_DestroyTable(h_hashTable[idx]);
+    for (uint idx = 0; idx <= icells.levmax; idx ++){
+        uintuintHash_DestroyTable(h_hashTable[idx]);
     }
     
     free(h_hashTable);

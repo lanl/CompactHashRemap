@@ -98,7 +98,7 @@ unsigned int c = COMPRESS_FUNC(((CL_GLOBAL NAME##MODIFIER##Hash_TableData*)table
   unsigned long int iteration = 0;\
   for(;;){\
     index = JUMP_EXP;\
-    int old_key = __sync_val_compare_and_swap(&buckets[index].key, -1, key);\
+    uint old_key = __sync_val_compare_and_swap(&buckets[index].key, -1, key);\
     if(old_key == HASH_BUCKET_STATUS_EMPTY){\
       exitCode = HASH_SEARCH_CODE_EMPTY;\
       break;\
