@@ -1107,29 +1107,12 @@ int uintuintIdentityPerfectHash_InnerInsertSingle(char *tableData, uint key,
 	int exitCode;
 	index =
 	    uintuintHash_CompressIdentity(key);
-	if (((buckets[index].key ==
-	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
-					   key,
-					   HASH_BUCKET_STATUS_EMPTY) :
-	     buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-		if (key == buckets[index].key) {
-			exitCode = HASH_SEARCH_CODE_MATCH;
-		} else {
-			exitCode = HASH_SEARCH_CODE_MISMATCH;
-		}
-	} else {
-		exitCode = HASH_SEARCH_CODE_EMPTY;
-	}
-	switch (exitCode) {
-	case HASH_SEARCH_CODE_MATCH:
-	case HASH_SEARCH_CODE_MISMATCH:
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		buckets[index].value = value;
 		return HASH_EXIT_CODE_OVERWRITE;
-	case HASH_SEARCH_CODE_EMPTY:
+	} else {
 		buckets[index].value = value;
 		return HASH_EXIT_CODE_NORMAL;
-	default:
-		return exitCode;
 	}
 }
 int uintuintIdentityPerfectHash_InnerInsert(char *tableData,

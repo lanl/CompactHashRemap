@@ -356,7 +356,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, uintuintHash_Factory *
 #endif
 
     
-    //place the cells and their breadcrumbs 
+    //Place the cells
     for (uint n = 0; n < icells.ncells; n++) {
         uint i = icells.i[n];
         uint j = icells.j[n];
@@ -364,15 +364,12 @@ void h_remap_compact (cell_list icells, cell_list ocells, uintuintHash_Factory *
 
         uint key = j * icells.ibasesize*two_to_the(lev) + i;
         uintuintHash_InsertSingle(h_hashTable[lev], key, n);
-        //write_hash(n, key, h_hash[lev]);
-
         while (i%2 == 0 && j%2 == 0 && lev > 0) {
             i /= 2;
             j /= 2;
             lev--;
             key = j * icells.ibasesize*two_to_the(lev) + i;
-            uintuintHash_InsertSingle(h_hashTable[lev], key, -1);
-            //write_hash(-1, key, h_hash[lev]);
+            uintuintHash_InsertSingle(h_hashTable[lev], key, UINT_MAX);
         }
     }
     
