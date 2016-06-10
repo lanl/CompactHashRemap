@@ -257,13 +257,13 @@ int intintHash_InsertSingleNoOverwrite(__global char *tableData, int key,
 #define HASH_REPORT_CYCLE /**/ 1
 #define HASH_REPORT_END /****/ 2
 //
-#define HASH_EXIT_CODE_NORMAL /****************/ -1
-#define HASH_EXIT_CODE_ERROR /*****************/ -2
-#define HASH_EXIT_CODE_OVERWRITE /*************/ -3
-#define HASH_EXIT_CODE_KEY_DNE /***************/ -4
-#define HASH_EXIT_CODE_CYCLE /*****************/ -5
-#define HASH_EXIT_CODE_MAX_ENTRIES_EXCEEDED /**/ -6
-#define HASH_EXIT_CODE_BUCKET_INDEX_OOB /******/ -7
+#define HASH_EXIT_CODE_NORMAL /****************/ UINT_MAX
+#define HASH_EXIT_CODE_ERROR /*****************/ UINT_MAX-1
+#define HASH_EXIT_CODE_OVERWRITE /*************/ UINT_MAX-2
+#define HASH_EXIT_CODE_KEY_DNE /***************/ UINT_MAX-3
+#define HASH_EXIT_CODE_CYCLE /*****************/ UINT_MAX-4
+#define HASH_EXIT_CODE_MAX_ENTRIES_EXCEEDED /**/ UINT_MAX-5
+#define HASH_EXIT_CODE_BUCKET_INDEX_OOB /******/ UINT_MAX-6
 //
 #define HASH_SEARCH_CODE_MATCH /*****/ 0
 #define HASH_SEARCH_CODE_MISMATCH /**/ 1

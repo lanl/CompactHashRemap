@@ -121,6 +121,7 @@ int clFinish(int command_queue);
 #endif
 //
 #include "CLHash_Utilities.h"
+#include <limits.h>
 //
 //
 //
@@ -128,13 +129,13 @@ int clFinish(int command_queue);
 #define HASH_REPORT_CYCLE /**/ 1
 #define HASH_REPORT_END /****/ 2
 //
-#define HASH_EXIT_CODE_NORMAL /****************/ -1
-#define HASH_EXIT_CODE_ERROR /*****************/ -2
-#define HASH_EXIT_CODE_OVERWRITE /*************/ -3
-#define HASH_EXIT_CODE_KEY_DNE /***************/ -4
-#define HASH_EXIT_CODE_CYCLE /*****************/ -5
-#define HASH_EXIT_CODE_MAX_ENTRIES_EXCEEDED /**/ -6
-#define HASH_EXIT_CODE_BUCKET_INDEX_OOB /******/ -7
+#define HASH_EXIT_CODE_NORMAL /****************/ UINT_MAX
+#define HASH_EXIT_CODE_ERROR /*****************/ UINT_MAX-1
+#define HASH_EXIT_CODE_OVERWRITE /*************/ UINT_MAX-2
+#define HASH_EXIT_CODE_KEY_DNE /***************/ UINT_MAX-3
+#define HASH_EXIT_CODE_CYCLE /*****************/ UINT_MAX-4
+#define HASH_EXIT_CODE_MAX_ENTRIES_EXCEEDED /**/ UINT_MAX-5
+#define HASH_EXIT_CODE_BUCKET_INDEX_OOB /******/ UINT_MAX-6
 //
 #define HASH_SEARCH_CODE_MATCH /*****/ 0
 #define HASH_SEARCH_CODE_MISMATCH /**/ 1
@@ -209,9 +210,9 @@ int clFinish(int command_queue);
 #define HASH_LCG_C /*******/ 2147483587
 #define HASH_LCG_M /*******/ 2147483647
 //
-#define HASH_BUCKET_STATUS_EMPTY /**/ -1
-#define HASH_BUCKET_STATUS_FULL /***/ -2
-#define HASH_BUCKET_STATUS_LOCK /***/ -3
+#define HASH_BUCKET_STATUS_EMPTY /**/ UINT_MAX
+#define HASH_BUCKET_STATUS_FULL /***/ UINT_MAX-1
+#define HASH_BUCKET_STATUS_LOCK /***/ UINT_MAX-2
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -223,14 +224,14 @@ extern "C" {
  * 
  * @return A string representation of that exit code.
  */
-	char *Hash_ExitCodeString(int exitCode);
+	char *Hash_ExitCodeString(uint exitCode);
 /**
  * Hash_ExitCodeDebug will print a string representation of the given exit code
  * if it is not EXIT_CODE_NORMAL.
  * 
  * @param exitCode
  */
-	void Hash_ExitCodeDebug(int exitCode);
+	void Hash_ExitCodeDebug(uint exitCode);
 /**
  * Hash_SetReportLevel sets a static report level variable in hash.c. It should 
  * be called before hash tables are created. 
@@ -261,7 +262,6 @@ extern "C" {
 	typedef struct uintuintHash_Factory_ uintuintHash_Factory;
 	typedef struct uintuintCLHash_Factory_ uintuintCLHash_Factory;
 	uintuintHash_Factory *uintuintHash_CreateFactory(int HashTypes,
-							 uint * emptyValue,
 							 size_t localWorkSize,
 							 cl_context * context,
 							 cl_command_queue *
@@ -299,8 +299,7 @@ extern "C" {
 	int uintuintHash_BufferInsertNoOverwrite(uintuintHash_Table * table,
 						 size_t numEntries, cl_mem keys,
 						 cl_mem values);
-	static inline unsigned int uintuintHash_CompressIdentity(char data,
-								 int hashCode) {
+	static inline unsigned int uintuintHash_CompressIdentity(int hashCode) {
 		return hashCode;
 	}
 	typedef struct uintuintHash_CompressLCGData {

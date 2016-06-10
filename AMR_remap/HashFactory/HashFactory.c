@@ -68,6 +68,7 @@
 #endif
 #include "HashFactory.h"
 #ifdef HAVE_OPENCL
+#include "CLHash_Utilities_kern_source.inc"
 #ifdef __APPLE_CC__
 #include <OpenCL/OpenCL.h>
 #else
@@ -553,7 +554,7 @@ void Hash_SetReportLevel(int level) {
 int Hash_GetReportLevel() {
 	return reportLevel;
 }
-char *Hash_ExitCodeString(int exitCode) {
+char *Hash_ExitCodeString(uint exitCode) {
 	switch (exitCode) {
 	case HASH_EXIT_CODE_NORMAL:
 		return "Normal";
@@ -571,7 +572,7 @@ char *Hash_ExitCodeString(int exitCode) {
 		return "Unknown";
 	}
 }
-void Hash_ExitCodeDebug(int exitCode) {
+void Hash_ExitCodeDebug(uint exitCode) {
 	if (exitCode != HASH_EXIT_CODE_NORMAL) {
 		printf("HashExitCode: %s\n", Hash_ExitCodeString(exitCode));
 	}
@@ -616,7 +617,6 @@ struct uintuintHash_Factory_ {
 	cl_kernel querySingleKernel[HASH_NUM_CL_HASHES];
 	cl_kernel insertSingleKernel[HASH_NUM_CL_HASHES];
 	cl_kernel insertSingleNoOverwriteKernel[HASH_NUM_CL_HASHES];
-	uint emptyValue;
 	size_t localWorkSize;
 	uintuintHash_Table *(*createFunc[HASH_NUM_HASHES]) (uintuintHash_Factory
 							    *, int hashIndex,
@@ -627,7 +627,6 @@ struct uintuintHash_Factory_ {
 					     int hashIndex);
 };
 uintuintHash_Factory *uintuintHash_CreateFactory(int hashTypes,
-						 uint * emptyValue,
 						 size_t localWorkSize,
 						 cl_context * context,
 						 cl_command_queue * queue) {
@@ -639,19 +638,8 @@ uintuintHash_Factory *uintuintHash_CreateFactory(int hashTypes,
 		exit(1);
 	}
 	hashTypes &= HASH_ALL_HASHES;
-	if ((hashTypes & HASH_SENTINEL_PERFECT_HASHES) == hashTypes
-	    && emptyValue == NULL) {
-		printf
-		    ("emptyValue must be valid if a sentinel perfect hash is the only option available.\n");
-		exit(1);
-	}
 	uintuintHash_Factory *factory =
 	    (uintuintHash_Factory *) malloc(sizeof(uintuintHash_Factory));
-	if (emptyValue == NULL) {
-		hashTypes &= !HASH_SENTINEL_PERFECT_HASHES;
-	} else {
-		factory->emptyValue = *emptyValue;
-	}
 	factory->hashTypesAvailable = hashTypes;
 	if (hashTypes & HASH_ALL_CL_HASHES) {
 		if (localWorkSize == 0) {
@@ -1049,7 +1037,7 @@ int uintuintIdentityPerfectHash_InnerQuerySingle(char *tableData, uint key,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
 		if (key == buckets[index].key) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
@@ -1086,7 +1074,7 @@ int uintuintIdentityPerfectHash_InnerQuery(char *tableData,
 		key = keys[i];
 		valueOutput = &valuesOutput[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
 			if (key == buckets[index].key) {
 				exitCode = HASH_SEARCH_CODE_MATCH;
@@ -1118,7 +1106,7 @@ int uintuintIdentityPerfectHash_InnerInsertSingle(char *tableData, uint key,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if (((buckets[index].key ==
 	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 					   key,
@@ -1158,7 +1146,7 @@ int uintuintIdentityPerfectHash_InnerInsert(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if (((buckets[index].key ==
 		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 						   key,
@@ -1194,7 +1182,7 @@ int uintuintIdentityPerfectHash_InnerInsertSingleNoOverwrite(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if (((buckets[index].key ==
 	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 					   key,
@@ -1234,7 +1222,7 @@ int uintuintIdentityPerfectHash_InnerInsertNoOverwrite(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if (((buckets[index].key ==
 		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 						   key,
@@ -1421,10 +1409,12 @@ int uintuintIdentityPerfectCLHash_CreateFactory(uintuintHash_Factory * factory,
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
 	    CLHash_Utilities_BuildProgramString(factory->context, device,
-						"static inline unsigned int uintuintHash_CompressIdentity(char data, int hashCode){ return hashCode; } typedef struct uintuintHash_CompressLCGData{ long unsigned int a; long unsigned int c; unsigned int m; unsigned int n; }uintuintHash_CompressLCGData; static inline unsigned int uintuintHash_CompressLCG(uintuintHash_CompressLCGData compressLCGData, int hashCode){ return ((compressLCGData.a * hashCode + compressLCGData.c) % compressLCGData.m) % compressLCGData.n; } typedef struct uintuintIdentityPerfectCLHash_TableData{ int hashID; unsigned int numBuckets; char compressFuncData; }uintuintIdentityPerfectCLHash_TableData; typedef struct uintuintIdentityPerfectCLHash_Bucket{ uint key; uint value; }uintuintIdentityPerfectCLHash_Bucket; __kernel void uintuintIdentityPerfectCLHash_Empty(__global char *tableData){ int index = get_global_id(0); if(index >= ((__global uintuintIdentityPerfectCLHash_TableData*)tableData)->numBuckets){ return; } __global uintuintIdentityPerfectCLHash_Bucket *buckets = (__global uintuintIdentityPerfectCLHash_Bucket*)&tableData[sizeof(uintuintIdentityPerfectCLHash_TableData)]; buckets[index].key = -1;/*HASH_BUCKET_STATUS_EMPTY*/ }");
+						CLHash_Utilities_kern_source);
+	    
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
 			   "uintuintIdentityPerfectCLHash_Empty", &error);
+	
 	CLHash_Utilities_HandleError(error,
 				     "uintuintIdentityPerfectCLHash_CreateFactory",
 				     "clCreateKernel");
@@ -1830,7 +1820,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerQuerySingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
 		if (key == buckets[index].key) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
@@ -1868,7 +1858,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerQuery(char *tableData,
 		key = keys[i];
 		valueOutput = &valuesOutput[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
 			if (key == buckets[index].key) {
 				exitCode = HASH_SEARCH_CODE_MATCH;
@@ -1900,7 +1890,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerInsertSingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if (((buckets[index].key ==
 	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 					   key,
@@ -1941,7 +1931,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerInsert(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if (((buckets[index].key ==
 		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 						   key,
@@ -1978,7 +1968,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerInsertSingleNoOverwrite(char
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+	    uintuintHash_CompressIdentity(key);
 	if (((buckets[index].key ==
 	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 					   key,
@@ -2020,7 +2010,7 @@ int uintuintIdentityPerfectOpenMPHash_InnerInsertNoOverwrite(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentityPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
+		    uintuintHash_CompressIdentity(key);
 		if (((buckets[index].key ==
 		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
 						   key,
@@ -2099,7 +2089,6 @@ typedef struct uintuintIdentitySentinelPerfectHash_TableData {
 	int hashID;
 	unsigned int numBuckets;
 	char compressFuncData;
-	uint emptyValue;
 } uintuintIdentitySentinelPerfectHash_TableData;
 typedef struct uintuintIdentitySentinelPerfectHash_Bucket {
 	uint value;
@@ -2130,8 +2119,6 @@ uintuintHash_Table
 	    malloc(sizeof(uintuintIdentitySentinelPerfectHash_TableData));
 	((uintuintIdentitySentinelPerfectHash_TableData *) table->tableData)->
 	    hashID = IDENTITY_SENTINEL_PERFECT_HASH_ID;
-	((uintuintIdentitySentinelPerfectHash_TableData *) table->tableData)->
-	    emptyValue = factory->emptyValue;
 	((uintuintIdentitySentinelPerfectHash_TableData *) table->tableData)->
 	    numBuckets = keyRange + 1;
 	char *tempHashData =
@@ -2175,9 +2162,7 @@ int uintuintIdentitySentinelPerfectHash_SetupTable(uintuintHash_Table * table) {
 		     index <
 		     ((uintuintIdentitySentinelPerfectHash_TableData *) table->
 		      tableData)->numBuckets; index++) {
-			buckets[index].value =
-			    ((uintuintIdentitySentinelPerfectHash_TableData *)
-			     table->tableData)->emptyValue;
+			buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 		}
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
@@ -2192,9 +2177,7 @@ int uintuintIdentitySentinelPerfectHash_EmptyTable(uintuintHash_Table * table) {
 	     index <
 	     ((uintuintIdentitySentinelPerfectHash_TableData *) table->
 	      tableData)->numBuckets; index++) {
-		buckets[index].value =
-		    ((uintuintIdentitySentinelPerfectHash_TableData *) table->
-		     tableData)->emptyValue;
+		buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
 	return exitCode;
@@ -2208,10 +2191,8 @@ int uintuintIdentitySentinelPerfectHash_InnerQuerySingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->
-	    emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2244,10 +2225,8 @@ int uintuintIdentitySentinelPerfectHash_InnerQuery(char *tableData,
 		key = keys[i];
 		valueOutput = &valuesOutput[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2275,10 +2254,8 @@ int uintuintIdentitySentinelPerfectHash_InnerInsertSingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->
-	    emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2310,10 +2287,8 @@ int uintuintIdentitySentinelPerfectHash_InnerInsert(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2342,10 +2317,8 @@ int uintuintIdentitySentinelPerfectHash_InnerInsertSingleNoOverwrite(char
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->
-	    emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2377,10 +2350,8 @@ int uintuintIdentitySentinelPerfectHash_InnerInsertNoOverwrite(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -2453,7 +2424,6 @@ typedef struct uintuintIdentitySentinelPerfectCLHash_TableData {
 	int hashID;
 	unsigned int numBuckets;
 	char compressFuncData;
-	uint emptyValue;
 } uintuintIdentitySentinelPerfectCLHash_TableData;
 typedef struct uintuintIdentitySentinelPerfectCLHash_Bucket {
 	uint value;
@@ -2504,9 +2474,7 @@ uintuintHash_Table
 	clRetainKernel(table->emptyKernel);
 	clRetainKernel(table->querySingleKernel);
 	clRetainKernel(table->insertSingleKernel);
-	clRetainKernel(table->insertSingleNoOverwriteKernel);;
-	((uintuintIdentitySentinelPerfectCLHash_TableData *) table->tableData)->
-	    emptyValue = factory->emptyValue;
+	clRetainKernel(table->insertSingleNoOverwriteKernel);
 	((uintuintIdentitySentinelPerfectCLHash_TableData *) table->tableData)->
 	    numBuckets = keyRange + 1;
 	char *tempHashData =
@@ -2579,7 +2547,8 @@ int uintuintIdentitySentinelPerfectCLHash_CreateFactory(uintuintHash_Factory *
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
 	    CLHash_Utilities_BuildProgramString(factory->context, device,
-						"static inline unsigned int uintuintHash_CompressIdentity(char data, int hashCode){ return hashCode; } typedef struct uintuintHash_CompressLCGData{ long unsigned int a; long unsigned int c; unsigned int m; unsigned int n; }uintuintHash_CompressLCGData; static inline unsigned int uintuintHash_CompressLCG(uintuintHash_CompressLCGData compressLCGData, int hashCode){ return ((compressLCGData.a * hashCode + compressLCGData.c) % compressLCGData.m) % compressLCGData.n; } typedef struct uintuintIdentitySentinelPerfectCLHash_TableData{ int hashID; unsigned int numBuckets; char compressFuncData; uint emptyValue; }uintuintIdentitySentinelPerfectCLHash_TableData; typedef struct uintuintIdentitySentinelPerfectCLHash_Bucket{ uint value; }uintuintIdentitySentinelPerfectCLHash_Bucket; __kernel void uintuintIdentitySentinelPerfectCLHash_Empty(__global char *tableData){ int index = get_global_id(0); if(index >= ((__global uintuintIdentitySentinelPerfectCLHash_TableData*)tableData)->numBuckets){ return; } __global uintuintIdentitySentinelPerfectCLHash_Bucket *buckets = (__global uintuintIdentitySentinelPerfectCLHash_Bucket*)&tableData[sizeof(uintuintIdentitySentinelPerfectCLHash_TableData)]; buckets[index].value = ((__global uintuintIdentitySentinelPerfectCLHash_TableData*)tableData)->emptyValue; }");
+						CLHash_Utilities_kern_source);
+	    
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
 			   "uintuintIdentitySentinelPerfectCLHash_Empty",
@@ -2594,7 +2563,7 @@ int uintuintIdentitySentinelPerfectCLHash_CreateFactory(uintuintHash_Factory *
 				     emptyKernelLocalWorkSize[hashIndex], NULL);
 	CLHash_Utilities_HandleError(error,
 				     "uintuintIdentitySentinelPerfectCLHash_CreateFactory",
-				     "clGetKernelWorkGroupInfo");;;
+				     "clGetKernelWorkGroupInfo");
 	return HASH_EXIT_CODE_NORMAL;
 }
 int uintuintIdentitySentinelPerfectCLHash_DestroyFactory(uintuintHash_Factory *
@@ -2907,7 +2876,6 @@ typedef struct uintuintIdentitySentinelPerfectOpenMPHash_TableData {
 	int hashID;
 	unsigned int numBuckets;
 	char compressFuncData;
-	uint emptyValue;
 } uintuintIdentitySentinelPerfectOpenMPHash_TableData;
 typedef struct uintuintIdentitySentinelPerfectOpenMPHash_Bucket {
 	uint value;
@@ -2942,8 +2910,6 @@ uintuintHash_Table
 	    malloc(sizeof(uintuintIdentitySentinelPerfectOpenMPHash_TableData));
 	((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) table->
 	 tableData)->hashID = IDENTITY_SENTINEL_PERFECT_OPENMP_HASH_ID;
-	((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) table->
-	 tableData)->emptyValue = factory->emptyValue;
 	((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) table->
 	 tableData)->numBuckets = keyRange + 1;
 	char *tempHashData =
@@ -2993,8 +2959,7 @@ int uintuintIdentitySentinelPerfectOpenMPHash_SetupTable(uintuintHash_Table *
 		     index <
 		     ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
 		      table->tableData)->numBuckets; index++) {
-			buckets[index].value =
-			    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) table->tableData)->emptyValue;
+			buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 		}
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
@@ -3012,9 +2977,7 @@ int uintuintIdentitySentinelPerfectOpenMPHash_EmptyTable(uintuintHash_Table *
 	     index <
 	     ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) table->
 	      tableData)->numBuckets; index++) {
-		buckets[index].value =
-		    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-		     table->tableData)->emptyValue;
+		buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
 	return exitCode;
@@ -3030,10 +2993,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerQuerySingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-	     tableData)->emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3067,10 +3028,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerQuery(char *tableData,
 		key = keys[i];
 		valueOutput = &valuesOutput[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3099,10 +3058,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerInsertSingle(char *tableData,
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-	     tableData)->emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3137,10 +3094,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerInsert(char *tableData,
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3172,10 +3127,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerInsertSingleNoOverwrite(char
 	uint index;
 	int exitCode;
 	index =
-	    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-	if (buckets[index].value !=
-	    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-	     tableData)->emptyValue) {
+	    uintuintHash_CompressIdentity(key);
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3213,10 +3166,8 @@ int uintuintIdentitySentinelPerfectOpenMPHash_InnerInsertNoOverwrite(char
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
-		    uintuintHash_CompressIdentity(((uintuintIdentitySentinelPerfectOpenMPHash_TableData *) tableData)->compressFuncData, key);
-		if (buckets[index].value !=
-		    ((uintuintIdentitySentinelPerfectOpenMPHash_TableData *)
-		     tableData)->emptyValue) {
+		    uintuintHash_CompressIdentity(key);
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -3880,7 +3831,7 @@ int uintuintLCGLinearOpenCompactCLHash_CreateFactory(uintuintHash_Factory *
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
 	    CLHash_Utilities_BuildProgramString(factory->context, device,
-						"static inline unsigned int uintuintHash_CompressIdentity(char data, int hashCode){ return hashCode; } typedef struct uintuintHash_CompressLCGData{ long unsigned int a; long unsigned int c; unsigned int m; unsigned int n; }uintuintHash_CompressLCGData; static inline unsigned int uintuintHash_CompressLCG(uintuintHash_CompressLCGData compressLCGData, int hashCode){ return ((compressLCGData.a * hashCode + compressLCGData.c) % compressLCGData.m) % compressLCGData.n; } typedef struct uintuintLCGLinearOpenCompactCLHash_TableData{ int hashID; unsigned int numBuckets; uintuintHash_CompressLCGData compressFuncData; }uintuintLCGLinearOpenCompactCLHash_TableData; typedef struct uintuintLCGLinearOpenCompactCLHash_Bucket{ uint key; uint value; }uintuintLCGLinearOpenCompactCLHash_Bucket; __kernel void uintuintLCGLinearOpenCompactCLHash_Empty(__global char *tableData){ int index = get_global_id(0); if(index >= ((__global uintuintLCGLinearOpenCompactCLHash_TableData*)tableData)->numBuckets){ return; } __global uintuintLCGLinearOpenCompactCLHash_Bucket *buckets = (__global uintuintLCGLinearOpenCompactCLHash_Bucket*)&tableData[sizeof(uintuintLCGLinearOpenCompactCLHash_TableData)]; buckets[index].key = -1;/*HASH_BUCKET_STATUS_EMPTY*/ }");
+						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
 			   "uintuintLCGLinearOpenCompactCLHash_Empty", &error);
@@ -5311,7 +5262,7 @@ int uintuintLCGQuadraticOpenCompactCLHash_CreateFactory(uintuintHash_Factory *
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
 	    CLHash_Utilities_BuildProgramString(factory->context, device,
-						"static inline unsigned int uintuintHash_CompressIdentity(char data, int hashCode){ return hashCode; } typedef struct uintuintHash_CompressLCGData{ long unsigned int a; long unsigned int c; unsigned int m; unsigned int n; }uintuintHash_CompressLCGData; static inline unsigned int uintuintHash_CompressLCG(uintuintHash_CompressLCGData compressLCGData, int hashCode){ return ((compressLCGData.a * hashCode + compressLCGData.c) % compressLCGData.m) % compressLCGData.n; } typedef struct uintuintLCGQuadraticOpenCompactCLHash_TableData{ int hashID; unsigned int numBuckets; uintuintHash_CompressLCGData compressFuncData; }uintuintLCGQuadraticOpenCompactCLHash_TableData; typedef struct uintuintLCGQuadraticOpenCompactCLHash_Bucket{ uint key; uint value; }uintuintLCGQuadraticOpenCompactCLHash_Bucket; __kernel void uintuintLCGQuadraticOpenCompactCLHash_Empty(__global char *tableData){ int index = get_global_id(0); if(index >= ((__global uintuintLCGQuadraticOpenCompactCLHash_TableData*)tableData)->numBuckets){ return; } __global uintuintLCGQuadraticOpenCompactCLHash_Bucket *buckets = (__global uintuintLCGQuadraticOpenCompactCLHash_Bucket*)&tableData[sizeof(uintuintLCGQuadraticOpenCompactCLHash_TableData)]; buckets[index].key = -1;/*HASH_BUCKET_STATUS_EMPTY*/ }");
+						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
 			   "uintuintLCGQuadraticOpenCompactCLHash_Empty",

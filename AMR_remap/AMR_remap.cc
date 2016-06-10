@@ -215,10 +215,9 @@ int main (int argc, char** argv) {
     //srand (time(NULL));
     srand(0);
     
-    uint emptyNeighborValue = -5;
-    factory = uintuintHash_CreateFactory(HASH_ALL_C_HASHES, &emptyNeighborValue, 0, NULL, NULL);
+    factory = uintuintHash_CreateFactory(HASH_ALL_C_HASHES, 0, NULL, NULL);
     //OpenMPfactory = uintuintHash_CreateFactory(LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, &emptyNeighborValue, 0, NULL, NULL);
-    OpenMPfactory = uintuintHash_CreateFactory(HASH_ALL_OPENMP_HASHES, &emptyNeighborValue, 0, NULL, NULL);
+    OpenMPfactory = uintuintHash_CreateFactory(HASH_ALL_OPENMP_HASHES, 0, NULL, NULL);
     //factory = uintuintHash_CreateFactory(HASH_ALL_C_HASHES, NULL, 0, NULL, NULL);
 
 #ifdef HAVE_OPENCL
@@ -239,7 +238,7 @@ int main (int argc, char** argv) {
     cl_command_queue queue   = ezcl_get_command_queue();
     
     uint lws = TILE_SIZE;
-    CLFactory = uintuintHash_CreateFactory(HASH_ALL_CL_HASHES, &emptyNeighborValue, lws, &context, &queue);
+    CLFactory = uintuintHash_CreateFactory(HASH_ALL_CL_HASHES, lws, &context, &queue);
 #endif
 
     

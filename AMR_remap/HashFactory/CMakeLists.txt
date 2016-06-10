@@ -34,6 +34,11 @@ add_custom_target(HashFactory_source.inc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}
                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl
                      ${CMAKE_CURRENT_SOURCE_DIR}/HashFactory.cl > ${CMAKE_CURRENT_BINARY_DIR}/HashFactory_source.inc
                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/HashFactory.cl ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl)
+                  
+                  add_custom_target(CLHash_Utilities_kern_source.inc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/CLHash_Utilities_kern.cl
+                  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl
+                     ${CMAKE_CURRENT_SOURCE_DIR}/CLHash_Utilities_kern.cl > ${CMAKE_CURRENT_BINARY_DIR}/CLHash_Utilities_kern_source.inc
+                  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CLHash_Utilities_kern.cl ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl)
 
 ########## HashFactory target ##############
 add_library(HashFactory STATIC ${libHashFactory_LIB_SRCS})

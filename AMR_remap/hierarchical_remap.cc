@@ -30,7 +30,7 @@
 
 #include <stdio.h>
 
-#include<climits>
+#include <climits>
 
 #include "simplehash/simplehash.h"
 #include "hierarchical_remap.h"
@@ -102,7 +102,7 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
         
         
         
-        for (int ic = queue[lev]; ic < 4; ic++){
+        for (char ic = queue[lev]; ic < 4; ic++){
             
             key = key_new[ic];
             
@@ -187,9 +187,12 @@ double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, uint
         
         
         
-        for (int ic = queue[lev]; ic < 4; ic++){
+        for (char ic = queue[lev]; ic < 4; ic++){
             
             key = key_new[ic];
+            if(lev>icells.levmax){
+                printf("too many levels\n");
+            }
             
             uintuintHash_QuerySingle(h_hashTable[lev], key, &probe);
             if (probe != UINT_MAX) {
@@ -572,14 +575,14 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, uintuintHash_Fa
              uintuintHash_InsertSingle(h_hashTable[lev], key, n);
              //write_hash(n, key, h_hash[lev]);
 
-             while (i%2 == 0 && j%2 == 0 && lev > 0) {
+             /*while (i%2 == 0 && j%2 == 0 && lev > 0) {
                  i /= 2;
                  j /= 2;
                  lev--;
                  key = j * icells.ibasesize*two_to_the(lev) + i;
                  uintuintHash_InsertSingle(h_hashTable[lev], key, UINT_MAX);
                  //write_hash(-1, key, h_hash[lev]);
-             }
+             }*/
          }
     
 #ifdef DETAILED_TIMING
@@ -605,7 +608,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, uintuintHash_Fa
                  uintuintHash_QuerySingle(h_hashTable[probe_lev], key, &probe);
              }
 
-             if (probe == UINT_MAX) {
+             if (probe != UINT_MAX) {
                  ocells.values[n] = icells.values[probe];
              } else {
                  ocells.values[n] = avg_sub_cells_h_compact (icells, oi, oj, olev, h_hashTable, icells.ibasesize);
