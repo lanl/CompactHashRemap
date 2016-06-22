@@ -942,7 +942,6 @@ typedef struct uintuintIdentityPerfectHash_TableData {
 	char compressFuncData;
 } uintuintIdentityPerfectHash_TableData;
 typedef struct uintuintIdentityPerfectHash_Bucket {
-	uint key;
 	uint value;
 } uintuintIdentityPerfectHash_Bucket;
 uintuintHash_Table *uintuintIdentityPerfectHash_CreateTable(uintuintHash_Factory
@@ -1009,7 +1008,7 @@ int uintuintIdentityPerfectHash_SetupTable(uintuintHash_Table * table) {
 		     index <
 		     ((uintuintIdentityPerfectHash_TableData *) table->
 		      tableData)->numBuckets; index++) {
-			buckets[index].key = HASH_BUCKET_STATUS_EMPTY;
+			buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 		}
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
@@ -1024,7 +1023,7 @@ int uintuintIdentityPerfectHash_EmptyTable(uintuintHash_Table * table) {
 	     index <
 	     ((uintuintIdentityPerfectHash_TableData *) table->tableData)->
 	     numBuckets; index++) {
-		buckets[index].key = HASH_BUCKET_STATUS_EMPTY;
+		buckets[index].value = HASH_BUCKET_STATUS_EMPTY;
 	}
 	exitCode = HASH_EXIT_CODE_NORMAL;
 	return exitCode;
@@ -1038,12 +1037,8 @@ int uintuintIdentityPerfectHash_InnerQuerySingle(char *tableData, uint key,
 	int exitCode;
 	index =
 	    uintuintHash_CompressIdentity(key);
-	if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-		if (key == buckets[index].key) {
-			exitCode = HASH_SEARCH_CODE_MATCH;
-		} else {
-			exitCode = HASH_SEARCH_CODE_MISMATCH;
-		}
+	if ((buckets[index].value) != HASH_BUCKET_STATUS_EMPTY) {
+	    exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
 	}
@@ -1075,12 +1070,8 @@ int uintuintIdentityPerfectHash_InnerQuery(char *tableData,
 		valueOutput = &valuesOutput[i];
 		index =
 		    uintuintHash_CompressIdentity(key);
-		if ((buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-			if (key == buckets[index].key) {
-				exitCode = HASH_SEARCH_CODE_MATCH;
-			} else {
-				exitCode = HASH_SEARCH_CODE_MISMATCH;
-			}
+		if ((buckets[index].value) != HASH_BUCKET_STATUS_EMPTY) {
+			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
 		}
@@ -1130,16 +1121,8 @@ int uintuintIdentityPerfectHash_InnerInsert(char *tableData,
 		key = keys[i];
 		index =
 		    uintuintHash_CompressIdentity(key);
-		if (((buckets[index].key ==
-		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
-						   key,
-						   HASH_BUCKET_STATUS_EMPTY) :
-		     buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-			if (key == buckets[index].key) {
-				exitCode = HASH_SEARCH_CODE_MATCH;
-			} else {
-				exitCode = HASH_SEARCH_CODE_MISMATCH;
-			}
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
+			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
 		}
@@ -1166,16 +1149,8 @@ int uintuintIdentityPerfectHash_InnerInsertSingleNoOverwrite(char *tableData,
 	int exitCode;
 	index =
 	    uintuintHash_CompressIdentity(key);
-	if (((buckets[index].key ==
-	      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
-					   key,
-					   HASH_BUCKET_STATUS_EMPTY) :
-	     buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-		if (key == buckets[index].key) {
-			exitCode = HASH_SEARCH_CODE_MATCH;
-		} else {
-			exitCode = HASH_SEARCH_CODE_MISMATCH;
-		}
+	if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
+		exitCode = HASH_SEARCH_CODE_MATCH;
 	} else {
 		exitCode = HASH_SEARCH_CODE_EMPTY;
 	}
@@ -1206,16 +1181,8 @@ int uintuintIdentityPerfectHash_InnerInsertNoOverwrite(char *tableData,
 		key = keys[i];
 		index =
 		    uintuintHash_CompressIdentity(key);
-		if (((buckets[index].key ==
-		      HASH_BUCKET_STATUS_EMPTY) ? (buckets[index].key =
-						   key,
-						   HASH_BUCKET_STATUS_EMPTY) :
-		     buckets[index].key) != HASH_BUCKET_STATUS_EMPTY) {
-			if (key == buckets[index].key) {
-				exitCode = HASH_SEARCH_CODE_MATCH;
-			} else {
-				exitCode = HASH_SEARCH_CODE_MISMATCH;
-			}
+		if (buckets[index].value != HASH_BUCKET_STATUS_EMPTY) {
+			exitCode = HASH_SEARCH_CODE_MATCH;
 		} else {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
 		}
