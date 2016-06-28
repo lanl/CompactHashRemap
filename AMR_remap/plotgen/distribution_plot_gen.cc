@@ -3,22 +3,82 @@
 
 typedef unsigned int uint;
 
-const uint basesize = 64;
-const uint levmax = 6;
-const float adapt_threshhold = 20.0f;
+uint basesize = 64;
+uint levmax = 6;
+float adapt_threshhold = 20.0f;
 uint numcells = 118;
+uint num_runs = 10;
+uint cell_inc = 3;
+
+long seed = 0xDEADBEEF;
+
+uint output_mode = 0;
+uint adapt_meshgen = 0;
+uint force_seed = 1;
  
 
-int main (int n_args, char** args){
-    int output_mode = 0;
-    int adapt_meshgen = 0;
-    if (n_args == 3){
-        if  (strcmp (args[2],"-output-mode")==0){
-            output_mode = 1;
+int main (int argc, char** argv){
+    if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)){
+        printf ("Usage: %s [--help | -h] [-output, -adapt-meshgen, -ncells <ncells>, -lev <level difference>, adapt-threshhold <adaptive threshhold>, -base-size <base size>, -no-force-seed, -seed <seed>, -cell-inc, -num-runs]\n", argv[0]);
+        printf ("Any variables not set will be run with reasonable defaults\n");
+        return 0;
+    }
+    if (argc>1){
+        for (int i = 1; i < argc; i++){
+            char* arg = argv[i];
+            if (strcmp(arg,"-output")==0){
+                output_mode = 1;
+            } else
+            if (strcmp(arg,"-adapt-meshgen")==0){
+                adapt_meshgen = 1;
+            } else
+            if (strcmp(arg,"-ncells")==0){
+                i++;
+                numcells = atoi(argv[i]);
+                if ((numcells - 1) % 3 != 0) {
+                    numcells--;
+                    numcells /= 3;
+                    numcells *= 3;
+                    numcells ++;
+                    printf("\nImpossible number of cells, using %u instead\n", numcells);
+                }
+            } else
+            if (strcmp(arg,"-lev")==0){
+                i++;
+                levmax = atoi(argv[i]);
+            } else
+            if (strcmp(arg,"-adapt-threshhold")==0){
+                i++;
+                adapt_threshhold = atof(argv[i]);
+            } else
+            if (strcmp(arg,"-base-size")==0){
+                i++;
+                basesize = atoi(argv[i]);
+            } else
+            if (strcmp(arg,"-no-force-seed")==0){
+                force_seed = 0;
+            } else
+            if (strcmp(arg,"-seed")==0){
+                i++;
+                seed = atol(argv[i]);
+            } else
+            if (strcmp(arg,"-cell-inc")==0){
+                i++;
+                cell_inc = atoi(argv[i]);
+                if ((cell_inc) % 3 != 0) {
+                    cell_inc /= 3;
+                    cell_inc *= 3;
+                    printf("\nImpossible increment, using %u instead\n", cell_inc);
+                }
+            } else
+            if (strcmp(arg,"-num-runs")==0){
+                i++;
+                num_runs = atoi(argv[i]);
+            } else
+            printf ("Invalid Argument: %s\n", arg);
         }
     }
     cell_list ocells;
-    ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
     uint levmin = 0;
     uint* olev_count;
     /*levmin = ocells.level[0];
@@ -27,8 +87,9 @@ int main (int n_args, char** args){
             levmin = ocells.level[i];
         }
     }*/
-    for (uint run_num = 0; run_num<100; run_num++){
+    for (uint run_num = 0; run_num<num_runs; run_num++){
         if (adapt_meshgen){
+            ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
             printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
             olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
             for (uint i = levmin; i <= ocells.levmax; i++){
@@ -40,7 +101,6 @@ int main (int n_args, char** args){
             for (uint i = levmin; i <= ocells.levmax; i++){
                 printf ("lev %u: %u\n", i-levmin, olev_count[i]);
             }
-            numcells = ocells.ncells;
             PrintMesh(ocells);
             destroy(ocells);
             free (olev_count);
@@ -79,15 +139,16 @@ int main (int n_args, char** args){
             destroy(ocells);
             free (olev_count);
         }
-    numcells += 3;
-    srand (0xDEADBEEF);
+    numcells += cell_inc;
+    if (force_seed)
+        srand(seed);
     }
     return 0;
 }
 
 // Prints the mesh as described by the cell list as if it were in a perfect hash.
 void PrintMesh (cell_list icells){
-    if (two_to_the(icells.levmax)*icells.ibasesize>64){
+    if (two_to_the(icells.levmax)*icells.ibasesize>32){
         printf("cell list too large! %u level %u base\n", icells.levmax, icells.ibasesize);
         return;
     }
