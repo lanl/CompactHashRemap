@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+
 add_subdirectory(genmalloc)
+add_subdirectory(plotgen)
 add_subdirectory(meshgen)
 if (OPENCL_FOUND)
    add_subdirectory(ezcl)

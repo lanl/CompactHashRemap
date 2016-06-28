@@ -32,7 +32,7 @@
 #include <math.h>
 #include "meshgen.h"
 
-static bool randomize = false;
+static bool randomize = true;
 
 #define SQ(x) (( (x)*(x) ))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -153,6 +153,9 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
             cell_count += 3;
         }
     }
+    clist.ncells = *length;
+    clist.ibasesize = 1;//four_to_the(*min_level-1);
+    clist.levmax = *max_level;
     return clist;
 }
 
@@ -380,7 +383,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int le
   //unsigned int iseed = (unsigned int)time(NULL);
   //srand (iseed);
   //srand (0);
-  for(int ii = levmax-1; ii >= 0; ii--) {
+  for(int ii = levmax; ii >= 0; ii--) {
     float lev_threshold = threshold*(float)ii/(float)levmax;
     for(ic = 0; ic < ncells; ic++) {
       float jj = (100.0*(float)rand() / ((float)RAND_MAX));
