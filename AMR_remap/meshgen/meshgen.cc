@@ -380,7 +380,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int le
   //unsigned int iseed = (unsigned int)time(NULL);
   //srand (iseed);
   //srand (0);
-  for(int ii = levmax; ii > 0; ii--) {
+  for(int ii = levmax-1; ii >= 0; ii--) {
     float lev_threshold = threshold*(float)ii/(float)levmax;
     for(ic = 0; ic < ncells; ic++) {
       float jj = (100.0*(float)rand() / ((float)RAND_MAX));
