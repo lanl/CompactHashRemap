@@ -175,7 +175,7 @@ void PrintMesh (cell_list icells){
         // Calculate the position of the cell on the lowest level of the mesh
         uint base_key = i*lev_mod + j*fine_size*lev_mod;
         // 2 to the lev_mod power is four to the difference
-        for (uint jc = 0; jc < four_to_the(icells.levmax - lev); jc++){
+        for (uint jc = 0; jc < (uint)four_to_the(icells.levmax - lev); jc++){
             uint ii = jc%lev_mod;
             uint jj = jc/lev_mod;
             uint key = base_key + ii + jj*fine_size;
