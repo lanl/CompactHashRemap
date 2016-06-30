@@ -873,7 +873,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
     
     ezcl_device_memory_delete(ierr_buffer);
     
-    for (int idx = 0; idx <= icells.levmax; idx ++){
+    for (uint idx = 0; idx <= icells.levmax; idx ++){
         intintHash_DestroyTable(h_hashTable[idx]);
     }
     

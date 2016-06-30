@@ -184,8 +184,6 @@ int main (int argc, char** argv) {
     uint o_max_level;
     uint i_min_level;
     uint o_min_level;
-    double i_sparsity = 0.02;
-    double o_sparsity = 0.02;
     //i for in o for out
     cell_list icells;
     cell_list ocells;

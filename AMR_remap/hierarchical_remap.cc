@@ -54,7 +54,7 @@ double avg_sub_cells_h (cell_list icells, uint i, uint j, uint lev, int **h_hash
     
     uint key_new[4];
     
-    int startlev = lev;
+    uint startlev = lev;
     
     char queue[32];
 
@@ -139,7 +139,7 @@ double avg_sub_cells_h_compact (cell_list icells, uint i, uint j, uint lev, inti
     
     uint key_new[4];
     
-    int startlev = lev;
+    uint startlev = lev;
     
     char queue[32];
 
