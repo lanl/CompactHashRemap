@@ -1788,7 +1788,9 @@ int intintIdentityPerfectOpenMPHash_SetupTable(intintHash_Table * table) {
 	    (intintIdentityPerfectOpenMPHash_Bucket *) & table->
 	    tableData[sizeof(intintIdentityPerfectOpenMPHash_TableData)];
 	if (intintHash_GetTableType(table) & ~HASH_SENTINEL_PERFECT_HASHES) {
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 		for (uint index = 0;
 		     index <
 		     ((intintIdentityPerfectOpenMPHash_TableData *) table->
@@ -1803,7 +1805,9 @@ int intintIdentityPerfectOpenMPHash_EmptyTable(intintHash_Table * table) {
 	intintIdentityPerfectOpenMPHash_Bucket *buckets =
 	    (intintIdentityPerfectOpenMPHash_Bucket *) & table->
 	    tableData[sizeof(intintIdentityPerfectOpenMPHash_TableData)];
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (uint index = 0;
 	     index <
 	     ((intintIdentityPerfectOpenMPHash_TableData *) table->tableData)->
@@ -1926,7 +1930,9 @@ int intintIdentityPerfectOpenMPHash_InnerInsert(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
@@ -2005,7 +2011,9 @@ int intintIdentityPerfectOpenMPHash_InnerInsertNoOverwrite(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
@@ -2962,7 +2970,9 @@ int intintIdentitySentinelPerfectOpenMPHash_SetupTable(intintHash_Table * table)
 	    tableData[sizeof
 		      (intintIdentitySentinelPerfectOpenMPHash_TableData)];
 	if (intintHash_GetTableType(table) & ~HASH_SENTINEL_PERFECT_HASHES) {
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 		for (uint index = 0;
 		     index <
 		     ((intintIdentitySentinelPerfectOpenMPHash_TableData *)
@@ -2980,7 +2990,9 @@ int intintIdentitySentinelPerfectOpenMPHash_EmptyTable(intintHash_Table * table)
 	    (intintIdentitySentinelPerfectOpenMPHash_Bucket *) & table->
 	    tableData[sizeof
 		      (intintIdentitySentinelPerfectOpenMPHash_TableData)];
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (uint index = 0;
 	     index <
 	     ((intintIdentitySentinelPerfectOpenMPHash_TableData *) table->
@@ -3103,7 +3115,9 @@ int intintIdentitySentinelPerfectOpenMPHash_InnerInsert(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
@@ -3177,7 +3191,9 @@ int intintIdentitySentinelPerfectOpenMPHash_InnerInsertNoOverwrite(char
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		index =
@@ -4241,7 +4257,9 @@ int intintLCGLinearOpenCompactOpenMPHash_SetupTable(intintHash_Table * table) {
 	    (intintLCGLinearOpenCompactOpenMPHash_Bucket *) & table->
 	    tableData[sizeof(intintLCGLinearOpenCompactOpenMPHash_TableData)];
 	if (intintHash_GetTableType(table) & ~HASH_SENTINEL_PERFECT_HASHES) {
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 		for (uint index = 0;
 		     index <
 		     ((intintLCGLinearOpenCompactOpenMPHash_TableData *) table->
@@ -4256,7 +4274,9 @@ int intintLCGLinearOpenCompactOpenMPHash_EmptyTable(intintHash_Table * table) {
 	intintLCGLinearOpenCompactOpenMPHash_Bucket *buckets =
 	    (intintLCGLinearOpenCompactOpenMPHash_Bucket *) & table->
 	    tableData[sizeof(intintLCGLinearOpenCompactOpenMPHash_TableData)];
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (uint index = 0;
 	     index <
 	     ((intintLCGLinearOpenCompactOpenMPHash_TableData *) table->
@@ -4424,7 +4444,9 @@ int intintLCGLinearOpenCompactOpenMPHash_InnerInsert(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		intintLCGLinearOpenCompactOpenMPHash_TableData *mytableData =
@@ -4528,7 +4550,9 @@ int intintLCGLinearOpenCompactOpenMPHash_InnerInsertNoOverwrite(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		intintLCGLinearOpenCompactOpenMPHash_TableData *mytableData =
@@ -5659,7 +5683,9 @@ int intintLCGQuadraticOpenCompactOpenMPHash_SetupTable(intintHash_Table * table)
 	    tableData[sizeof
 		      (intintLCGQuadraticOpenCompactOpenMPHash_TableData)];
 	if (intintHash_GetTableType(table) & ~HASH_SENTINEL_PERFECT_HASHES) {
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 		for (uint index = 0;
 		     index <
 		     ((intintLCGQuadraticOpenCompactOpenMPHash_TableData *)
@@ -5675,7 +5701,9 @@ int intintLCGQuadraticOpenCompactOpenMPHash_EmptyTable(intintHash_Table * table)
 	    (intintLCGQuadraticOpenCompactOpenMPHash_Bucket *) & table->
 	    tableData[sizeof
 		      (intintLCGQuadraticOpenCompactOpenMPHash_TableData)];
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (uint index = 0;
 	     index <
 	     ((intintLCGQuadraticOpenCompactOpenMPHash_TableData *) table->
@@ -5857,7 +5885,9 @@ int intintLCGQuadraticOpenCompactOpenMPHash_InnerInsert(char *tableData,
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		intintLCGQuadraticOpenCompactOpenMPHash_TableData *mytableData =
@@ -5972,7 +6002,9 @@ int intintLCGQuadraticOpenCompactOpenMPHash_InnerInsertNoOverwrite(char
 	uint index;
 	int exitCode;
 	uint i;
+#ifdef HAVE_OPENMP
 #pragma omp parallel for
+#endif
 	for (i = 0; i < numEntries; i++) {
 		key = keys[i];
 		intintLCGQuadraticOpenCompactOpenMPHash_TableData *mytableData =
