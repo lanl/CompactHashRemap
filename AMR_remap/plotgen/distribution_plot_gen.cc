@@ -82,6 +82,9 @@ int main (int argc, char** argv){
     uint levmin = 0;
     uint* olev_count;
     for (uint run_num = 0; run_num<num_runs; run_num++){
+        if (force_seed) {
+            srand(seed);
+        }
         if (adapt_meshgen){
             ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
             printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
@@ -143,8 +146,6 @@ int main (int argc, char** argv){
             free (olev_count);
         }
     numcells += cell_inc;
-    if (force_seed)
-        srand(seed);
     }
     return 0;
 }

@@ -89,9 +89,9 @@ void destroy(cell_list a) {
     free(a.values);
 }
 
-cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uint *max_level, 
+cell_list mesh_maker_level (cell_list clist, uint num_levels, uint *length, uint *max_level, 
     uint *min_level) {
-    *max_level = levels_diff;
+    *max_level = num_levels;
     uint cell_count;
     
     //use a local variable because pointers are hard
@@ -105,8 +105,8 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
         printf("\nImpossible number of cells, using %u instead\n", num_cells);
     }
     
-    if (num_cells < levels_diff * 3 + 1) {
-        num_cells = levels_diff * 3 + 1;
+    if (num_cells < num_levels * 3 + 1) {
+        num_cells = num_levels * 3 + 1;
         printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
@@ -118,7 +118,7 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
     *max_level = max_level_temp;
     *length = num_cells;
     
-    *min_level = *max_level - levels_diff;
+    *min_level = *max_level - num_levels;
     
     cell_count = 1;
     uint cell_target, current_max_lev = 0, lev;
@@ -159,9 +159,9 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
     return clist;
 }
 
-cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, uint *max_level, 
+cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, uint *max_level, 
     uint *min_level, double sparsity) {
-    *max_level = levels_diff;
+    *max_level = num_levels;
     uint cell_count;
     
     //use a local variable because pointers are hard
@@ -175,8 +175,8 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
         printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
-    if (num_cells < levels_diff * 3 + 1) {
-        num_cells = levels_diff * 3 + 1;
+    if (num_cells < num_levels * 3 + 1) {
+        num_cells = num_levels * 3 + 1;
         printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
@@ -188,7 +188,15 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
     *max_level = max_level_temp;
     *length = num_cells;
     
-    *min_level = *max_level - levels_diff;
+    *min_level = *max_level - num_levels + 1;
+    
+    uint *dist = (uint *)malloc((*max_level + 1) * sizeof(uint));
+    for (uint i = 1; i < *max_level + 1; i++) {
+        dist[i] = 0;
+    }
+    
+    dist[0] = 1;
+    //printf("%u\t %u\n", *min_level, *max_level);
     
     cell_count = 1;
     uint cell_target, current_max_lev = 0, lev;
@@ -199,10 +207,13 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
     clist.level[0]  =  0;
     clist.values[0] = -1;
     
+    
     for (uint n = 0; n < *min_level; n++) {
         for (uint m = 0; m < four_to_the(n); m++) {
-            divide_cell (clist.i[m], clist.j[m],
-                clist.level[m], clist, cell_count, m);
+            lev = clist.level[m];
+            divide_cell (clist.i[m], clist.j[m], lev, clist, cell_count, m);
+            dist[lev]--;
+            dist[lev+1]+=4;
             cell_count += 3;
         }
         current_max_lev ++;
@@ -213,9 +224,18 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
         //print_cell (clist, cell_target);
         lev = clist.level[cell_target];
         
-        if (lev < *max_level && (current_max_lev == *max_level || lev == current_max_lev)) {
+        if (lev < *max_level 
+                && (current_max_lev == *max_level || lev == current_max_lev) 
+                && dist[lev]>1) {
+            
             divide_cell (clist.i[cell_target], clist.j[cell_target],
-                clist.level[cell_target], clist, cell_count, cell_target);
+                lev, clist, cell_count, cell_target);
+            dist[lev]--;
+            dist[lev+1]+=4;
+            
+            //for (uint i = 0; i < *max_level+1; i++) {
+            //    printf("%u\t", dist[i]);
+            //} printf("\n");
             
             if (lev + 1 > current_max_lev) {
                 current_max_lev = lev + 1;
@@ -226,6 +246,7 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
     clist.ncells = *length;
     clist.ibasesize = 1;//four_to_the(*min_level-1);
     clist.levmax = *max_level;
+    clist.dist = dist;
     return clist;
 }
 
@@ -362,10 +383,10 @@ int two_to_the (int val) {
 // Output: number of cells in the adaptive mesh
 //
 cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint levmax, float threshold, uint target_ncells) {
-  int ncells = SQ(n);
+  uint ncells = SQ(n);
 
   // ints used for for() loops later
-  int ic, xc, yc, xlc, ylc, nlc;
+  uint ic, xc, yc, xlc, ylc, nlc;
 
   //printf("\nBuilding the mesh...\n");
 
@@ -405,7 +426,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
       lev = level[ic];
       lev++;
       // Check bottom neighbor
-      if(ic - n >= 0) {
+      if((int)ic - (int)n >= 0) {
         if(level[ic-n] > lev) {
           level[ic] = lev;
           newcount++;
@@ -421,7 +442,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
         }
       }
       // Check left neighbor
-      if((ic%n)-1 >= 0) {
+      if(((int)ic%(int)n)-1 >= 0) {
         if(level[ic-1] > lev) {
           level[ic] = lev;
           newcount++;
@@ -440,21 +461,21 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
   }
 
   //printf("\nDEBUG -- ncells %d target_ncells %ld fine mesh size %ld\n",ncells,target_ncells,n*two_to_the(levmax)*n*two_to_the(levmax));
-  if (target_ncells > ncells && (int)target_ncells < n*two_to_the(levmax)*n*two_to_the(levmax)) {
-    int icount = 0;
-    int newcount = 0;
+  if (target_ncells > ncells && target_ncells < n*two_to_the(levmax)*n*two_to_the(levmax)) {
+    uint icount = 0;
+    uint newcount = 0;
     for(ic = 0; ic < ncells; ic++) {newcount += (powerOfFour(level[ic]) - 1);}
 
-    while ( abs((ncells+newcount) - target_ncells) > MAX(5,target_ncells/10000) && icount < 40) {
+    while ( (uint)abs((ncells+newcount) - target_ncells) > MAX(5u,target_ncells/10000u) && icount < 40u) {
       icount++;
       //printf("DEBUG -- Adjusting cell count %ld target %ld diff %ld\n",ncells+newcount, target_ncells, abs(ncells+newcount - target_ncells));
 
       if (ncells+newcount > target_ncells){
         int reduce_count = ((ncells+newcount) - target_ncells);
         //printf("DEBUG -- Too many cells -- need to reduce by %d\n",reduce_count);
-        int jcount = 0;
+        uint jcount = 0;
         while (reduce_count > 0 && jcount < ncells) {
-          int jj = 1 + (int)((float)ncells*rand() / (RAND_MAX+1.0));
+          uint jj = 1 + (int)((float)ncells*rand() / (RAND_MAX+1.0));
           if(jj>0 && jj<ncells && level[jj] > 0) {
              reduce_count-=4;
           //   printf("DEBUG reducing level for ic %d level %d reduce_count %d jj %d\n",jj,level[jj],reduce_count,jj);
@@ -463,12 +484,12 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
           jcount++;
         }
       } else {
-        int increase_count = (target_ncells - (ncells+newcount));
+        uint increase_count = (target_ncells - (ncells+newcount));
         increase_count /= (levmax*4);
         //printf("DEBUG -- Too few cells -- need to increase by %d\n",increase_count);
-        int jcount = 0;
+        uint jcount = 0;
         while (increase_count > 0 && jcount < ncells) {
-          int jj = 1 + (int)((float)ncells*rand() / (RAND_MAX+1.0));
+          uint jj = 1 + (uint)((float)ncells*rand() / (RAND_MAX+1.0));
           if(jj>0 && jj<ncells && level[jj] < levmax) {
             increase_count-=4;
             level[jj]++;
@@ -486,7 +507,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
           lev = level[ic];
           lev++;
           // Check bottom neighbor
-          if(ic - n >= 0) {
+          if((int)ic - (int)n >= 0) {
             if(level[ic-n] > lev) {
               level[ic] = lev;
               newcount++;
@@ -502,7 +523,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
             }
           }
           // Check left neighbor
-          if((ic%n)-1 >= 0) {
+          if(((int)ic%(int)n)-1 >= 0) {
             if(level[ic-1] > lev) {
               level[ic] = lev;
               newcount++;
@@ -592,13 +613,13 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
     for(int ii = 0; ii < 7; ii++) {
       for(ic = 0; ic < ncells; ic++) {
     
-        int jj = (int)( (double)ncells*((double)rand() / (double)(RAND_MAX+1.0) ) );
+        uint jj = (int)( (double)ncells*((double)rand() / (double)(RAND_MAX+1.0) ) );
         // occasionally jj will be ncells and random ratio is 1.0
         if (jj >= ncells) jj=ncells-1;
         nlc = random[jj];
         random[jj] = random[ic];
         random[ic] = nlc;
-         if (random[ic] >= ncells) {
+         if (random[ic] >= (int)ncells) {
            exit(0);
          }
       }
