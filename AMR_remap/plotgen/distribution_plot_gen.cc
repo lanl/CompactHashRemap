@@ -102,7 +102,7 @@ int main (int argc, char** argv){
         
             uint ilength = numcells;
             uint i_max_level, i_min_level;
-            ocells = mesh_maker_level(ocells, levmax, &ilength, &i_max_level, &i_min_level);
+            ocells = mesh_maker_sparsity(ocells, levmax, &ilength, &i_max_level, &i_min_level, 0.5);
             levmin = 1;
             //levmin = ocells.level[0];
             /*for (uint i = 1; i < ocells.ncells; i++){
@@ -110,13 +110,19 @@ int main (int argc, char** argv){
                     levmin = ocells.level[i];
                 }
             }*/
-            if (!output_mode)
+            if (!output_mode) {
                 printf ("Levelbased-meshgen: %u cells.\n", ocells.ncells);
+            }
+            
+            
             olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
+            
             for (uint i = levmin; i <= ocells.levmax; i++){
                 olev_count[i] = 0;
             }
+            
             for (uint i = 0; i < ocells.ncells; i++){
+                
                 olev_count[ocells.level[i]]++;
             }
             for (uint i = levmin; i <= ocells.levmax; i++){
@@ -125,6 +131,9 @@ int main (int argc, char** argv){
                 }else{
                     printf ("%u ",olev_count[i]);
                 }
+            }
+            for (uint i = 0; i < ocells.ncells; i++){
+                printf("lev: %u",ocells.level[i]);
             }
             if (output_mode)
                 printf ("\n");
