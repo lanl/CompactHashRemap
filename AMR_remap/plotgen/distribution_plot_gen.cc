@@ -81,12 +81,6 @@ int main (int argc, char** argv){
     cell_list ocells;
     uint levmin = 0;
     uint* olev_count;
-    /*levmin = ocells.level[0];
-    for (uint i = 1; i < ocells.ncells; i++){
-        if (ocells.level[i]<levmin){
-            levmin = ocells.level[i];
-        }
-    }*/
     for (uint run_num = 0; run_num<num_runs; run_num++){
         if (adapt_meshgen){
             ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
@@ -110,17 +104,17 @@ int main (int argc, char** argv){
             uint i_max_level, i_min_level;
             ocells = mesh_maker_level(ocells, levmax, &ilength, &i_max_level, &i_min_level);
             levmin = 0;
-            /*levmin = ocells.level[0];
+            levmin = ocells.level[0];
             for (uint i = 1; i < ocells.ncells; i++){
                 if (ocells.level[i]<levmin){
                     levmin = ocells.level[i];
                 }
-            }*/
+            }
             if (!output_mode)
                 printf ("Levelbased-meshgen: %u cells.\n", ocells.ncells);
             olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
             for (uint i = levmin; i <= ocells.levmax; i++){
-                olev_count[i-levmin] = 0;
+                olev_count[i] = 0;
             }
             for (uint i = levmin; i < ocells.ncells; i++){
                 olev_count[ocells.level[i]]++;
