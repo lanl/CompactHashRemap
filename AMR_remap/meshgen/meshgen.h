@@ -39,8 +39,8 @@ typedef unsigned int uint;
 #define USE_ASSERT
 
 #ifdef USE_MACROS
-#define two_to_the(ishift)       (1<<(ishift) )
-#define four_to_the(ishift)      (1 << ( (ishift)*2 ) )
+#define two_to_the(ishift)       (1u <<(ishift) )
+#define four_to_the(ishift)      (1u << ( (ishift)*2 ) )
 #define key_to_i(key, lev)       ( (key) % two_to_the(lev) )
 #define key_to_j(key, lev)       ( (key) / two_to_the(lev) )
 #define truncate_base(val, val2) ( ((val)/(val2)) +val2 );

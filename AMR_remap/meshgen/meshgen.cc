@@ -111,7 +111,7 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
     }
     
     uint max_level_temp = *max_level;
-    while (four_to_the(max_level_temp) < (int)*length) {
+    while (four_to_the(max_level_temp) < *length) {
         max_level_temp++;
     }
     
@@ -130,7 +130,7 @@ cell_list mesh_maker_level (cell_list clist, uint levels_diff, uint *length, uin
     clist.values[0] = -1;
     
     for (uint n = 0; n < *min_level; n++) {
-        for (int m = 0; m < four_to_the(n); m++) {
+        for (uint m = 0; m < four_to_the(n); m++) {
             divide_cell (clist.i[m], clist.j[m],
                 clist.level[m], clist, cell_count, m);
             cell_count += 3;
@@ -181,7 +181,7 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
     }
     
     uint max_level_temp = *max_level;
-    while (four_to_the(max_level_temp) < (int)*length / sparsity) {
+    while (four_to_the(max_level_temp) < *length / sparsity) {
         max_level_temp++;
     }
     
@@ -200,7 +200,7 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
     clist.values[0] = -1;
     
     for (uint n = 0; n < *min_level; n++) {
-        for (int m = 0; m < four_to_the(n); m++) {
+        for (uint m = 0; m < four_to_the(n); m++) {
             divide_cell (clist.i[m], clist.j[m],
                 clist.level[m], clist, cell_count, m);
             cell_count += 3;
@@ -223,6 +223,9 @@ cell_list mesh_maker_sparsity (cell_list clist, uint levels_diff, uint *length, 
             cell_count += 3;
         }
     }
+    clist.ncells = *length;
+    clist.ibasesize = 1;//four_to_the(*min_level-1);
+    clist.levmax = *max_level;
     return clist;
 }
 
@@ -358,7 +361,7 @@ int two_to_the (int val) {
 //         pointers for the level, x, and y arrays (should be NULL for all three)
 // Output: number of cells in the adaptive mesh
 //
-cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int levmax, float threshold, int target_ncells) {
+cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int levmax, float threshold, uint target_ncells) {
   int ncells = SQ(n);
 
   // ints used for for() loops later
@@ -437,7 +440,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int le
   }
 
   //printf("\nDEBUG -- ncells %d target_ncells %ld fine mesh size %ld\n",ncells,target_ncells,n*two_to_the(levmax)*n*two_to_the(levmax));
-  if (target_ncells > ncells && target_ncells < n*two_to_the(levmax)*n*two_to_the(levmax)) {
+  if (target_ncells > ncells && (int)target_ncells < n*two_to_the(levmax)*n*two_to_the(levmax)) {
     int icount = 0;
     int newcount = 0;
     for(ic = 0; ic < ncells; ic++) {newcount += (powerOfFour(level[ic]) - 1);}
