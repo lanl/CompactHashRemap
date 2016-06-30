@@ -361,7 +361,7 @@ int two_to_the (int val) {
 //         pointers for the level, x, and y arrays (should be NULL for all three)
 // Output: number of cells in the adaptive mesh
 //
-cell_list adaptiveMeshConstructorWij(cell_list icells, const int n, const int levmax, float threshold, uint target_ncells) {
+cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint levmax, float threshold, uint target_ncells) {
   int ncells = SQ(n);
 
   // ints used for for() loops later
