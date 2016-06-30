@@ -123,8 +123,6 @@ int clFinish(int command_queue);
 #include "CLHash_Utilities.h"
 //
 //
-#include "HashFactory.hm"
-#include "HashFactory.cm"
 //
 #define HASH_REPORT_NEVER /**/ 0
 #define HASH_REPORT_CYCLE /**/ 1
