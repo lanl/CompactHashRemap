@@ -104,7 +104,7 @@ int main (int argc, char** argv){
             uint i_max_level, i_min_level;
             ocells = mesh_maker_level(ocells, levmax, &ilength, &i_max_level, &i_min_level);
             levmin = 1;
-            levmin = ocells.level[0];
+            //levmin = ocells.level[0];
             /*for (uint i = 1; i < ocells.ncells; i++){
                 if (ocells.level[i]<levmin){
                     levmin = ocells.level[i];
