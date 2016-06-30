@@ -298,7 +298,7 @@ extern "C" {
 	int intintHash_BufferInsertNoOverwrite(intintHash_Table * table,
 					       size_t numEntries, cl_mem keys,
 					       cl_mem values);
-	static inline unsigned int intintHash_CompressIdentity(char data,
+	static inline unsigned int intintHash_CompressIdentity(
 							       int hashCode) {
 		return hashCode;
 	}
