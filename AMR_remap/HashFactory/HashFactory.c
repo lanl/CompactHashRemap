@@ -996,9 +996,8 @@ int intintIdentityPerfectHash_CreateFactory(intintHash_Factory * factory,
 }
 int intintIdentityPerfectHash_DestroyFactory(intintHash_Factory * factory,
 					     int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintIdentityPerfectHash_DestroyTable(intintHash_Table * table) {
@@ -1771,9 +1770,8 @@ int intintIdentityPerfectOpenMPHash_CreateFactory(intintHash_Factory * factory,
 }
 int intintIdentityPerfectOpenMPHash_DestroyFactory(intintHash_Factory * factory,
 						   int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintIdentityPerfectOpenMPHash_DestroyTable(intintHash_Table * table) {
@@ -2151,9 +2149,8 @@ int intintIdentitySentinelPerfectHash_CreateFactory(intintHash_Factory *
 }
 int intintIdentitySentinelPerfectHash_DestroyFactory(intintHash_Factory *
 						     factory, int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintIdentitySentinelPerfectHash_DestroyTable(intintHash_Table * table) {
@@ -2951,9 +2948,8 @@ int intintIdentitySentinelPerfectOpenMPHash_CreateFactory(intintHash_Factory *
 int intintIdentitySentinelPerfectOpenMPHash_DestroyFactory(intintHash_Factory *
 							   factory,
 							   int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintIdentitySentinelPerfectOpenMPHash_DestroyTable(intintHash_Table *
@@ -3339,9 +3335,8 @@ int intintLCGLinearOpenCompactHash_CreateFactory(intintHash_Factory * factory,
 }
 int intintLCGLinearOpenCompactHash_DestroyFactory(intintHash_Factory * factory,
 						  int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintLCGLinearOpenCompactHash_DestroyTable(intintHash_Table * table) {
@@ -4240,9 +4235,8 @@ int intintLCGLinearOpenCompactOpenMPHash_CreateFactory(intintHash_Factory *
 int intintLCGLinearOpenCompactOpenMPHash_DestroyFactory(intintHash_Factory *
 							factory,
 							int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintLCGLinearOpenCompactOpenMPHash_DestroyTable(intintHash_Table * table) {
@@ -4721,9 +4715,8 @@ int intintLCGQuadraticOpenCompactHash_CreateFactory(intintHash_Factory *
 }
 int intintLCGQuadraticOpenCompactHash_DestroyFactory(intintHash_Factory *
 						     factory, int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintLCGQuadraticOpenCompactHash_DestroyTable(intintHash_Table * table) {
@@ -5664,9 +5657,8 @@ int intintLCGQuadraticOpenCompactOpenMPHash_CreateFactory(intintHash_Factory *
 int intintLCGQuadraticOpenCompactOpenMPHash_DestroyFactory(intintHash_Factory *
 							   factory,
 							   int hashIndex) {
-	free (factory->createFunc[hashIndex]);
-	free (factory->destroyFunc[hashIndex]);
-	free (factory);
+	(void) factory;
+	(void) hashIndex;
 	return HASH_EXIT_CODE_NORMAL;
 }
 int intintLCGQuadraticOpenCompactOpenMPHash_DestroyTable(intintHash_Table *
