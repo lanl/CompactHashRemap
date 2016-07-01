@@ -32,9 +32,7 @@
 #include "genmalloc/genmalloc.h"
 #include "full_perfect_remap.h"
 #include "stdio.h"
-
-//Same as in Single-write
-double avg_sub_cells (cell_list icells, uint jo, uint io, uint lev, int *hash);
+#include <assert.h>
 
 double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, int *hash) {
 
@@ -66,7 +64,7 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
     
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
                        icells.jbasesize*two_to_the(icells.levmax);
-    int *hash = (int *) malloc(hash_size * sizeof(int));
+    uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
 
@@ -99,12 +97,12 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
 
         if (lev < ocells.levmax) {
             uint lev_mod = two_to_the(ocells.levmax - lev);
-            ii = io*lev_mod;
-            ji = jo*lev_mod;
+            ii = i*lev_mod;
+            jj = j*lev_mod;
         } else {
             uint lev_mod = two_to_the(lev - ocells.levmax);
-            ii = io/lev_mod;
-            ji = jo/lev_mod;
+            ii = i/lev_mod;
+            jj = j/lev_mod;
         }
 
         // If at the finest level, get the index number and
@@ -124,7 +122,7 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
 //            // Get average by dividing by number of cells
 //            ocells.values[ic] /= (double)(lev_mod*lev_mod);
 //        }
-        key = hash[(jj*i_max)+ii]
+        uint key = hash[(jj*i_max)+ii]
         
         if (lev >= icells.level[key]) {
             ocells.values[ic] = icells.values[key];
