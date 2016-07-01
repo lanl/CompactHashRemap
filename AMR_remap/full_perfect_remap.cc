@@ -32,25 +32,22 @@
 #include "genmalloc/genmalloc.h"
 #include "full_perfect_remap.h"
 #include "stdio.h"
+#include <assert.h>
 
-//Same as in Single-write
-double avg_sub_cells (cell_list icells, uint jo, uint io, uint lev, int *hash);
 
-double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, int *hash) {
+double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, uint *hash) {
 
     uint key, i_max, jump;
     double sum = 0.0;
     i_max = icells.ibasesize*two_to_the(icells.levmax);
     jump = two_to_the(icells.levmax - level - 1);
     
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < 2; i++) {
+    for (uint j = 0; j < 2; j++) {
+        for (uint i = 0; i < 2; i++) {
             key = ((ji + (j*jump)) * i_max) + (ii + (i*jump));
-            int ic = hash[key];
-            // Getting sub averages failed
-            assert(ic >= 0);
-            if (icells.level[ic] == (level + 1)) {
-                sum += icells.values[ic];
+            uint probe = hash[key];
+            if (icells.level[probe] == (level + 1)) {
+                sum += icells.values[probe];
             } else {
                 sum += avg_sub_cells(icells, ji + (j*jump), ii + (i*jump), level + 1, hash);
             }
@@ -66,7 +63,7 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
     
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
                        icells.jbasesize*two_to_the(icells.levmax);
-    int *hash = (int *) malloc(hash_size * sizeof(int));
+    uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
 
@@ -98,13 +95,13 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
         uint lev = ocells.level[ic];
 
         if (lev < ocells.levmax) {
-            uint lev_mod = two_to_the(ocells.levmax - lev);
-            ii = io*lev_mod;
-            ji = jo*lev_mod;
+            lev_mod = two_to_the(ocells.levmax - lev);
+            ii = i*lev_mod;
+            jj = j*lev_mod;
         } else {
-            uint lev_mod = two_to_the(lev - ocells.levmax);
-            ii = io/lev_mod;
-            ji = jo/lev_mod;
+            lev_mod = two_to_the(lev - ocells.levmax);
+            ii = i/lev_mod;
+            jj = j/lev_mod;
         }
 
         // If at the finest level, get the index number and
@@ -124,17 +121,17 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
 //            // Get average by dividing by number of cells
 //            ocells.values[ic] /= (double)(lev_mod*lev_mod);
 //        }
-        key = hash[(jj*i_max)+ii]
+        uint key = hash[(jj*i_max)+ii];
         
         if (lev >= icells.level[key]) {
             ocells.values[ic] = icells.values[key];
         } else {
-            ocells.values[ic] = avg_sub_cells(icells, j, i, lev, hash);
+            ocells.values[ic] = avg_sub_cells(icells, jj, ii, lev, hash);
         }
     }
 
     // Deallocate hash table
-    genmatrixfree((void **)hash);
+    free(hash);
 }
 
 #ifdef _OPENMP
