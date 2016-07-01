@@ -145,9 +145,9 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
         uint ii, ji;
         uint io = ocells.i[i];
         uint jo = ocells.j[i];
-        int lev = ocells.level[i];
+        uint lev = ocells.level[i];
         
-        if (lev < (int)ocells.levmax) {
+        if (lev < ocells.levmax) {
             uint lev_mod = two_to_the(ocells.levmax - lev);
             ii = io*lev_mod;
             ji = jo*lev_mod;
@@ -158,10 +158,12 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
         }
         
         uint key = ji*i_max + ii;
-        int ic = hash[key];
+        int probe = hash[key];
 
-        if (lev > (int)ocells.levmax) lev = ocells.levmax;
-        while(ic < 0 && lev > 0) {
+        //What is this for?
+        if (lev > ocells.levmax){lev = ocells.levmax;}
+        
+        while(probe < 0 && lev > 0) {
             lev--;
             uint lev_diff = ocells.levmax - lev;
             ii >>= lev_diff;
@@ -169,10 +171,10 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
             ji >>= lev_diff;
             ji <<= lev_diff;
             key = ji*i_max + ii;
-            ic = hash[key];
+            probe = hash[key];
         }
-        if (lev >= (int)icells.level[ic]) {
-            ocells.values[i] = icells.values[ic];
+        if (lev >= icells.level[probe]) {
+            ocells.values[i] = icells.values[probe];
         } else {
             ocells.values[i] = avg_sub_cells(icells, ji, ii, lev, hash);
         }

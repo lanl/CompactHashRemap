@@ -33,12 +33,42 @@
 #include "full_perfect_remap.h"
 #include "stdio.h"
 
+//Same as in Single-write
+double avg_sub_cells (cell_list icells, uint jo, uint io, uint lev, int *hash);
+
+double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, int *hash) {
+
+    uint key, i_max, jump;
+    double sum = 0.0;
+    i_max = icells.ibasesize*two_to_the(icells.levmax);
+    jump = two_to_the(icells.levmax - level - 1);
+    
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < 2; i++) {
+            key = ((ji + (j*jump)) * i_max) + (ii + (i*jump));
+            int ic = hash[key];
+            // Getting sub averages failed
+            assert(ic >= 0);
+            if (icells.level[ic] == (level + 1)) {
+                sum += icells.values[ic];
+            } else {
+                sum += avg_sub_cells(icells, ji + (j*jump), ii + (i*jump), level + 1, hash);
+            }
+        }
+    }
+    
+    return sum/4.0;
+}
+
 void full_perfect_remap (cell_list icells, cell_list ocells) {
 
     // Allocate a hash table the size of the finest level of the grid
+    
+    size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
+                       icells.jbasesize*two_to_the(icells.levmax);
+    int *hash = (int *) malloc(hash_size * sizeof(int));
+    uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
-    uint j_max = icells.jbasesize*two_to_the(icells.levmax);
-    int **hash = (int **)genmatrix(j_max, i_max, sizeof(int));
 
     // Fill Hash Table from Input mesh
     for (uint ic = 0; ic < icells.ncells; ic++){
@@ -47,14 +77,14 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
         uint j = icells.j[ic];
         // If at the maximum level just set the one cell
         if (lev == icells.levmax) {
-            hash[j][i] = ic;
+            hash[(j*i_max)+i] = ic;
         } else {
             // Set the square block of cells at the finest level
             // to the index number
             uint lev_mod = two_to_the(icells.levmax - lev);
             for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
                 for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                    hash[jj][ii] = ic;
+                    hash[(jj*i_max)+ii] = ic;
                 }
             }
         }
@@ -62,26 +92,44 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
 
     // Use Hash Table to Perform Remap
     for (uint ic = 0; ic < ocells.ncells; ic++){
-        uint lev = ocells.level[ic];
+        uint ii, jj;
         uint i = ocells.i[ic];
         uint j = ocells.j[ic];
+        uint lev = ocells.level[ic];
+
+        if (lev < ocells.levmax) {
+            uint lev_mod = two_to_the(ocells.levmax - lev);
+            ii = io*lev_mod;
+            ji = jo*lev_mod;
+        } else {
+            uint lev_mod = two_to_the(lev - ocells.levmax);
+            ii = io/lev_mod;
+            ji = jo/lev_mod;
+        }
 
         // If at the finest level, get the index number and
         // get the value of the input mesh at that index
-        if (lev == ocells.levmax) {
-            ocells.values[ic] = icells.values[hash[j][i]];
+//        if (lev == ocells.levmax) {
+//            ocells.values[ic] = icells.values[hash[(j*i_max)+i]];
+//        } else {
+//            // Sum up the values in the underlying block of
+//            // cells at the finest level and average
+//            uint lev_mod = two_to_the(ocells.levmax - lev);
+//            ocells.values[ic] = 0.0;
+//            for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
+//                for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
+//                    ocells.values[ic] += icells.values[hash[jj][ii]];
+//                }
+//            }
+//            // Get average by dividing by number of cells
+//            ocells.values[ic] /= (double)(lev_mod*lev_mod);
+//        }
+        key = hash[(jj*i_max)+ii]
+        
+        if (lev >= icells.level[key]) {
+            ocells.values[ic] = icells.values[key];
         } else {
-            // Sum up the values in the underlying block of
-            // cells at the finest level and average
-            uint lev_mod = two_to_the(ocells.levmax - lev);
-            ocells.values[ic] = 0.0;
-            for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
-                for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                    ocells.values[ic] += icells.values[hash[jj][ii]];
-                }
-            }
-            // Get average by dividing by number of cells
-            ocells.values[ic] /= (double)(lev_mod*lev_mod);
+            ocells.values[ic] = avg_sub_cells(icells, j, i, lev, hash);
         }
     }
 
