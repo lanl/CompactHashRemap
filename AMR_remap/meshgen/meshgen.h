@@ -70,10 +70,12 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
     uint target_ncells);
 void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
     uint cell_count, uint cell_id);
+void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
+    uint cell_count, uint cell_id, uint ibasesize);
 void print_cell_list (cell_list cells, uint length);
 
 uint translate_cell (uint i, uint j, uint lev, uint new_lev);
-uint translate_cell (uint i, uint j, uint lev, uint new_lev, int ibasesize);
+uint translate_cell (uint i, uint j, uint lev, uint new_lev, uint ibasesize);
 
 #ifndef USE_MACROS
 int two_to_the (int val);

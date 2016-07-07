@@ -266,34 +266,22 @@ int main (int argc, char** argv) {
            olength = atoi (argv[4]);
            o_level_diff = atoi (argv[3]);
 
-           icells = mesh_maker_level(icells, i_level_diff, &ilength, &i_max_level, &i_min_level);
-           uint num_fine_cells = four_to_the(i_max_level);
+           icells = mesh_maker_sparsity(icells, i_level_diff, &ilength, &i_max_level, &i_min_level, 0.1);
+           uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
-           ocells = mesh_maker_level(ocells, o_level_diff, &olength, &o_max_level, &o_min_level);
-           num_fine_cells = four_to_the(o_max_level);
+           ocells = mesh_maker_sparsity(ocells, o_level_diff, &olength, &o_max_level, &o_min_level, 0.1);
+           num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
            printf("\n");
 
            icells.ncells    = ilength;
-           icells.ibasesize = two_to_the(i_min_level);
-           icells.jbasesize = two_to_the(i_min_level);
-           icells.levmax    = i_max_level - i_min_level;
+           icells.jbasesize = icells.ibasesize;
 
            ocells.ncells    = olength;
-           ocells.ibasesize = two_to_the(o_min_level);
-           ocells.jbasesize = two_to_the(o_min_level);
-           ocells.levmax    = o_max_level - o_min_level;
-
-           for (uint ic=0; ic < olength; ic++){
-                ocells.level[ic] -= o_min_level;
-           }
-           
-           for (uint ic=0; ic < ilength; ic++){
-                icells.level[ic] -= i_min_level;
-           }
+           ocells.jbasesize = icells.ibasesize;
 
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;

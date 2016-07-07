@@ -68,7 +68,7 @@ double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, int *hash)
 double avg_sub_cells_compact (cell_list icells, uint ji, uint ii, uint level, int *hash) {
 
     uint key, i_max, jump;
-    double sum = 0;
+    double sum = 0.0;
     i_max = icells.ibasesize*two_to_the(icells.levmax);
     jump = two_to_the(icells.levmax - level - 1);
     
@@ -117,8 +117,8 @@ double avg_sub_cells_compact_openMP (cell_list icells, uint ji, uint ii, uint le
 
 void singlewrite_remap (cell_list icells, cell_list ocells) {
     
-    size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.jbasesize*two_to_the(icells.levmax);
+    size_t hash_size = icells.ibasesize*two_to_the(icells.levmax+1)*
+                       icells.jbasesize*two_to_the(icells.levmax+1);
     int *hash = (int *) malloc(hash_size * sizeof(int));
     uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
