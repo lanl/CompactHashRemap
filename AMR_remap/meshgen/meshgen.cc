@@ -161,10 +161,9 @@ cell_list mesh_maker_level (cell_list clist, uint num_levels, uint *length, uint
 
 cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, uint *max_level, 
     uint *min_level, double sparsity) {
-    *max_level = num_levels;
-    uint cell_count;
+    *max_level = num_levels-1;
+    uint cell_count = 4;
     
-    //use a local variable because pointers are hard
     uint num_cells = *length;
     
     if ((num_cells - 1) % 3 != 0) {
@@ -172,70 +171,90 @@ cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, u
         num_cells /= 3;
         num_cells *= 3;
         num_cells ++;
-        printf("Impossible number of cells, using %u instead\n", num_cells);
+        //printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
     if (num_cells < num_levels * 3 + 1) {
         num_cells = num_levels * 3 + 1;
-        printf("Impossible number of cells, using %u instead\n", num_cells);
+        //printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
-    uint max_level_temp = *max_level;
-    while (four_to_the(max_level_temp) < *length / sparsity) {
-        max_level_temp++;
-    }
-    
-    *max_level = max_level_temp;
     *length = num_cells;
     
-    *min_level = *max_level - num_levels + 1;
+    clist = create_cell_list (clist, num_cells);
     
-    uint *dist = (uint *)malloc((*max_level + 1) * sizeof(uint));
-    for (uint i = 1; i < *max_level + 1; i++) {
-        dist[i] = 0;
-    }
-    
-    dist[0] = 1;
-    //printf("%u\t %u\n", *min_level, *max_level);
-    
-    cell_count = 1;
-    uint cell_target, current_max_lev = 0, lev;
-    
-    clist = create_cell_list (clist, *length);
+    //lower left
     clist.i[0]      =  0;
     clist.j[0]      =  0;
     clist.level[0]  =  0;
     clist.values[0] = -1;
     
+    //lower right
+    clist.i[1]      =  1;
+    clist.j[1]      =  0;
+    clist.level[1]  =  0;
+    clist.values[1] = -1;
     
-    for (uint n = 0; n < *min_level; n++) {
-        for (uint m = 0; m < four_to_the(n); m++) {
-            lev = clist.level[m];
-            divide_cell (clist.i[m], clist.j[m], lev, clist, cell_count, m);
-            dist[lev]--;
-            dist[lev+1]+=4;
-            cell_count += 3;
-        }
-        current_max_lev ++;
+    //upper left
+    clist.i[2]      =  0;
+    clist.j[2]      =  1;
+    clist.level[2]  =  0;
+    clist.values[2] = -1;
+    
+    //upper right
+    clist.i[3]      =  1;
+    clist.j[3]      =  1;
+    clist.level[3]  =  0;
+    clist.values[3] = -1;
+    
+    clist.ibasesize = 2;
+    
+    *min_level = 0;
+    
+    uint *dist = (uint *)malloc((*max_level + 1) * sizeof(uint));
+    for (uint i = 1; i < *max_level + 1; i++) {
+        dist[i] = 0;
     }
+    dist[0] = 4;
+    
+    while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level+1) < (*length / sparsity)) {
+        clist.ibasesize *= 2;
+        //add cells
+        for (uint i = 0; i < 0.5*clist.ibasesize*clist.ibasesize; i++){
+            //printf("%u\n",cell_count);
+            clist.i[cell_count] = i % clist.ibasesize;
+            clist.j[cell_count] = (i / clist.ibasesize)+(clist.ibasesize/2);
+            clist.level[cell_count]  =  0;
+            clist.values[cell_count] = -1;
+            cell_count++;
+            dist[0]++;
+        }
+        for (uint i = 0; i < 0.25*clist.ibasesize*clist.ibasesize; i++){
+            clist.i[cell_count] = (i % (clist.ibasesize/2)) + (clist.ibasesize/2);
+            clist.j[cell_count] = (2*i)/clist.ibasesize;
+            clist.level[cell_count]  =  0;
+            clist.values[cell_count] = -1;
+            cell_count++;
+            dist[0]++;
+        }
+    }
+    
+    uint cell_target, current_max_lev = 0, lev;
     
     while (current_max_lev < *max_level || cell_count < *length) {
         cell_target = (uint) rand() % (cell_count);
         //print_cell (clist, cell_target);
         lev = clist.level[cell_target];
+        //printf("%u\t%u\n", lev, dist[lev]);
         
         if (lev < *max_level 
                 && (current_max_lev == *max_level || lev == current_max_lev) 
-                && dist[lev]>1) {
+                && dist[lev] > 1) {
             
             divide_cell (clist.i[cell_target], clist.j[cell_target],
-                lev, clist, cell_count, cell_target);
+                lev, clist, cell_count, cell_target, clist.ibasesize);
             dist[lev]--;
             dist[lev+1]+=4;
-            
-            //for (uint i = 0; i < *max_level+1; i++) {
-            //    printf("%u\t", dist[i]);
-            //} printf("\n");
             
             if (lev + 1 > current_max_lev) {
                 current_max_lev = lev + 1;
@@ -244,10 +263,42 @@ cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, u
         }
     }
     clist.ncells = *length;
-    clist.ibasesize = 1;//four_to_the(*min_level-1);
     clist.levmax = *max_level;
     clist.dist = dist;
+    
+    //printf("%u\n", clist.levmax);
     return clist;
+}
+
+void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
+    uint cell_count, uint cell_id, uint ibasesize) {
+    
+    uint key, ibase, jbase;
+
+    key = translate_cell (super_i, super_j, super_level, super_level + 1, ibasesize);
+    ibase = key % (two_to_the(super_level + 1) * ibasesize);
+    jbase = key / (two_to_the(super_level + 1) * ibasesize);
+    
+    //New cell 1:
+    cells.i[cell_id] = ibase;
+    cells.j[cell_id] = jbase;
+    cells.level[cell_id] = super_level + 1;
+    cells.values[cell_id] =  0xFFFFFFFF;
+    //New cell 2:
+    cells.i[cell_count] = ibase + 1;
+    cells.j[cell_count] = jbase;
+    cells.level[cell_count] = super_level + 1;
+    cells.values[cell_count] =  0xFFFFFFFF;
+    //New cell 3:
+    cells.i[cell_count + 1] = ibase;
+    cells.j[cell_count + 1] = jbase + 1;
+    cells.level[cell_count + 1] = super_level + 1;
+    cells.values[cell_count + 1] =  0xFFFFFFFF;
+    //New cell 4:
+    cells.i[cell_count + 2] = ibase + 1;
+    cells.j[cell_count + 2] = jbase + 1;
+    cells.level[cell_count + 2] = super_level + 1;
+    cells.values[cell_count + 2] =  0xFFFFFFFF;
 }
 
 void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
@@ -281,6 +332,7 @@ void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells,
     cells.values[cell_count + 2] =  0xFFFFFFFF;
 }
 
+
 uint translate_cell (uint i, uint j, uint lev, uint new_lev) {
     uint j_comp, i_comp;
     if (new_lev < lev) {
@@ -301,7 +353,7 @@ uint translate_cell (uint i, uint j, uint lev, uint new_lev) {
     return key;
 }
 
-uint translate_cell (uint i, uint j, uint lev, uint new_lev, int ibasesize) {
+uint translate_cell (uint i, uint j, uint lev, uint new_lev, uint ibasesize) {
     uint j_comp, i_comp;
     if (new_lev < lev) {
         //j_comp = j / two_to_the(lev - new_lev);

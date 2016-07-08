@@ -223,7 +223,7 @@ void h_remap (cell_list icells, cell_list ocells) {
     //initialize 2d array
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*icells.jbasesize*four_to_the(i);
         h_hash[i] = (int *) malloc(hash_size*sizeof(uint));
     }
     
@@ -236,8 +236,10 @@ void h_remap (cell_list icells, cell_list ocells) {
         h_hash[lev][key] = n;
         
         while (i%2 == 0 && j%2 == 0 && lev > 0) {
-            i /= 2;
-            j /= 2;
+            //i /= 2;
+            //j /= 2;
+            i >>= 1;
+            j >>= 1;
             lev--;
             key = j * icells.ibasesize*two_to_the(lev) + i;
             h_hash[lev][key] = -1;

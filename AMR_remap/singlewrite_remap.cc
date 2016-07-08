@@ -68,7 +68,7 @@ double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, int *hash)
 double avg_sub_cells_compact (cell_list icells, uint ji, uint ii, uint level, int *hash) {
 
     uint key, i_max, jump;
-    double sum = 0;
+    double sum = 0.0;
     i_max = icells.ibasesize*two_to_the(icells.levmax);
     jump = two_to_the(icells.levmax - level - 1);
     

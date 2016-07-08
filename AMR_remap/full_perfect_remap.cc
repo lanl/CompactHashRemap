@@ -65,7 +65,12 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
                        icells.jbasesize*two_to_the(icells.levmax);
     uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
+    // levmax+1?
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
+    
+    //for (uint i = 0; i < icells.ncells; i++) {
+    //    printf("%u\t%u\t%u\n", icells.i[i], icells.j[i], icells.level[i]);
+    //} printf("\n%u\t%u\n", icells.ibasesize, icells.levmax);
 
     // Fill Hash Table from Input mesh
     for (uint ic = 0; ic < icells.ncells; ic++){
