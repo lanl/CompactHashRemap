@@ -521,7 +521,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        singlewrite_remap_openMP (icells_openmp, ocells_openmp);
+        //singlewrite_remap_openMP (icells_openmp, ocells_openmp);
         singlewrite_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Single-write Remap OpenMP", ocells.ncells, ocells_openmp.values, val_test_answer);
@@ -538,7 +538,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        h_remap_openMP (icells_openmp, ocells_openmp);
+        //h_remap_openMP (icells_openmp, ocells_openmp);
         h_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Hierarchical Remap OpenMP", olength, ocells_openmp.values, val_test_answer);
@@ -555,7 +555,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        singlewrite_remap_compact_openMP (icells_openmp, ocells_openmp);
+        //singlewrite_remap_compact_openMP (icells_openmp, ocells_openmp);
         compact_singlewrite_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Compact Single-write Remap OpenMP", ocells.ncells, ocells_openmp.values, val_test_answer);
@@ -572,7 +572,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        h_remap_compact_openMP (icells_openmp, ocells_openmp, OpenMPfactory);
+        //h_remap_compact_openMP (icells_openmp, ocells_openmp, OpenMPfactory);
         compact_h_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Compact Hierarchical Remap OpenMP", olength, ocells_openmp.values, val_test_answer);
