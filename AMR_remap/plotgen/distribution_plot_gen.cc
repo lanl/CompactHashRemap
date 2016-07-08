@@ -108,7 +108,7 @@ int main (int argc, char** argv){
             ocells = mesh_maker_sparsity(ocells, levmax, &ilength, &i_max_level, &i_min_level, 0.1);
             //printf("Max lev: %u\n", i_max_level);
             ocells.ncells = ilength;
-            levmin = 1;
+            levmin = 0;
             //levmin = ocells.level[0];
             /*for (uint i = 1; i < ocells.ncells; i++){
                 if (ocells.level[i]<levmin){

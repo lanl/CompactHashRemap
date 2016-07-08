@@ -281,7 +281,12 @@ int main (int argc, char** argv) {
            icells.jbasesize = icells.ibasesize;
 
            ocells.ncells    = olength;
-           ocells.jbasesize = icells.ibasesize;
+           ocells.jbasesize = ocells.ibasesize;
+           
+           if (icells.ibasesize != ocells.ibasesize) {
+                printf("Meshes of incompatible size. Exiting.\n");
+                exit(0);
+           }
 
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;

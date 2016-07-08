@@ -171,12 +171,12 @@ cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, u
         num_cells /= 3;
         num_cells *= 3;
         num_cells ++;
-        printf("Impossible number of cells, using %u instead\n", num_cells);
+        //printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
     if (num_cells < num_levels * 3 + 1) {
         num_cells = num_levels * 3 + 1;
-        printf("Impossible number of cells, using %u instead\n", num_cells);
+        //printf("Impossible number of cells, using %u instead\n", num_cells);
     }
     
     *length = num_cells;
