@@ -144,10 +144,10 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
 
     // Allocate a hash table the size of the finest level of the grid
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
-    uint j_max = icells.jbasesize*two_to_the(icells.levmax);
-    int **hash = (int **)genmatrix(j_max, i_max, sizeof(int));
+    uint j_max = icells.jbasesize*two_to_the(icells.levmax);   
+    int *hash = (int *)malloc(i_max*j_max*sizeof(int));
 
-#pragma omp parallel default(none) shared(icells, ocells, hash)
+#pragma omp parallel default(none) shared(icells, ocells, hash, i_max)
     {
         uint ilength = icells.ncells;
         uint olength = ocells.ncells;
@@ -161,14 +161,16 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             uint j = icells.j[ic];
             // If at the maximum level just set the one cell
             if (lev == max_lev) {
-                hash[j][i] = ic;
+                //printf("%u\t%u\n", i, j);
+                hash[j*i_max + i] = ic;
             } else {
                 // Set the square block of cells at the finest level
                 // to the index number
                 uint lev_mod = two_to_the(max_lev - lev);
+                //printf("%u\t%u\n", i*lev_mod, j*lev_mod);
                 for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
                     for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                        hash[jj][ii] = ic;
+                        hash[jj*i_max + ii] = ic;
                     }
                 }
             }
@@ -184,7 +186,7 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             // If at the finest level, get the index number and
             // get the value of the input mesh at that index
             if (lev == max_lev) {
-                ocells.values[ic] = icells.values[hash[j][i]];
+                ocells.values[ic] = icells.values[hash[j*i_max + i]];
             } else {
                 // Sum up the values in the underlying block of
                 // cells at the finest level and average
@@ -192,7 +194,7 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
                 ocells.values[ic] = 0.0;
                 for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
                     for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                        ocells.values[ic] += icells.values[hash[jj][ii]];
+                        ocells.values[ic] += icells.values[hash[j*i_max + i]];
                     }
                 }
                 // Get average by dividing by number of cells
@@ -202,6 +204,6 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
     }
 
     // Deallocate hash table
-    genmatrixfree((void **)hash);
+    free(hash);
 }
 #endif
