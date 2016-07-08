@@ -182,24 +182,25 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             uint lev = ocells.level[ic];
             uint i = ocells.i[ic];
             uint j = ocells.j[ic];
-
-            // If at the finest level, get the index number and
-            // get the value of the input mesh at that index
-            if (lev == max_lev) {
-                ocells.values[ic] = icells.values[hash[j*i_max + i]];
+            
+            if (lev < ocells.levmax) {
+                lev_mod = two_to_the(ocells.levmax - lev);
+                ii = i*lev_mod;
+                jj = j*lev_mod;
             } else {
-                // Sum up the values in the underlying block of
-                // cells at the finest level and average
-                uint lev_mod = two_to_the(max_lev - lev);
-                ocells.values[ic] = 0.0;
-                for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
-                    for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                        ocells.values[ic] += icells.values[hash[j*i_max + i]];
-                    }
-                }
-                // Get average by dividing by number of cells
-                ocells.values[ic] /= (double)(lev_mod*lev_mod);
+                lev_mod = two_to_the(lev - ocells.levmax);
+                ii = i/lev_mod;
+                jj = j/lev_mod;
             }
+            
+            uint key = hash[(jj*i_max)+ii];
+        
+            if (lev >= icells.level[key]) {
+                ocells.values[ic] = icells.values[key];
+            } else {
+                ocells.values[ic] = avg_sub_cells(icells, jj, ii, lev, hash);
+            }
+            
         }
     }
 
