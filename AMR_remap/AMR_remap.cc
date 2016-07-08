@@ -60,12 +60,22 @@ enum meshgen_type {
 
 #include "HashFactory/HashFactory.h"
 
+#ifndef DONT_CATCH_SIGNALS
+#include <signal.h>
+
+void handle_signal(int signal);
+#endif
+
 int TILE_SIZE = 128;
 intintHash_Factory *factory;
 intintHash_Factory *OpenMPfactory;
 intintHash_Factory *CLFactory;
 
 struct timeval timer;
+
+#ifndef DONT_CATCH_SIGNALS
+volatile sig_atomic_t quit_loop = 0; 
+#endif
 
 int main (int argc, char** argv) {
     const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
@@ -252,8 +262,20 @@ int main (int argc, char** argv) {
     size_t save_num_fine_cells=0;
 
     int mesh_size, levmax;
+    
+    #ifndef DONT_CATCH_SIGNALS
+    signal (SIGINT, handle_signal);
+    #endif
 
     for (uint n = 0; n < num_rep; n++) {
+    
+        #ifndef DONT_CATCH_SIGNALS
+        if (quit_loop){
+            printf ("Keyboard Interupt\n");
+            num_rep = n;
+            break;
+        }
+        #endif
     
         //if (n % 10 == 0) {
         printf("run #%i", n);
@@ -734,6 +756,13 @@ int main (int argc, char** argv) {
     
     return 0;
 }
+
+#ifndef DONT_CATCH_SIGNALS
+void handle_signal(int signal){
+    (void) signal;
+    quit_loop = 1;
+}
+#endif
 
 void check_output(const char *string, uint olength, double *output_val, double *val_test_answer){
     //printf("Checking %s\n",string);
