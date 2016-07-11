@@ -73,6 +73,7 @@ void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells,
 void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
     uint cell_count, uint cell_id, uint ibasesize);
 void print_cell_list (cell_list cells, uint length);
+cell_list shuffle_cell_list(cell_list clist, uint num);
 
 uint translate_cell (uint i, uint j, uint lev, uint new_lev);
 uint translate_cell (uint i, uint j, uint lev, uint new_lev, uint ibasesize);

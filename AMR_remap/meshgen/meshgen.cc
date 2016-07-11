@@ -217,7 +217,7 @@ cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, u
     }
     dist[0] = 4;
     
-    while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level+1) < (*length / sparsity)) {
+    while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level) - (four_to_the(*max_level)-1/3.0) + 1 < (*length / sparsity)) {
         clist.ibasesize *= 2;
         //add cells
         for (uint i = 0; i < 0.5*clist.ibasesize*clist.ibasesize; i++){
@@ -265,8 +265,6 @@ cell_list mesh_maker_sparsity (cell_list clist, uint num_levels, uint *length, u
     clist.ncells = *length;
     clist.levmax = *max_level;
     clist.dist = dist;
-    
-    //printf("%u\n", clist.levmax);
     return clist;
 }
 
@@ -428,6 +426,29 @@ int two_to_the (int val) {
 #endif
 
 #endif
+
+cell_list shuffle_cell_list(cell_list clist, uint num) {
+    uint a, b, temp_i, temp_j, temp_lev, temp_val;
+    
+    for (uint i = 0; i < num; i++) {
+        //printf("%u\n", i);
+        a = (uint) rand() % clist.ncells;
+        b = (uint) rand() % clist.ncells;
+        temp_i = clist.i[a];
+        temp_j = clist.j[a];
+        temp_lev = clist.level[a];
+        temp_val = clist.values[a];
+        clist.i[a] = clist.i[b];
+        clist.j[a] = clist.j[b];
+        clist.level[a] = clist.level[b];
+        clist.values[a] = clist.values[b];
+        clist.i[b] = temp_i;
+        clist.j[b] = temp_j;
+        clist.level[b] = temp_lev;
+        clist.values[b] = temp_val;
+    }
+    return clist;
+}
 
 // adaptiveMeshConstructor()
 // Inputs: n (width/height of the square mesh), l (maximum level of refinement),

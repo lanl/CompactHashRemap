@@ -288,22 +288,19 @@ int main (int argc, char** argv) {
            olength = atoi (argv[4]);
            o_level_diff = atoi (argv[3]);
 
-           icells = mesh_maker_sparsity(icells, i_level_diff, &ilength, &i_max_level, &i_min_level, 1);
+           icells = mesh_maker_sparsity(icells, i_level_diff, &ilength, &i_max_level, &i_min_level, 0.1);
         
            uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
-           ocells = mesh_maker_sparsity(ocells, o_level_diff, &olength, &o_max_level, &o_min_level, 1);
+           ocells = mesh_maker_sparsity(ocells, o_level_diff, &olength, &o_max_level, &o_min_level, 0.1);
            num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
            printf("\n");
 
-           icells.ncells    = ilength;
            icells.jbasesize = icells.ibasesize;
-
-           ocells.ncells    = olength;
            ocells.jbasesize = ocells.ibasesize;
            
            if (icells.ibasesize != ocells.ibasesize) {

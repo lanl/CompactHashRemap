@@ -145,13 +145,14 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
     // Allocate a hash table the size of the finest level of the grid
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
     uint j_max = icells.jbasesize*two_to_the(icells.levmax);   
-    int *hash = (int *)malloc(i_max*j_max*sizeof(int));
+    uint *hash = (uint *)malloc(i_max*j_max*sizeof(uint));
 
 #pragma omp parallel default(none) shared(icells, ocells, hash, i_max)
     {
         uint ilength = icells.ncells;
         uint olength = ocells.ncells;
         uint max_lev = icells.levmax;
+        uint lev_mod;
 
         // Fill Hash Table from Input mesh
 #pragma omp for
@@ -166,7 +167,7 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             } else {
                 // Set the square block of cells at the finest level
                 // to the index number
-                uint lev_mod = two_to_the(max_lev - lev);
+                lev_mod = two_to_the(max_lev - lev);
                 //printf("%u\t%u\n", i*lev_mod, j*lev_mod);
                 for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
                     for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
@@ -182,6 +183,7 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             uint lev = ocells.level[ic];
             uint i = ocells.i[ic];
             uint j = ocells.j[ic];
+            uint ii, jj;
             
             if (lev < ocells.levmax) {
                 lev_mod = two_to_the(ocells.levmax - lev);
