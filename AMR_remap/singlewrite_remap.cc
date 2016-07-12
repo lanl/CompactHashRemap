@@ -118,7 +118,7 @@ double avg_sub_cells_compact_openMP (cell_list icells, uint ji, uint ii, uint le
 void singlewrite_remap (cell_list icells, cell_list ocells) {
     
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.jbasesize*two_to_the(icells.levmax);
+                       icells.ibasesize*two_to_the(icells.levmax);
     int *hash = (int *) malloc(hash_size * sizeof(int));
     uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
@@ -188,7 +188,7 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
 void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
     
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
-    uint j_max = icells.jbasesize*two_to_the(icells.levmax);
+    uint j_max = icells.ibasesize*two_to_the(icells.levmax);
     //size_t hash_size = i_max*j_max;
     int *hash = compact_hash_init(icells.ncells, i_max, j_max, 1, 0);
     uint lev_mod;
@@ -273,7 +273,7 @@ void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
 void singlewrite_remap_openMP (cell_list icells, cell_list ocells) {
 
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.jbasesize*two_to_the(icells.levmax);
+                       icells.ibasesize*two_to_the(icells.levmax);
     int *hash = (int *) malloc(hash_size * sizeof(int));
 
 #pragma omp parallel default(none) firstprivate(hash_size) shared(ocells, icells, hash)
@@ -347,7 +347,7 @@ void singlewrite_remap_openMP (cell_list icells, cell_list ocells) {
 void singlewrite_remap_compact_openMP (cell_list icells, cell_list ocells) {
     
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
-    uint j_max = icells.jbasesize*two_to_the(icells.levmax);
+    uint j_max = icells.ibasesize*two_to_the(icells.levmax);
 #ifdef __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4
     int *hash = compact_hash_init_openmp(icells.ncells, i_max, j_max, 1, 0);
 #else

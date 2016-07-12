@@ -62,7 +62,7 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
     // Allocate a hash table the size of the finest level of the grid
     
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.jbasesize*two_to_the(icells.levmax);
+                       icells.ibasesize*two_to_the(icells.levmax);
     uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
     // levmax+1?
@@ -144,7 +144,7 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
 
     // Allocate a hash table the size of the finest level of the grid
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
-    uint j_max = icells.jbasesize*two_to_the(icells.levmax);
+    uint j_max = icells.ibasesize*two_to_the(icells.levmax);
     int **hash = (int **)genmatrix(j_max, i_max, sizeof(int));
 
 #pragma omp parallel default(none) shared(icells, ocells, hash)

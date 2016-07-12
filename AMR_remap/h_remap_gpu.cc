@@ -173,7 +173,7 @@ double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests)
     global_work_size[0] = ((local_work_size[0]+icells.ncells-1)/local_work_size[0])*local_work_size[0];
 
     // The hash is the size of the sum of all the points in the array - so enough to hold all the scanned powers of 4
-    uint hash_size = icells.ibasesize*two_to_the(icells.levmax)*icells.jbasesize*two_to_the(icells.levmax);
+    uint hash_size = icells.ibasesize*two_to_the(icells.levmax)*icells.ibasesize*two_to_the(icells.levmax);
     cl_mem hash_buffer = ezcl_device_memory_malloc(context, NULL, "hash", hash_size, sizeof(int), CL_MEM_READ_WRITE, 0);
 
     ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 0, sizeof(cl_uint), &icells.ncells);
@@ -288,7 +288,7 @@ double cl_singlewrite_remap (cell_list icells, cell_list ocells, int run_tests){
     local_work_size[0] = TILE_SIZE;
 
     // The hash is the size of the sum of all the points in the array - so enough to hold all the scanned powers of 4
-    uint hash_size = icells.ibasesize*two_to_the(icells.levmax)*icells.jbasesize*two_to_the(icells.levmax);
+    uint hash_size = icells.ibasesize*two_to_the(icells.levmax)*icells.ibasesize*two_to_the(icells.levmax);
     cl_mem hash_buffer = ezcl_device_memory_malloc(context, NULL, "hash", hash_size, sizeof(int), CL_MEM_READ_WRITE, 0);
 
     global_work_size[0] = ((local_work_size[0]+hash_size-1)/local_work_size[0])*local_work_size[0];
@@ -428,7 +428,7 @@ double cl_compact_singlewrite_remap (cell_list icells, cell_list ocells, int run
     size_t hashsize;
     cl_mem dev_hash_header = NULL;
     cl_mem dev_hash = gpu_compact_hash_init(icells.ncells, icells.ibasesize*two_to_the(icells.levmax),
-       icells.jbasesize*two_to_the(icells.levmax), 0, gpu_hash_method, hash_report_level,
+       icells.ibasesize*two_to_the(icells.levmax), 0, gpu_hash_method, hash_report_level,
        &gpu_hash_table_size, &hashsize, &dev_hash_header);
 #ifdef DETAILED_TIMING
     double init_time = cpu_timer_stop(timer1);
@@ -565,7 +565,7 @@ double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests)
     uint* hash_memory_indices = (uint*)malloc((icells.levmax+2)*sizeof(uint));
     memset (hash_memory_indices,0,(icells.levmax+2)*sizeof(uint));
     for (uint i = 0; i <= icells.levmax; i++){
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.ibasesize*two_to_the(i);
         index_cume += hash_size;
         // the last value (at index maxLev + 1) is the size of the hash, so kept
         hash_memory_indices[i+1] = index_cume;
@@ -785,7 +785,7 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
 
     //initialize 2d array
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.ibasesize*two_to_the(i);
         h_hashTable[i] = intintHash_CreateTable(CLFactory, HASH_CL_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {
            h_hashtype[i] = intintHash_GetTableType(h_hashTable[i]);
@@ -825,12 +825,15 @@ double cl_compact_hierarchical_remap (cell_list icells, cell_list ocells,
        ezcl_set_kernel_arg(hierarchical_compact_insert_kernel, 5+ilev, sizeof(cl_mem), NULL);
     }
     
+    ezcl_finish(queue);
 
     ezcl_enqueue_ndrange_kernel(queue, hierarchical_compact_insert_kernel, 1, 0, global_work_size, local_work_size, NULL);
 
     /*
     * Query hash
     */
+    
+    printf("Hash args: %u cells, %u size",icells.ncells,icells.ibasesize);
     
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 0, sizeof(uint),   &ocells.ncells);
     ezcl_set_kernel_arg(hierarchical_compact_probe_kernel, 1, sizeof(uint),   &ocells.ibasesize);

@@ -49,7 +49,6 @@ typedef unsigned int uint;
 typedef struct {
     uint ncells;    // number of cells in the mesh
     uint ibasesize; // number of coarse cells across the x dimension for the minimum level of the mesh
-    uint jbasesize; // number of coarse cells across the y dimension for the minimum level of the mesh
     uint levmax;    // number of refinement levels in addition to the base mesh
     uint *dist;     // distribution of cells across levels of refinemnt
     uint *i;

@@ -300,10 +300,8 @@ int main (int argc, char** argv) {
            printf("\n");
 
            icells.ncells    = ilength;
-           icells.jbasesize = icells.ibasesize;
 
            ocells.ncells    = olength;
-           ocells.jbasesize = ocells.ibasesize;
            
            if (icells.ibasesize != ocells.ibasesize) {
                 printf("Meshes of incompatible size. Exiting.\n");
@@ -313,12 +311,12 @@ int main (int argc, char** argv) {
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;
            icells_openmp.ibasesize = two_to_the(i_min_level);
-           icells_openmp.jbasesize = two_to_the(i_min_level);
+           icells_openmp.ibasesize = two_to_the(i_min_level);
            icells_openmp.levmax    = i_max_level - i_min_level;
 
            ocells_openmp.ncells    = olength;
            ocells_openmp.ibasesize = two_to_the(o_min_level);
-           ocells_openmp.jbasesize = two_to_the(o_min_level);
+           ocells_openmp.ibasesize = two_to_the(o_min_level);
            ocells_openmp.levmax    = o_max_level - o_min_level;
 #endif
         } else if (meshgen == SPARSE_MESHGEN){
@@ -355,12 +353,12 @@ int main (int argc, char** argv) {
 #ifdef _OPENMP
            icells_openmp.ncells    = icells.ncells;
            icells_openmp.ibasesize = mesh_size;
-           icells_openmp.jbasesize = mesh_size;
+           icells_openmp.ibasesize = mesh_size;
            icells_openmp.levmax    = levmax;
 
            ocells_openmp.ncells    = ocells.ncells;
            ocells_openmp.ibasesize = mesh_size;
-           ocells_openmp.jbasesize = mesh_size;
+           ocells_openmp.ibasesize = mesh_size;
            ocells_openmp.levmax    = levmax;
 #endif
 
