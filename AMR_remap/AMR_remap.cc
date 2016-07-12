@@ -289,6 +289,7 @@ int main (int argc, char** argv) {
            o_level_diff = atoi (argv[3]);
 
            icells = mesh_maker_sparsity(icells, i_level_diff, &ilength, &i_max_level, &i_min_level, 0.1);
+        
            uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
@@ -298,7 +299,6 @@ int main (int argc, char** argv) {
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
            printf("\n");
-
            icells.ncells    = ilength;
 
            ocells.ncells    = olength;
@@ -311,13 +311,12 @@ int main (int argc, char** argv) {
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;
            icells_openmp.ibasesize = two_to_the(i_min_level);
-           icells_openmp.ibasesize = two_to_the(i_min_level);
            icells_openmp.levmax    = i_max_level - i_min_level;
 
            ocells_openmp.ncells    = olength;
            ocells_openmp.ibasesize = two_to_the(o_min_level);
-           ocells_openmp.ibasesize = two_to_the(o_min_level);
            ocells_openmp.levmax    = o_max_level - o_min_level;
+
 #endif
         } else if (meshgen == SPARSE_MESHGEN){
         } else if (meshgen == ADAPT_MESHGEN){
@@ -541,7 +540,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        //singlewrite_remap_openMP (icells_openmp, ocells_openmp);
+        singlewrite_remap_openMP (icells_openmp, ocells_openmp);
         singlewrite_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Single-write Remap OpenMP", ocells.ncells, ocells_openmp.values, val_test_answer);
@@ -558,7 +557,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        //h_remap_openMP (icells_openmp, ocells_openmp);
+        h_remap_openMP (icells_openmp, ocells_openmp);
         h_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Hierarchical Remap OpenMP", olength, ocells_openmp.values, val_test_answer);
@@ -575,7 +574,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        //singlewrite_remap_compact_openMP (icells_openmp, ocells_openmp);
+        singlewrite_remap_compact_openMP (icells_openmp, ocells_openmp);
         compact_singlewrite_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Compact Single-write Remap OpenMP", ocells.ncells, ocells_openmp.values, val_test_answer);
@@ -592,7 +591,7 @@ int main (int argc, char** argv) {
         }
 
         cpu_timer_start(&timer);
-        //h_remap_compact_openMP (icells_openmp, ocells_openmp, OpenMPfactory);
+        h_remap_compact_openMP (icells_openmp, ocells_openmp, OpenMPfactory);
         compact_h_remap_openMP_time += cpu_timer_stop(timer);
 
         if (run_tests) check_output("Compact Hierarchical Remap OpenMP", olength, ocells_openmp.values, val_test_answer);

@@ -1566,7 +1566,7 @@ int intintLCGQuadraticOpenCompactCLHash_InnerQuerySingle(__global char
 		index =
 		    ((1 * iteration * iteration + 0 * iteration +
 		      c) %
-		     ((intintLCGQuadraticOpenCompactCLHash_TableData *)
+		     ((__global intintLCGQuadraticOpenCompactCLHash_TableData *)
 		      tableData)->numBuckets);
 		if ((buckets[index].key) == HASH_BUCKET_STATUS_EMPTY) {
 			exitCode = HASH_SEARCH_CODE_EMPTY;
@@ -1576,7 +1576,8 @@ int intintLCGQuadraticOpenCompactCLHash_InnerQuerySingle(__global char
 			break;
 		} else
 		    if ((iteration >
-			 ((intintLCGQuadraticOpenCompactCLHash_TableData *)
+			 ((__global
+			   intintLCGQuadraticOpenCompactCLHash_TableData *)
 			  tableData)->numBuckets)) {
 			exitCode = HASH_EXIT_CODE_CYCLE;
 			break;

@@ -114,6 +114,7 @@ int main (int argc, char** argv){
             uint ilength = numcells;
             uint i_max_level, i_min_level;
             ocells = mesh_maker_sparsity(ocells, levmax, &ilength, &i_max_level, &i_min_level, 0.1);
+            ocells = shuffle_cell_list(ocells, ilength*0xFF);
             //printf("Max lev: %u\n", i_max_level);
             ocells.ncells = ilength;
             levmin = 0;
