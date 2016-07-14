@@ -31,6 +31,26 @@
 #include "meshgen/meshgen.h"
 #include "brute_force_remap.h"
 
+uint translate_cell (uint i, uint j, uint lev, uint new_lev, uint ibasesize) {
+    uint j_comp, i_comp;
+    if (new_lev < lev) {
+        //j_comp = j / two_to_the(lev - new_lev);
+        //i_comp = i / two_to_the(lev - new_lev);
+        j_comp = j >> (lev - new_lev);
+        i_comp = i >> (lev - new_lev);
+    } else {
+        //j_comp = j * two_to_the(new_lev - lev);
+        //i_comp = i * two_to_the(new_lev - lev);
+        j_comp = j << (new_lev - lev);
+        i_comp = i << (new_lev - lev);
+    }
+
+    //printf("j_comp: %u\tx_comp: %u\n", j_comp, i_comp);
+    uint key = (j_comp * ibasesize*two_to_the(new_lev)) + i_comp;
+    //printf("newKey: %d\n", newKey);
+    return key;
+}
+
 void brute_force_remap (cell_list icells, cell_list ocells) {
     
     for(uint o = 0; o<ocells.ncells; o++){

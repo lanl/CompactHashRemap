@@ -61,8 +61,8 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
 
     // Allocate a hash table the size of the finest level of the grid
     
-    size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.jbasesize*two_to_the(icells.levmax);
+    size_t hash_size = icells.ibasesize*four_to_the(icells.levmax)*
+                       icells.jbasesize;
     uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
     // levmax+1?
