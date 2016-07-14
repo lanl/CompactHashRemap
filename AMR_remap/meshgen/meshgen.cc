@@ -553,7 +553,6 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
 
   icells.ncells = ncells;
   icells.ibasesize = n;
-  icells.jbasesize = n;
   icells.levmax = levmax;
   icells.i = i;
   icells.j = j;

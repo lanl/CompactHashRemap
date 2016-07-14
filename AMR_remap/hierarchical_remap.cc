@@ -223,7 +223,7 @@ void h_remap (cell_list icells, cell_list ocells) {
     //initialize 2d array
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*icells.jbasesize*four_to_the(i);
+        size_t hash_size = icells.ibasesize*icells.ibasesize*four_to_the(i);
         h_hash[i] = (int *) malloc(hash_size*sizeof(uint));
     }
     
@@ -283,7 +283,7 @@ void h_remap (cell_list icells, cell_list ocells) {
 }
 
 //#define HASH_TYPE HASH_ALL_C_HASHES
-#define HASH_TYPE (LCG_QUADRATIC_OPEN_COMPACT_HASH_ID | IDENTITY_SENTINEL_PERFECT_HASH_ID)
+#define HASH_TYPE (LCG_QUADRATIC_OPEN_COMPACT_HASH_ID)
 //#define HASH_TYPE LCG_QUADRATIC_OPEN_COMPACT_HASH_ID
 #define HASH_LOAD_FACTOR 0.3333333
 
@@ -320,7 +320,7 @@ void h_remap_compact (cell_list icells, cell_list ocells, intintHash_Factory *fa
     //initialize 2d array
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.ibasesize*two_to_the(i);
         h_hashTable[i] = intintHash_CreateTable(factory, HASH_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {
            h_hashtype[i] = intintHash_GetTableType(h_hashTable[i]);
@@ -425,7 +425,7 @@ void h_remap_openMP (cell_list icells, cell_list ocells) {
     //initialize 2d array
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.ibasesize*two_to_the(i);
         h_hash[i] = (int *) malloc(hash_size*sizeof(uint));
         //memset(h_hash[i], -2, hash_size*sizeof(uint));
     }
@@ -519,7 +519,7 @@ void h_remap_compact_openMP (cell_list icells, cell_list ocells, intintHash_Fact
     //initialize 2d array
     //worth checking for an empty level?
     for (uint i = 0; i <= icells.levmax; i++) {
-        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.jbasesize*two_to_the(i);
+        size_t hash_size = icells.ibasesize*two_to_the(i)*icells.ibasesize*two_to_the(i);
         //h_hashTable[i] = intintHash_CreateTable(factory, LCG_QUADRATIC_OPEN_COMPACT_OPENMP_HASH_ID, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         h_hashTable[i] = intintHash_CreateTable(factory, HASH_OPENMP_TYPE, hash_size, num_at_level[i], HASH_LOAD_FACTOR);
         if (DEBUG >= 2) {

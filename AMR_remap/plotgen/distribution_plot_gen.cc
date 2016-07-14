@@ -13,13 +13,14 @@ uint cell_inc = 3;
 long seed = 0xDEADBEEF;
 
 uint output_mode = 0;
+uint print_mode = 0;
 uint adapt_meshgen = 0;
 uint force_seed = 1;
  
 
 int main (int argc, char** argv){
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)){
-        printf ("Usage: %s [--help | -h] [-output, -adapt-meshgen, -ncells <ncells>, -lev <level difference>, adapt-threshhold <adaptive threshhold>, -base-size <base size>, -no-force-seed, -seed <seed>, -cell-inc, -num-runs]\n", argv[0]);
+        printf ("Usage: %s [--help | -h] [-output, -print-levels, -adapt-meshgen, -ncells <ncells>, -lev <level difference>, adapt-threshhold <adaptive threshhold>, -base-size <base size>, -no-force-seed, -seed <seed>, -cell-inc, -num-runs]\n", argv[0]);
         printf ("Any variables not set will be run with reasonable defaults\n");
         return 0;
     }
@@ -28,6 +29,9 @@ int main (int argc, char** argv){
             char* arg = argv[i];
             if (strcmp(arg,"-output")==0){
                 output_mode = 1;
+            } else
+            if (strcmp(arg,"-print-levels")==0){
+                print_mode = 1;
             } else
             if (strcmp(arg,"-adapt-meshgen")==0){
                 adapt_meshgen = 1;
@@ -87,6 +91,7 @@ int main (int argc, char** argv){
         }
         if (adapt_meshgen){
             ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
+            if (print_mode){
             printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
             olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
             for (uint i = levmin; i <= ocells.levmax; i++){
@@ -98,7 +103,10 @@ int main (int argc, char** argv){
             for (uint i = levmin; i <= ocells.levmax; i++){
                 printf ("lev %u: %u\n", i-levmin, olev_count[i]);
             }
-            PrintMesh(ocells);
+            }
+            if (output_mode){
+                PrintMesh(ocells);
+            }
             destroy(ocells);
             free (olev_count);
         }else{
@@ -120,31 +128,33 @@ int main (int argc, char** argv){
                 printf ("Levelbased-meshgen: %u cells.\n", ocells.ncells);
             }
             
-            
-            olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
-            
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                olev_count[i] = 0;
-            }
-            
-            for (uint i = 0; i < ocells.ncells; i++){
+                if (print_mode){
+                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
                 
-                olev_count[ocells.level[i]]++;
-            }
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                if (!output_mode){
-                    printf ("lev %u: %u\n", i-levmin, olev_count[i]);
-                }else{
-                    printf ("%u ",olev_count[i]);
+                for (uint i = levmin; i <= ocells.levmax; i++){
+                    olev_count[i] = 0;
+                }
+                
+                for (uint i = 0; i < ocells.ncells; i++){
+                    
+                    olev_count[ocells.level[i]]++;
+                }
+                for (uint i = levmin; i <= ocells.levmax; i++){
+                    if (!output_mode){
+                        printf ("lev %u: %u\n", i-levmin, olev_count[i]);
+                    }else{
+                        printf ("%u ",olev_count[i]);
+                    }
                 }
             }
           
-            if (output_mode)
-                printf ("\n");
             if (!output_mode)
+                printf ("\n");
+            if (output_mode)
                 PrintMesh(ocells);
             destroy(ocells);
-            free (olev_count);
+            if (print_mode)
+                free (olev_count);
         }
     numcells += cell_inc;
     }
