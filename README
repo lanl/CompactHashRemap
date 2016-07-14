@@ -28,7 +28,7 @@ To setup the environment:
 
 The Nvidia Kepler K40 with a 32-cpu host node is the Darwin node for timing.
 
-salloc -p SAND_16_2:MEM64.0:Accelerator-1:TeslaK40c:10GbE::
+salloc --constraint="k40c,2.20ghz,tesla,10gbe"
 
 Options to cmake for the configure step is
    cmake .                         // in-tree build
