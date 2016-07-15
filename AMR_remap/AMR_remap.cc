@@ -304,12 +304,12 @@ int main (int argc, char** argv) {
 
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;
-           icells_openmp.ibasesize = two_to_the(i_min_level);
-           icells_openmp.levmax    = i_max_level - i_min_level;
+           icells_openmp.ibasesize = icells.ibasesize;
+           icells_openmp.levmax    = i_max_level;
 
            ocells_openmp.ncells    = olength;
-           ocells_openmp.ibasesize = two_to_the(o_min_level);
-           ocells_openmp.levmax    = o_max_level - o_min_level;
+           ocells_openmp.ibasesize = ocells.ibasesize;
+           ocells_openmp.levmax    = o_max_level;
 
 #endif
         } else if (meshgen == ADAPT_MESHGEN){

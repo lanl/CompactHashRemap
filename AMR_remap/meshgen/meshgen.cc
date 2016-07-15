@@ -96,19 +96,6 @@ cell_list mesh_maker(cell_list clist, uint num_levels, uint *length,
     
     uint num_cells = *length;
     
-    if ((num_cells - 1) % 3 != 0) {
-        num_cells--;
-        num_cells /= 3;
-        num_cells *= 3;
-        num_cells ++;
-        printf("\nImpossible number of cells, using %u instead\n", num_cells);
-    }
-    
-    if (num_cells < num_levels * 3 + 1) {
-        num_cells = num_levels * 3 + 1;
-        printf("\nNot enough cells to achieve %u levels of refinement. Using %u instead\n", num_levels, num_cells);
-    }
-    
     clist.ibasesize =2;
     while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level) < *length / sparsity) {
         clist.ibasesize++;
@@ -118,8 +105,17 @@ cell_list mesh_maker(cell_list clist, uint num_levels, uint *length,
     //if (clist.ibasesize < 2) {
     //    clist.ibasesize = 2;
     //}
-    
-    if (num_cells < ((3*(*max_level) + 1) + (clist.ibasesize*clist.ibasesize - 1))) {
+   
+    if ((num_cells - (clist.ibasesize*clist.ibasesize)) % 3 != 0) {
+        num_cells -= clist.ibasesize*clist.ibasesize;
+        num_cells /= 3;
+        num_cells *= 3;
+        num_cells += clist.ibasesize*clist.ibasesize;;
+        printf("\nImpossible number of cells, using %u instead\n", num_cells);
+    }
+ 
+ 
+    if (num_cells < (3*(*max_level) + clist.ibasesize*clist.ibasesize)) {
         num_cells = ((3*(*max_level) + 1) + (clist.ibasesize*clist.ibasesize - 1));
         printf("\nNot enough cells to fill a mesh of sparsity of %0.2f. Using %u instead.\n", sparsity, num_cells);
         *length = num_cells;
