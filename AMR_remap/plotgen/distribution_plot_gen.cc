@@ -16,11 +16,13 @@ uint output_mode = 0;
 uint print_mode = 0;
 uint adapt_meshgen = 0;
 uint force_seed = 1;
+
+double sparsity = 0.1;
  
 
 int main (int argc, char** argv){
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)){
-        printf ("Usage: %s [--help | -h] [-output, -print-levels, -adapt-meshgen, -ncells <ncells>, -lev <level difference>, adapt-threshhold <adaptive threshhold>, -base-size <base size>, -no-force-seed, -seed <seed>, -cell-inc, -num-runs]\n", argv[0]);
+        printf ("Usage: %s [--help | -h] [-output, -print-levels, -adapt-meshgen, -ncells <ncells>, -lev <level difference>, adapt-threshhold <adaptive threshhold>, -base-size <base size>, -no-force-seed, -seed <seed>, -cell-inc <cell increment size>, -num-runs <number of runs>, -sparsity <sparsity>]\n", argv[0]);
         printf ("Any variables not set will be run with reasonable defaults\n");
         return 0;
     }
@@ -79,6 +81,10 @@ int main (int argc, char** argv){
                 i++;
                 num_runs = atoi(argv[i]);
             } else
+            if (strcmp(arg,"-sparsity")==0){
+                i++;
+                sparsity = atof(argv[i]);
+            } else
             printf ("Invalid Argument: %s\n", arg);
         }
     }
@@ -113,7 +119,7 @@ int main (int argc, char** argv){
         
             uint ilength = numcells;
             uint i_max_level;
-            ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, 0.1);
+            ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, sparsity);
             ocells = shuffle_cell_list(ocells, ilength*0xFF);
             //printf("Max lev: %u\n", i_max_level);
             ocells.ncells = ilength;
