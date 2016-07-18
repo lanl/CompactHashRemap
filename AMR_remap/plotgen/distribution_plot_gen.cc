@@ -112,8 +112,8 @@ int main (int argc, char** argv){
         }else{
         
             uint ilength = numcells;
-            uint i_max_level, i_min_level;
-            ocells = mesh_maker_sparsity(ocells, levmax, &ilength, &i_max_level, &i_min_level, 0.1);
+            uint i_max_level;
+            ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, 0.1);
             ocells = shuffle_cell_list(ocells, ilength*0xFF);
             //printf("Max lev: %u\n", i_max_level);
             ocells.ncells = ilength;
@@ -163,10 +163,10 @@ int main (int argc, char** argv){
 
 // Prints the mesh as described by the cell list as if it were in a perfect hash.
 void PrintMesh (cell_list icells){
-    if (two_to_the(icells.levmax)*icells.ibasesize>32){
-        printf("cell list too large! %u level %u base\n", icells.levmax, icells.ibasesize);
-        return;
-    }
+    //if (two_to_the(icells.levmax)*icells.ibasesize>32){
+    //    printf("cell list too large! %u level %u base\n", icells.levmax, icells.ibasesize);
+    //    return;
+    //}
     
     uint* hash = (uint*)malloc (sizeof(uint)*icells.ibasesize*icells.ibasesize*four_to_the(icells.levmax));
     // initialize the hash to aid in checking for errors

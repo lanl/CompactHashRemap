@@ -126,9 +126,6 @@ int main (int argc, char** argv) {
             if (strcmp(arg,"-plot-file")==0){
                 plot_file = 1;
             } else 
-            if (strcmp(arg,"-sparse-meshgen")==0){
-                meshgen = SPARSE_MESHGEN;
-            } else 
             if (strcmp(arg,"-adapt-meshgen")==0){
                 meshgen = ADAPT_MESHGEN;
             } else
@@ -181,9 +178,9 @@ int main (int argc, char** argv) {
 #ifdef HAVE_OPENCL
     double gpu_full_perfect_remap_time = 0.0; 
     double gpu_singlewrite_remap_time = 0.0; 
-    double gpu_compact_singlewrite_remap_time = 0.0; 
+    //double gpu_compact_singlewrite_remap_time = 0.0; 
     double gpu_hierarchical_remap_time = 0.0; 
-    double gpu_compact_hierarchical_remap_time = 0.0; 
+    //double gpu_compact_hierarchical_remap_time = 0.0; 
 #endif
     
     uint ilength = atoi (argv[2]);
@@ -192,8 +189,6 @@ int main (int argc, char** argv) {
     uint o_level_diff = atoi (argv[3]);
     uint i_max_level;
     uint o_max_level;
-    uint i_min_level;
-    uint o_min_level;
     //i for in o for out
     cell_list icells;
     cell_list ocells;
@@ -288,13 +283,12 @@ int main (int argc, char** argv) {
            olength = atoi (argv[4]);
            o_level_diff = atoi (argv[3]);
 
-           icells = mesh_maker_sparsity(icells, i_level_diff, &ilength, &i_max_level, &i_min_level, 0.1);
-        
+           icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, 0.1);
            uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
-           ocells = mesh_maker_sparsity(ocells, o_level_diff, &olength, &o_max_level, &o_min_level, 0.1);
+           ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, 0.1);
            num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
@@ -310,15 +304,14 @@ int main (int argc, char** argv) {
 
 #ifdef _OPENMP
            icells_openmp.ncells    = ilength;
-           icells_openmp.ibasesize = two_to_the(i_min_level);
-           icells_openmp.levmax    = i_max_level - i_min_level;
+           icells_openmp.ibasesize = icells.ibasesize;
+           icells_openmp.levmax    = i_max_level;
 
            ocells_openmp.ncells    = olength;
-           ocells_openmp.ibasesize = two_to_the(o_min_level);
-           ocells_openmp.levmax    = o_max_level - o_min_level;
+           ocells_openmp.ibasesize = ocells.ibasesize;
+           ocells_openmp.levmax    = o_max_level;
 
 #endif
-        } else if (meshgen == SPARSE_MESHGEN){
         } else if (meshgen == ADAPT_MESHGEN){
            float threshold = 1.0;
            mesh_size = atoi (argv[1]);
@@ -492,7 +485,7 @@ int main (int argc, char** argv) {
         ocells_openmp.level  = (uint *)  malloc(olength*sizeof(uint));
         ocells_openmp.values = (double *)malloc(olength*sizeof(double));
 
-#pragma omp parallel default(none) firstprivate(ilength, olength, i_min_level) shared(icells_openmp, ocells_openmp, icells, ocells)
+#pragma omp parallel default(none) firstprivate(ilength, olength) shared(icells_openmp, ocells_openmp, icells, ocells)
         {
 #pragma omp for 
            for (uint ic=0; ic < ilength; ic++){
@@ -609,6 +602,8 @@ int main (int argc, char** argv) {
 
 #ifdef HAVE_OPENCL
 
+//const uint NUM_HASH_TABLES = 8;
+
 // Full Perfect Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
@@ -632,18 +627,24 @@ int main (int argc, char** argv) {
         if (run_tests) check_output("GPU Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
         
 // Compact Single-write Remap GPU
-        memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
+        /*memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
-        gpu_compact_singlewrite_remap_time+=cl_compact_singlewrite_remap(icells, ocells, run_tests);
-
-        if (run_tests) check_output("GPU Compact Singlewrite Remap", ocells.ncells, ocells.values, val_test_answer);
+        if (i_max_level + 1 > NUM_HASH_TABLES) {
+            printf("Failed to run compact single-write remap on GPU. Hash table limit of %u was exceeded.\n", NUM_HASH_TABLES);
+        } else {
+            gpu_compact_singlewrite_remap_time+=cl_compact_singlewrite_remap(icells, ocells, run_tests);
+            if (run_tests) check_output("GPU Compact Singlewrite Remap", ocells.ncells, ocells.values, val_test_answer);
+        }*/
         
 // Compact Hierarchical Remap GPU
-        memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
+        /*memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
-        gpu_compact_hierarchical_remap_time+=cl_compact_hierarchical_remap(icells, ocells, CLFactory, run_tests);
-
-        if (run_tests) check_output("GPU Compact Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
+        if (i_max_level + 1 > NUM_HASH_TABLES) {
+            printf("Failed to run compact hierarchical remap on GPU. Hash table limit of %u was exceeded.\n", NUM_HASH_TABLES);
+        } else {
+            gpu_compact_hierarchical_remap_time+=cl_compact_hierarchical_remap(icells, ocells, CLFactory, run_tests);
+            if (run_tests) check_output("GPU Compact Hierarchical Remap", ocells.ncells, ocells.values, val_test_answer);
+        }*/
         
 #endif
 
@@ -703,8 +704,8 @@ int main (int argc, char** argv) {
 #endif
        fprintf(fout,"%9.3f,\t", gpu_full_perfect_remap_time/num_rep*1000);
        fprintf(fout,"%9.3f,\t", gpu_singlewrite_remap_time/num_rep*1000);
-       fprintf(fout,"%9.3f,\t", gpu_hierarchical_remap_time/num_rep*1000);
-       fprintf(fout,"%9.3f,\t", gpu_compact_singlewrite_remap_time/num_rep*1000);
+       //fprintf(fout,"%9.3f,\t", gpu_hierarchical_remap_time/num_rep*1000);
+       //fprintf(fout,"%9.3f,\t", gpu_compact_singlewrite_remap_time/num_rep*1000);
 
        fprintf(fout,"%8lu,\t",average_ncells);
        fprintf(fout,"%8.2f,\t",(float)save_num_fine_cells/(float)average_ncells);
@@ -740,8 +741,8 @@ int main (int argc, char** argv) {
     printf("\nGPU Full Perfect Remap:\t\t\t%10.4f ms\n", gpu_full_perfect_remap_time/num_rep*1000);
     printf("GPU Singlewrite Remap:\t\t\t%10.4f ms\n", gpu_singlewrite_remap_time/num_rep*1000);
     printf("GPU Hierarchical Remap:\t\t\t%10.4f ms\n", gpu_hierarchical_remap_time/num_rep*1000);
-    printf("GPU Compact Singlewrite Remap:\t\t%10.4f ms\n", gpu_compact_singlewrite_remap_time/num_rep*1000);
-    printf("GPU Compact Hierarchical Remap:\t\t%10.4f ms\n", gpu_compact_hierarchical_remap_time/num_rep*1000);
+    //printf("GPU Compact Singlewrite Remap:\t\t%10.4f ms\n", gpu_compact_singlewrite_remap_time/num_rep*1000);
+    //printf("GPU Compact Hierarchical Remap:\t\t%10.4f ms\n", gpu_compact_hierarchical_remap_time/num_rep*1000);
 
     hash_lib_terminate();
     cleanup_cl();

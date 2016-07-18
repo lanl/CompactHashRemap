@@ -60,9 +60,8 @@ double avg_sub_cells (cell_list icells, uint ji, uint ii, uint level, uint *hash
 void full_perfect_remap (cell_list icells, cell_list ocells) {
 
     // Allocate a hash table the size of the finest level of the grid
-    
-    size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
-                       icells.ibasesize*two_to_the(icells.levmax);
+    size_t hash_size = icells.ibasesize*icells.ibasesize*four_to_the(icells.levmax);
+
     uint *hash = (uint *) malloc(hash_size * sizeof(uint));
     uint lev_mod;
     // levmax+1?
@@ -109,23 +108,6 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
             jj = j/lev_mod;
         }
 
-        // If at the finest level, get the index number and
-        // get the value of the input mesh at that index
-//        if (lev == ocells.levmax) {
-//            ocells.values[ic] = icells.values[hash[(j*i_max)+i]];
-//        } else {
-//            // Sum up the values in the underlying block of
-//            // cells at the finest level and average
-//            uint lev_mod = two_to_the(ocells.levmax - lev);
-//            ocells.values[ic] = 0.0;
-//            for (uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
-//                for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-//                    ocells.values[ic] += icells.values[hash[jj][ii]];
-//                }
-//            }
-//            // Get average by dividing by number of cells
-//            ocells.values[ic] /= (double)(lev_mod*lev_mod);
-//        }
         uint key = hash[(jj*i_max)+ii];
         
         if (lev >= icells.level[key]) {
