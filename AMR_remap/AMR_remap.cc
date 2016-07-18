@@ -71,6 +71,8 @@ intintHash_Factory *factory;
 intintHash_Factory *OpenMPfactory;
 intintHash_Factory *CLFactory;
 
+double sparsity = 0.1;
+
 struct timeval timer;
 
 #ifndef DONT_CATCH_SIGNALS
@@ -128,6 +130,10 @@ int main (int argc, char** argv) {
             } else 
             if (strcmp(arg,"-adapt-meshgen")==0){
                 meshgen = ADAPT_MESHGEN;
+            } else
+            if (strcmp(arg,"-sparsity")==0){
+                i++;
+                sparsity = atof(argv[i]);
             } else
             printf ("Invalid Argument: %s\n", arg);
         }
@@ -283,12 +289,12 @@ int main (int argc, char** argv) {
            olength = atoi (argv[4]);
            o_level_diff = atoi (argv[3]);
 
-           icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, 0.1);
+           icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, sparsity);
            uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
-           ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, 0.1);
+           ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, sparsity);
            num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
