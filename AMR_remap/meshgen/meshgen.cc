@@ -96,15 +96,15 @@ cell_list mesh_maker(cell_list clist, uint num_levels, uint *length,
     
     uint num_cells = *length;
     
-    clist.ibasesize =2;
-    while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level) < *length / sparsity) {
-        clist.ibasesize++;
-    } 
+    //clist.ibasesize =2;
+    //while (clist.ibasesize*clist.ibasesize*four_to_the(*max_level) < *length / sparsity) {
+    //    clist.ibasesize++;
+    //} 
     
-    //clist.ibasesize = sqrt(*length/(sparsity*four_to_the(*max_level))) + 1;
-    //if (clist.ibasesize < 2) {
-    //    clist.ibasesize = 2;
-    //}
+    clist.ibasesize = sqrt(*length/(sparsity*four_to_the(*max_level))) + 1;
+    if (clist.ibasesize < 2) {
+        clist.ibasesize = 2;
+    }
    
     if ((num_cells - (clist.ibasesize*clist.ibasesize)) % 3 != 0) {
         num_cells -= clist.ibasesize*clist.ibasesize;
