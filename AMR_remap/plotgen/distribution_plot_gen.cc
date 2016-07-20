@@ -14,6 +14,7 @@ long seed = 0xDEADBEEF;
 
 uint output_mode = 0;
 uint print_mode = 0;
+uint data_mode = 0;
 uint adapt_meshgen = 0;
 uint force_seed = 1;
 
@@ -34,6 +35,9 @@ int main (int argc, char** argv){
             } else
             if (strcmp(arg,"-print-levels")==0){
                 print_mode = 1;
+            } else
+            if (strcmp(arg,"-data-format")==0){
+                data_mode = 1;
             } else
             if (strcmp(arg,"-adapt-meshgen")==0){
                 adapt_meshgen = 1;
@@ -120,9 +124,9 @@ int main (int argc, char** argv){
             uint ilength = numcells;
             uint i_max_level;
             ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, sparsity);
-            ocells = shuffle_cell_list(ocells, ilength*0xFF);
+            numcells = ocells.ncells;
+            //ocells = shuffle_cell_list(ocells, ilength*0xFF);
             //printf("Max lev: %u\n", i_max_level);
-            ocells.ncells = ilength;
             levmin = 0;
             //levmin = ocells.level[0];
             /*for (uint i = 1; i < ocells.ncells; i++){
@@ -130,11 +134,8 @@ int main (int argc, char** argv){
                     levmin = ocells.level[i];
                 }
             }*/
-            if (!output_mode) {
+            if (print_mode) {
                 printf ("Levelbased-meshgen: %u cells.\n", ocells.ncells);
-            }
-            
-                if (print_mode){
                 olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
                 
                 for (uint i = levmin; i <= ocells.levmax; i++){
@@ -142,15 +143,26 @@ int main (int argc, char** argv){
                 }
                 
                 for (uint i = 0; i < ocells.ncells; i++){
-                    
                     olev_count[ocells.level[i]]++;
                 }
                 for (uint i = levmin; i <= ocells.levmax; i++){
-                    if (!output_mode){
-                        printf ("lev %u: %u\n", i-levmin, olev_count[i]);
-                    }else{
-                        printf ("%u ",olev_count[i]);
-                    }
+                    printf ("lev %u: %u\n", i-levmin, olev_count[i]);
+                }
+            }
+            
+            if (data_mode) {
+                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
+                
+                for (uint i = levmin; i <= ocells.levmax; i++){
+                    olev_count[i] = 0;
+                }
+                
+                for (uint i = 0; i < ocells.ncells; i++){
+                    olev_count[ocells.level[i]]++;
+                }
+                printf("%u ", ocells.ibasesize);
+                for (uint i = levmin; i <= ocells.levmax; i++){
+                    printf ("%u ", olev_count[i]);
                 }
             }
           

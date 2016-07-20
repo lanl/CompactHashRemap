@@ -102,8 +102,8 @@ cell_list mesh_maker(cell_list clist, uint num_levels, uint *length,
     //} 
     
     clist.ibasesize = sqrt(*length/(sparsity*four_to_the(*max_level))) + 1;
-    if (clist.ibasesize < 2) {
-        clist.ibasesize = 2;
+    if (clist.ibasesize < 128) {
+        clist.ibasesize = 128;
     }
    
     if ((num_cells - (clist.ibasesize*clist.ibasesize)) % 3 != 0) {
