@@ -98,23 +98,24 @@ int main (int argc, char** argv){
         if (adapt_meshgen){
             ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
             if (print_mode){
-            printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
-            olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                olev_count[i-levmin] = 0;
-            }
-            for (uint i = levmin; i < ocells.ncells; i++){
-                olev_count[ocells.level[i-levmin]]++;
-            }
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                printf ("lev %u: %u\n", i-levmin, olev_count[i]);
-            }
+                printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
+                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
+                for (uint i = 0; i < ocells.levmax; i++){
+                    olev_count[i-levmin] = 0;
+                }
+                for (uint i = 0; i < ocells.ncells; i++){
+                    olev_count[ocells.level[i]]++;
+                }
+                for (uint i = 0; i <= ocells.levmax; i++){
+                    printf ("lev %u: %u\n", i-levmin, olev_count[i]);
+                }
+                free (olev_count);
             }
             if (output_mode){
                 PrintMesh(ocells);
             }
             destroy(ocells);
-            free (olev_count);
+            
         }else{
         
             uint ilength = numcells;
