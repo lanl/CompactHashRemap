@@ -28,6 +28,10 @@
  *          Colin Redman      XCP-2   credman@lanl.gov 
  */
 
+#ifndef CHECK_LEV
+//#define CHECK_LEV 1
+#endif
+
 #include <stdio.h>
 #include <math.h>
 #include "meshgen.h"
@@ -456,6 +460,26 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
     }
   }
   //printf("%8d small cells, ", small_cells);
+
+#ifdef CHECK_LEV
+  int *lev_check = (int *)malloc(sizeof(int)*(levmax+1));
+  for(int lev = 0; lev <= levmax; lev++) {
+     lev_check[lev] = 0;
+  }
+  for(int lev = 0; lev <= levmax; lev++) {
+    for(ic = 0; ic < ncells; ic++) {
+       if (level[ic] == lev) {
+         lev_check[lev]++;
+       }
+    }
+  }
+  printf("\n");
+  for(int lev = 0; lev <= levmax; lev++) {
+     printf("For level %d, numcells is %d\n",lev,lev_check[lev]);
+  }
+  free(lev_check);
+#endif
+  
   
   // Allocate Space for the Adaptive Mesh
   newcount = 0;

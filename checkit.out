@@ -1,0 +1,649 @@
+
+AMR_remap/AMR_remap_openMP 128 1 4.74      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 15623
+For level 1, numcells is 761
+
+For level 0, numcells is 15625
+For level 1, numcells is 759
+         71.516418         3.510794         71.525574         3.511923 fine cells 65536 ncells in 18667 ncells out 18661
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     71.520996     3.511359            65536                18664
+ --------------------------------------------------------------------
+KD Tree Remap:				   22.6460 ms
+Full Perfect Remap:			    0.3830 ms
+Singlewrite Remap:			    0.3120 ms Speedup relative to full hash     1.23
+Hierarchical Remap:			    0.2110 ms Speedup relative to full hash     1.82
+Compact Singlewrite Remap:		    1.1020 ms
+Compact Hierarchical Remap:		    2.4890 ms
+
+OpenMP Full Perfect Remap:		    0.2090 ms speedup 	    1.83
+OpenMP Singlewrite Remap:		    0.2400 ms speedup 	    1.30
+OpenMP Hierarchical Remap:		    0.0870 ms speedup 	    2.43
+OpenMP Compact Singlewrite Remap:	    0.1820 ms speedup 	    6.05
+OpenMP Compact Hierarchical Remap:	    0.1230 ms speedup 	   20.24
+
+GPU Full Perfect Remap:			    0.1160 ms
+GPU Singlewrite Remap:			    0.1030 ms
+GPU Hierarchical Remap:			    0.3610 ms
+AMR_remap/AMR_remap_openMP 128 2 3.97      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 13204
+For level 1, numcells is 2549
+For level 2, numcells is 631
+
+For level 0, numcells is 12981
+For level 1, numcells is 2713
+For level 2, numcells is 690
+         87.222290         7.826128         86.697006         7.517105 fine cells 262144 ncells in 33496 ncells out 34873
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     86.959839     7.668617            262144                34184
+ --------------------------------------------------------------------
+KD Tree Remap:				   45.2080 ms
+Full Perfect Remap:			    1.3030 ms
+Singlewrite Remap:			    1.1310 ms Speedup relative to full hash     1.15
+Hierarchical Remap:			    0.7770 ms Speedup relative to full hash     1.68
+Compact Singlewrite Remap:		    4.6030 ms
+Compact Hierarchical Remap:		    7.1860 ms
+
+OpenMP Full Perfect Remap:		    0.3900 ms speedup 	    3.34
+OpenMP Singlewrite Remap:		    0.1560 ms speedup 	    7.25
+OpenMP Hierarchical Remap:		    0.2860 ms speedup 	    2.72
+OpenMP Compact Singlewrite Remap:	    0.4230 ms speedup 	   10.88
+OpenMP Compact Hierarchical Remap:	    0.2950 ms speedup 	   24.36
+
+GPU Full Perfect Remap:			    0.3550 ms
+GPU Singlewrite Remap:			    0.3180 ms
+GPU Hierarchical Remap:			    0.4220 ms
+AMR_remap/AMR_remap_openMP 128 3 3.11      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 9876
+For level 1, numcells is 3918
+For level 2, numcells is 2101
+For level 3, numcells is 489
+
+For level 0, numcells is 9728
+For level 1, numcells is 3990
+For level 2, numcells is 2159
+For level 3, numcells is 507
+         91.373062         11.591599         91.161346         11.313940 fine cells 1048576 ncells in 90460 ncells out 92680
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     91.267204     11.451087            1048576                91570
+ --------------------------------------------------------------------
+KD Tree Remap:				  133.6370 ms
+Full Perfect Remap:			    5.3180 ms
+Singlewrite Remap:			    5.4920 ms Speedup relative to full hash     0.97
+Hierarchical Remap:			    3.3130 ms Speedup relative to full hash     1.61
+Compact Singlewrite Remap:		   14.1090 ms
+Compact Hierarchical Remap:		   24.7660 ms
+
+OpenMP Full Perfect Remap:		    1.0000 ms speedup 	    5.32
+OpenMP Singlewrite Remap:		    0.5770 ms speedup 	    9.52
+OpenMP Hierarchical Remap:		    0.5190 ms speedup 	    6.38
+OpenMP Compact Singlewrite Remap:	    1.6540 ms speedup 	    8.53
+OpenMP Compact Hierarchical Remap:	    0.6480 ms speedup 	   38.22
+
+GPU Full Perfect Remap:			    1.0160 ms
+GPU Singlewrite Remap:			    1.0570 ms
+GPU Hierarchical Remap:			    0.8260 ms
+AMR_remap/AMR_remap_openMP 128 4 2.30      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 7115
+For level 1, numcells is 4016
+For level 2, numcells is 3276
+For level 3, numcells is 1616
+For level 4, numcells is 361
+
+For level 0, numcells is 6763
+For level 1, numcells is 4050
+For level 2, numcells is 3407
+For level 3, numcells is 1755
+For level 4, numcells is 409
+         93.528485         15.452332         92.978597         14.242167 fine cells 4194304 ncells in 271435 ncells out 294499
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     93.253541     14.822591            4194304                282967
+ --------------------------------------------------------------------
+KD Tree Remap:				  480.9900 ms
+Full Perfect Remap:			   19.1640 ms
+Singlewrite Remap:			   20.2960 ms Speedup relative to full hash     0.94
+Hierarchical Remap:			   13.0990 ms Speedup relative to full hash     1.46
+Compact Singlewrite Remap:		   50.3510 ms
+Compact Hierarchical Remap:		   97.7650 ms
+
+OpenMP Full Perfect Remap:		    4.0890 ms speedup 	    4.69
+OpenMP Singlewrite Remap:		    1.7200 ms speedup 	   11.80
+OpenMP Hierarchical Remap:		    2.7410 ms speedup 	    4.78
+OpenMP Compact Singlewrite Remap:	    5.9440 ms speedup 	    8.47
+OpenMP Compact Hierarchical Remap:	    2.0910 ms speedup 	   46.76
+
+GPU Full Perfect Remap:			    3.9490 ms
+GPU Singlewrite Remap:			    3.4450 ms
+GPU Hierarchical Remap:			    2.1550 ms
+AMR_remap/AMR_remap_openMP 128 5 1.59      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 5597
+For level 1, numcells is 3425
+For level 2, numcells is 3452
+For level 3, numcells is 2503
+For level 4, numcells is 1155
+For level 5, numcells is 252
+
+For level 0, numcells is 5514
+For level 1, numcells is 3504
+For level 2, numcells is 3453
+For level 3, numcells is 2489
+For level 4, numcells is 1166
+For level 5, numcells is 258
+         95.300478         21.278759         95.250928         21.056747 fine cells 16777216 ncells in 788449 ncells out 796762
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     95.275706     21.167185            16777216                792605
+ --------------------------------------------------------------------
+KD Tree Remap:				 1567.4230 ms
+Full Perfect Remap:			   90.4510 ms
+Singlewrite Remap:			   93.3130 ms Speedup relative to full hash     0.97
+Hierarchical Remap:			   55.6590 ms Speedup relative to full hash     1.63
+Compact Singlewrite Remap:		  195.3770 ms
+Compact Hierarchical Remap:		  394.0770 ms
+
+OpenMP Full Perfect Remap:		   13.2510 ms speedup 	    6.83
+OpenMP Singlewrite Remap:		    8.7650 ms speedup 	   10.65
+OpenMP Hierarchical Remap:		    9.5150 ms speedup 	    5.85
+OpenMP Compact Singlewrite Remap:	   10.5400 ms speedup 	   18.54
+OpenMP Compact Hierarchical Remap:	   19.3520 ms speedup 	   20.36
+
+GPU Full Perfect Remap:			   16.3330 ms
+GPU Singlewrite Remap:			   11.6640 ms
+GPU Hierarchical Remap:			    6.9580 ms
+AMR_remap/AMR_remap_openMP 128 6 0.97      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 4942
+For level 1, numcells is 2920
+For level 2, numcells is 3129
+For level 3, numcells is 2718
+For level 4, numcells is 1758
+For level 5, numcells is 758
+For level 6, numcells is 159
+
+For level 0, numcells is 5548
+For level 1, numcells is 2905
+For level 2, numcells is 3036
+For level 3, numcells is 2480
+For level 4, numcells is 1574
+For level 5, numcells is 690
+For level 6, numcells is 151
+         96.843719         31.682892         97.090602         34.371372 fine cells 67108864 ncells in 2118142 ncells out 1952464
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     96.967161     32.972420            67108864                2035303
+ --------------------------------------------------------------------
+KD Tree Remap:				 4682.9610 ms
+Full Perfect Remap:			  297.9170 ms
+Singlewrite Remap:			  330.5540 ms Speedup relative to full hash     0.90
+Hierarchical Remap:			  204.7640 ms Speedup relative to full hash     1.45
+Compact Singlewrite Remap:		  749.1140 ms
+Compact Hierarchical Remap:		 1220.7350 ms
+
+OpenMP Full Perfect Remap:		   45.1990 ms speedup 	    6.59
+OpenMP Singlewrite Remap:		   30.7640 ms speedup 	   10.74
+OpenMP Hierarchical Remap:		   23.8110 ms speedup 	    8.60
+OpenMP Compact Singlewrite Remap:	   35.7160 ms speedup 	   20.97
+OpenMP Compact Hierarchical Remap:	   57.1010 ms speedup 	   21.38
+
+GPU Full Perfect Remap:			  100.9800 ms
+GPU Singlewrite Remap:			   35.0580 ms
+GPU Hierarchical Remap:			   22.5690 ms
+AMR_remap/AMR_remap_openMP 128 7 0.55      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 11: 26370 Segmentation fault      AMR_remap/AMR_remap_openMP 128 7 0.55 0 1 -adapt-meshgen -no-brute
+AMR_remap/AMR_remap_openMP 128 8 0.30      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 12: 26412 Segmentation fault      AMR_remap/AMR_remap_openMP 128 8 0.30 0 1 -adapt-meshgen -no-brute
+
+AMR_remap/AMR_remap_openMP 200 1 3.01      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 38843
+For level 1, numcells is 1157
+
+For level 0, numcells is 38867
+For level 1, numcells is 1133
+         72.830623         3.680615         72.875625         3.686721 fine cells 160000 ncells in 43471 ncells out 43399
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     72.853124     3.683665            160000                43435
+ --------------------------------------------------------------------
+KD Tree Remap:				   57.2300 ms
+Full Perfect Remap:			    0.9380 ms
+Singlewrite Remap:			    0.7290 ms Speedup relative to full hash     1.29
+Hierarchical Remap:			    0.5220 ms Speedup relative to full hash     1.80
+Compact Singlewrite Remap:		    2.6900 ms
+Compact Hierarchical Remap:		    5.4440 ms
+
+OpenMP Full Perfect Remap:		    0.3740 ms speedup 	    2.51
+OpenMP Singlewrite Remap:		    0.1410 ms speedup 	    5.17
+OpenMP Hierarchical Remap:		    0.1560 ms speedup 	    3.35
+OpenMP Compact Singlewrite Remap:	    0.4410 ms speedup 	    6.10
+OpenMP Compact Hierarchical Remap:	    0.2670 ms speedup 	   20.39
+
+GPU Full Perfect Remap:			    0.3220 ms
+GPU Singlewrite Remap:			    0.2530 ms
+GPU Hierarchical Remap:			    0.3810 ms
+AMR_remap/AMR_remap_openMP 200 2 2.54      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 34939
+For level 1, numcells is 4084
+For level 2, numcells is 977
+
+For level 0, numcells is 34594
+For level 1, numcells is 4351
+For level 2, numcells is 1055
+         89.545780         9.565516         89.237815         9.291791 fine cells 640000 ncells in 66907 ncells out 68878
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     89.391875     9.426737            640000                67892
+ --------------------------------------------------------------------
+KD Tree Remap:				   95.7030 ms
+Full Perfect Remap:			    2.9820 ms
+Singlewrite Remap:			    2.8070 ms Speedup relative to full hash     1.06
+Hierarchical Remap:			    1.5840 ms Speedup relative to full hash     1.88
+Compact Singlewrite Remap:		    7.0050 ms
+Compact Hierarchical Remap:		   12.9310 ms
+
+OpenMP Full Perfect Remap:		    0.7530 ms speedup 	    3.96
+OpenMP Singlewrite Remap:		    0.2960 ms speedup 	    9.48
+OpenMP Hierarchical Remap:		    0.3370 ms speedup 	    4.70
+OpenMP Compact Singlewrite Remap:	    1.0640 ms speedup 	    6.58
+OpenMP Compact Hierarchical Remap:	    0.4920 ms speedup 	   26.28
+
+GPU Full Perfect Remap:			    0.7370 ms
+GPU Singlewrite Remap:			    0.6050 ms
+GPU Hierarchical Remap:			    0.6140 ms
+AMR_remap/AMR_remap_openMP 200 3 2.13      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 28392
+For level 1, numcells is 7176
+For level 2, numcells is 3609
+For level 3, numcells is 823
+
+For level 0, numcells is 28039
+For level 1, numcells is 7397
+For level 2, numcells is 3712
+For level 3, numcells is 852
+         93.456560         15.282487         93.298948         14.923024 fine cells 2560000 ncells in 167512 ncells out 171547
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     93.377775     15.100661            2560000                169529
+ --------------------------------------------------------------------
+KD Tree Remap:				  267.9280 ms
+Full Perfect Remap:			    9.1870 ms
+Singlewrite Remap:			   10.0150 ms Speedup relative to full hash     0.92
+Hierarchical Remap:			    6.1630 ms Speedup relative to full hash     1.49
+Compact Singlewrite Remap:		   31.6630 ms
+Compact Hierarchical Remap:		   38.9820 ms
+
+OpenMP Full Perfect Remap:		    2.7810 ms speedup 	    3.30
+OpenMP Singlewrite Remap:		    0.9410 ms speedup 	   10.64
+OpenMP Hierarchical Remap:		    0.8790 ms speedup 	    7.01
+OpenMP Compact Singlewrite Remap:	    3.5860 ms speedup 	    8.83
+OpenMP Compact Hierarchical Remap:	    1.1530 ms speedup 	   33.81
+
+GPU Full Perfect Remap:			    2.5510 ms
+GPU Singlewrite Remap:			    1.7790 ms
+GPU Hierarchical Remap:			    1.0710 ms
+AMR_remap/AMR_remap_openMP 200 4 1.75      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 21026
+For level 1, numcells is 8688
+For level 2, numcells is 6487
+For level 3, numcells is 3107
+For level 4, numcells is 692
+
+For level 0, numcells is 20918
+For level 1, numcells is 8617
+For level 2, numcells is 6586
+For level 3, numcells is 3176
+For level 4, numcells is 703
+         94.769824         19.119816         94.687557         18.823736 fine cells 10240000 ncells in 535570 ncells out 543994
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     94.728690     18.970621            10240000                539782
+ --------------------------------------------------------------------
+KD Tree Remap:				 1007.9800 ms
+Full Perfect Remap:			   51.9040 ms
+Singlewrite Remap:			   50.6230 ms Speedup relative to full hash     1.03
+Hierarchical Remap:			   35.0350 ms Speedup relative to full hash     1.48
+Compact Singlewrite Remap:		  127.8260 ms
+Compact Hierarchical Remap:		  171.2760 ms
+
+OpenMP Full Perfect Remap:		    8.6210 ms speedup 	    6.02
+OpenMP Singlewrite Remap:		    5.6850 ms speedup 	    8.90
+OpenMP Hierarchical Remap:		    7.2800 ms speedup 	    4.81
+OpenMP Compact Singlewrite Remap:	    6.9360 ms speedup 	   18.43
+OpenMP Compact Hierarchical Remap:	   12.0590 ms speedup 	   14.20
+
+GPU Full Perfect Remap:			    8.7950 ms
+GPU Singlewrite Remap:			    6.9370 ms
+GPU Hierarchical Remap:			    3.7670 ms
+AMR_remap/AMR_remap_openMP 200 5 1.28      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 16513
+For level 1, numcells is 8107
+For level 2, numcells is 7408
+For level 3, numcells is 5125
+For level 4, numcells is 2336
+For level 5, numcells is 511
+
+For level 0, numcells is 16773
+For level 1, numcells is 8122
+For level 2, numcells is 7390
+For level 3, numcells is 4990
+For level 4, numcells is 2241
+For level 5, numcells is 484
+         96.052861         25.334793         96.200752         26.320980 fine cells 40960000 ncells in 1616749 ncells out 1556173
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     96.126807     25.818472            40960000                1586461
+ --------------------------------------------------------------------
+KD Tree Remap:				 3636.8900 ms
+Full Perfect Remap:			  208.0910 ms
+Singlewrite Remap:			  220.6210 ms Speedup relative to full hash     0.94
+Hierarchical Remap:			  142.7340 ms Speedup relative to full hash     1.46
+Compact Singlewrite Remap:		  497.5130 ms
+Compact Hierarchical Remap:		  872.2480 ms
+
+OpenMP Full Perfect Remap:		   34.7040 ms speedup 	    6.00
+OpenMP Singlewrite Remap:		   19.3120 ms speedup 	   11.42
+OpenMP Hierarchical Remap:		   18.6350 ms speedup 	    7.66
+OpenMP Compact Singlewrite Remap:	   22.5900 ms speedup 	   22.02
+OpenMP Compact Hierarchical Remap:	   33.0550 ms speedup 	   26.39
+
+GPU Full Perfect Remap:			   41.0750 ms
+GPU Singlewrite Remap:			   23.5300 ms
+GPU Hierarchical Remap:			   12.7950 ms
+AMR_remap/AMR_remap_openMP 200 6 0.85      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 19: 26656 Segmentation fault      AMR_remap/AMR_remap_openMP 200 6 0.85 0 1 -adapt-meshgen -no-brute
+AMR_remap/AMR_remap_openMP 200 7 0.51      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 20: 26697 Segmentation fault      AMR_remap/AMR_remap_openMP 200 7 0.51 0 1 -adapt-meshgen -no-brute
+AMR_remap/AMR_remap_openMP 200 8 0.28      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 21: 26738 Segmentation fault      AMR_remap/AMR_remap_openMP 200 8 0.28 0 1 -adapt-meshgen -no-brute
+
+AMR_remap/AMR_remap_openMP 256 1 2.25      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 64110
+For level 1, numcells is 1426
+
+For level 0, numcells is 64097
+For level 1, numcells is 1439
+         73.368073         3.754892         73.353195         3.752795 fine cells 262144 ncells in 69814 ncells out 69853
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     73.360825     3.753870            262144                69833
+ --------------------------------------------------------------------
+KD Tree Remap:				   95.1570 ms
+Full Perfect Remap:			    1.5600 ms
+Singlewrite Remap:			    1.1610 ms Speedup relative to full hash     1.34
+Hierarchical Remap:			    0.8520 ms Speedup relative to full hash     1.83
+Compact Singlewrite Remap:		    4.3190 ms
+Compact Hierarchical Remap:		    8.9190 ms
+
+OpenMP Full Perfect Remap:		    0.5690 ms speedup 	    2.74
+OpenMP Singlewrite Remap:		    0.2100 ms speedup 	    5.53
+OpenMP Hierarchical Remap:		    0.2070 ms speedup 	    4.12
+OpenMP Compact Singlewrite Remap:	    0.5400 ms speedup 	    8.00
+OpenMP Compact Hierarchical Remap:	    0.4870 ms speedup 	   18.31
+
+GPU Full Perfect Remap:			    0.5010 ms
+GPU Singlewrite Remap:			    0.4250 ms
+GPU Hierarchical Remap:			    0.5130 ms
+AMR_remap/AMR_remap_openMP 256 2 2.02      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 58707
+For level 1, numcells is 5529
+For level 2, numcells is 1300
+
+For level 0, numcells is 58497
+For level 1, numcells is 5705
+For level 2, numcells is 1334
+         90.308475         10.318295         90.209484         10.213966 fine cells 1048576 ncells in 101623 ncells out 102661
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     90.258980     10.265865            1048576                102142
+ --------------------------------------------------------------------
+KD Tree Remap:				  155.1180 ms
+Full Perfect Remap:			    4.9090 ms
+Singlewrite Remap:			    4.2210 ms Speedup relative to full hash     1.16
+Hierarchical Remap:			    2.3960 ms Speedup relative to full hash     2.05
+Compact Singlewrite Remap:		   10.2310 ms
+Compact Hierarchical Remap:		   17.2340 ms
+
+OpenMP Full Perfect Remap:		    1.1250 ms speedup 	    4.36
+OpenMP Singlewrite Remap:		    0.4410 ms speedup 	    9.57
+OpenMP Hierarchical Remap:		    0.4720 ms speedup 	    5.08
+OpenMP Compact Singlewrite Remap:	    1.7050 ms speedup 	    6.00
+OpenMP Compact Hierarchical Remap:	    0.6980 ms speedup 	   24.69
+
+GPU Full Perfect Remap:			    1.5290 ms
+GPU Singlewrite Remap:			    0.8230 ms
+GPU Hierarchical Remap:			    0.6650 ms
+AMR_remap/AMR_remap_openMP 256 3 1.75      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 48981
+For level 1, numcells is 10399
+For level 2, numcells is 5025
+For level 3, numcells is 1131
+
+For level 0, numcells is 49188
+For level 1, numcells is 10265
+For level 2, numcells is 4957
+For level 3, numcells is 1126
+         94.197822         17.234905         94.239235         17.358805 fine cells 4194304 ncells in 243361 ncells out 241624
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     94.218540     17.296669            4194304                242492
+ --------------------------------------------------------------------
+KD Tree Remap:				  413.5470 ms
+Full Perfect Remap:			   16.8150 ms
+Singlewrite Remap:			   18.0630 ms Speedup relative to full hash     0.93
+Hierarchical Remap:			    8.9100 ms Speedup relative to full hash     1.89
+Compact Singlewrite Remap:		   36.9380 ms
+Compact Hierarchical Remap:		   65.8760 ms
+
+OpenMP Full Perfect Remap:		    3.5030 ms speedup 	    4.80
+OpenMP Singlewrite Remap:		    1.3500 ms speedup 	   13.38
+OpenMP Hierarchical Remap:		    2.5590 ms speedup 	    3.48
+OpenMP Compact Singlewrite Remap:	    5.9220 ms speedup 	    6.24
+OpenMP Compact Hierarchical Remap:	    1.6940 ms speedup 	   38.89
+
+GPU Full Perfect Remap:			    5.2480 ms
+GPU Singlewrite Remap:			    2.5310 ms
+GPU Hierarchical Remap:			    1.4260 ms
+AMR_remap/AMR_remap_openMP 256 4 1.46      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 37800
+For level 1, numcells is 13151
+For level 2, numcells is 9302
+For level 3, numcells is 4329
+For level 4, numcells is 954
+
+For level 0, numcells is 37698
+For level 1, numcells is 13052
+For level 2, numcells is 9429
+For level 3, numcells is 4387
+For level 4, numcells is 970
+         95.466971         22.060307         95.411289         21.792610 fine cells 16777216 ncells in 760516 ncells out 769858
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     95.439130     21.925642            16777216                765187
+ --------------------------------------------------------------------
+KD Tree Remap:				 1538.2170 ms
+Full Perfect Remap:			   87.4330 ms
+Singlewrite Remap:			   92.5140 ms Speedup relative to full hash     0.95
+Hierarchical Remap:			   50.9110 ms Speedup relative to full hash     1.72
+Compact Singlewrite Remap:		  178.5650 ms
+Compact Hierarchical Remap:		  313.3390 ms
+
+OpenMP Full Perfect Remap:		   14.1940 ms speedup 	    6.16
+OpenMP Singlewrite Remap:		    8.7330 ms speedup 	   10.59
+OpenMP Hierarchical Remap:		    9.2610 ms speedup 	    5.50
+OpenMP Compact Singlewrite Remap:	   10.2030 ms speedup 	   17.50
+OpenMP Compact Hierarchical Remap:	   14.7430 ms speedup 	   21.25
+
+GPU Full Perfect Remap:			   14.0890 ms
+GPU Singlewrite Remap:			    9.9330 ms
+GPU Hierarchical Remap:			    5.1560 ms
+AMR_remap/AMR_remap_openMP 256 5 1.13      0  1 -adapt-meshgen -no-brute
+--- max num openmp threads: 32
+--- num openmp threads in parallel region: 32
+                      Input mesh                       Output mesh
+           --------------------------------  --------------------------------
+run num    sparsity percent compressibility  sparsity percent compressibility
+-------    ---------------- ---------------  ---------------- ---------------
+run #0
+For level 0, numcells is 29442
+For level 1, numcells is 12910
+For level 2, numcells is 11415
+For level 3, numcells is 7622
+For level 4, numcells is 3411
+For level 5, numcells is 736
+
+For level 0, numcells is 29554
+For level 1, numcells is 12960
+For level 2, numcells is 11392
+For level 3, numcells is 7549
+For level 4, numcells is 3361
+For level 5, numcells is 720
+         96.455896         28.215851         96.506429         28.623980 fine cells 67108864 ncells in 2378410 ncells out 2344498
+~~~~~~~~~~~~~~~~Averages~~ ~~~~~~~~~~~~~~
+sparsity percent compressibility    cells in fine mesh average ncells
+---------------- ---------------      --------------     ----------  
+     96.481156     28.418451            67108864                2361454
+ --------------------------------------------------------------------
+KD Tree Remap:				 5849.7750 ms
+Full Perfect Remap:			  337.8850 ms
+Singlewrite Remap:			  378.7250 ms Speedup relative to full hash     0.89
+Hierarchical Remap:			  238.7890 ms Speedup relative to full hash     1.41
+Compact Singlewrite Remap:		  854.1630 ms
+Compact Hierarchical Remap:		 1353.2590 ms
+
+OpenMP Full Perfect Remap:		   49.9560 ms speedup 	    6.76
+OpenMP Singlewrite Remap:		   34.8510 ms speedup 	   10.87
+OpenMP Hierarchical Remap:		   27.3420 ms speedup 	    8.73
+OpenMP Compact Singlewrite Remap:	   39.9630 ms speedup 	   21.37
+OpenMP Compact Hierarchical Remap:	   50.0890 ms speedup 	   27.02
+
+GPU Full Perfect Remap:			   97.6410 ms
+GPU Singlewrite Remap:			   35.1970 ms
+GPU Hierarchical Remap:			   18.8080 ms
+AMR_remap/AMR_remap_openMP 256 6 0.78      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 28: 26985 Segmentation fault      AMR_remap/AMR_remap_openMP 256 6 0.78 0 1 -adapt-meshgen -no-brute
+AMR_remap/AMR_remap_openMP 256 7 0.49      0  1 -adapt-meshgen -no-brute
+./checkit.sh: line 29: 27026 Segmentation fault      AMR_remap/AMR_remap_openMP 256 7 0.49 0 1 -adapt-meshgen -no-brute
+#../../AMR_remap/AMR_remap_openMP 255 8 0.28 474345  1 -adapt-meshgen -no-brute
+
