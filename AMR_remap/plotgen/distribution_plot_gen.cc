@@ -6,9 +6,10 @@ typedef unsigned int uint;
 uint basesize = 64;
 uint levmax = 6;
 float adapt_threshhold = 20.0f;
-uint numcells = 118;
-uint num_runs = 10;
+uint numcells = 16399;
+uint num_runs = 1;
 uint cell_inc = 3;
+float threshhold_inc = 0.0;
 
 long seed = 0xDEADBEEF;
 
@@ -42,6 +43,10 @@ int main (int argc, char** argv){
             if (strcmp(arg,"-adapt-meshgen")==0){
                 adapt_meshgen = 1;
             } else
+            if (strcmp(arg,"-threshhold-inc")==0){
+                i++;
+                threshhold_inc = atof(argv[i]);
+            } else
             if (strcmp(arg,"-ncells")==0){
                 i++;
                 numcells = atoi(argv[i]);
@@ -50,7 +55,7 @@ int main (int argc, char** argv){
                     numcells /= 3;
                     numcells *= 3;
                     numcells ++;
-                    printf("\nImpossible number of cells, using %u instead\n", numcells);
+                    //printf("\nImpossible number of cells, using %u instead\n", numcells);
                 }
             } else
             if (strcmp(arg,"-lev")==0){
@@ -102,23 +107,27 @@ int main (int argc, char** argv){
         if (adapt_meshgen){
             ocells = adaptiveMeshConstructorWij(ocells, basesize, levmax, adapt_threshhold, numcells);
             if (print_mode){
-            printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
-            olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                olev_count[i-levmin] = 0;
-            }
-            for (uint i = levmin; i < ocells.ncells; i++){
-                olev_count[ocells.level[i-levmin]]++;
-            }
-            for (uint i = levmin; i <= ocells.levmax; i++){
-                printf ("lev %u: %u\n", i-levmin, olev_count[i]);
-            }
+                printf ("Adapt-meshgen: %u cells.\n", ocells.ncells);
+                if (threshhold_inc!=0){
+                    printf ("Threshhold = %f\n", adapt_threshhold);
+                }
+                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
+                for (uint i = 0; i < ocells.levmax; i++){
+                    olev_count[i-levmin] = 0;
+                }
+                for (uint i = 0; i < ocells.ncells; i++){
+                    olev_count[ocells.level[i]]++;
+                }
+                for (uint i = 0; i <= ocells.levmax; i++){
+                    printf ("lev %u: %u\n", i-levmin, olev_count[i]);
+                }
+                free (olev_count);
             }
             if (output_mode){
                 PrintMesh(ocells);
             }
             destroy(ocells);
-            free (olev_count);
+            
         }else{
         
             uint ilength = numcells;
@@ -175,6 +184,7 @@ int main (int argc, char** argv){
                 free (olev_count);
         }
     numcells += cell_inc;
+    adapt_threshhold+=threshhold_inc;
     }
     return 0;
 }
