@@ -1,4 +1,5 @@
 #include "distribution_plot_gen.h"
+#include <time.h>
 
 
 typedef unsigned int uint;
@@ -100,6 +101,9 @@ int main (int argc, char** argv){
     cell_list ocells;
     uint levmin = 0;
     uint* olev_count;
+    if (!force_seed){
+        srand ((unsigned)time(NULL));
+    }
     for (uint run_num = 0; run_num<num_runs; run_num++){
         if (force_seed) {
             srand(seed);
@@ -111,14 +115,14 @@ int main (int argc, char** argv){
                 if (threshhold_inc!=0){
                     printf ("Threshhold = %f\n", adapt_threshhold);
                 }
-                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax+1));
+                olev_count = (uint*)malloc(sizeof(uint)*(ocells.levmax));
                 for (uint i = 0; i < ocells.levmax; i++){
                     olev_count[i-levmin] = 0;
                 }
                 for (uint i = 0; i < ocells.ncells; i++){
                     olev_count[ocells.level[i]]++;
                 }
-                for (uint i = 0; i <= ocells.levmax; i++){
+                for (uint i = 0; i < ocells.levmax; i++){
                     printf ("lev %u: %u\n", i-levmin, olev_count[i]);
                 }
                 free (olev_count);
