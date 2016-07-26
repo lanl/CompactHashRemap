@@ -289,12 +289,16 @@ int main (int argc, char** argv) {
            olength = atoi (argv[4]);
            o_level_diff = atoi (argv[3]);
 
+           //srand(0xDEADBEEF);
            icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, sparsity);
+           printf("%u\n", icells.ibasesize);
            uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
+           
            ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, sparsity);
+           printf("%u\n", ocells.ibasesize);
            num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
@@ -679,9 +683,9 @@ int main (int argc, char** argv) {
     if (plot_file) {
        char filename[40];
        if (meshgen == ADAPT_MESHGEN){
-          sprintf(filename,"rundata%3d.dat", mesh_size);
+          sprintf(filename,"../RemapPaper/plots/rundata%3d.dat", mesh_size);
        } else {
-          sprintf(filename,"rundata%3d.dat", i_level_diff);
+          sprintf(filename,"../RemapPaper/plots/rundata%3d.dat", i_level_diff);
        }
 
        FILE *fout = fopen(filename,"a");
