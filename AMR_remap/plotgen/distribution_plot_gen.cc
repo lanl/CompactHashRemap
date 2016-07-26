@@ -206,7 +206,7 @@ void PrintMesh (cell_list icells){
     // the size across of the finest level of the mesh
     uint fine_size = two_to_the(icells.levmax)*icells.ibasesize;
     
-    printf ("finesize: %u from levmax %u and basesize %u\n", fine_size, icells.levmax, icells.ibasesize);
+    //printf ("finesize: %u from levmax %u and basesize %u\n", fine_size, icells.levmax, icells.ibasesize);
     
     // Add items to the hash
     for (uint ic = 0; ic < icells.ncells; ic++){
