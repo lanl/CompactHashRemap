@@ -101,7 +101,8 @@ int main (int argc, char** argv) {
     int run_brute = 1;
     int run_tree = 1;
     int run_tests = 1;
-    int plot_file = 0;
+    int plot_file_bool = 0;
+    char *plot_file;
     int meshgen = HIERARCHICAL_MESHGEN;
     if (argc < 6) {
        printf("Usage -- ./AMR_remap <i_level_diff> <ilength> <o_level_diff> <olength> <num_rep> [-no-brute,-no-test,-no-tree,-plot-file]\n");
@@ -126,7 +127,9 @@ int main (int argc, char** argv) {
                 run_tree = 0;
             } else 
             if (strcmp(arg,"-plot-file")==0){
-                plot_file = 1;
+                plot_file_bool = 1;
+                i++;
+                plot_file = argv[i];
             } else 
             if (strcmp(arg,"-adapt-meshgen")==0){
                 meshgen = ADAPT_MESHGEN;
@@ -292,20 +295,22 @@ int main (int argc, char** argv) {
            //srand(0xDEADBEEF);
            icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, sparsity);
            printf("%u\n", icells.ibasesize);
-           uint num_fine_cells = four_to_the(i_max_level) * icells.ibasesize * icells.ibasesize;
+           size_t num_fine_cells = (size_t)four_to_the(i_max_level) * (size_t)icells.ibasesize * (size_t)icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
            
            ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, sparsity);
            printf("%u\n", ocells.ibasesize);
-           num_fine_cells = four_to_the(o_max_level) * ocells.ibasesize * ocells.ibasesize;
+           num_fine_cells = (size_t)four_to_the(i_max_level) * (size_t)icells.ibasesize * (size_t)icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
            printf("\n");
-           icells.ncells    = ilength;
-
-           ocells.ncells    = olength;
+           
+           save_num_fine_cells = num_fine_cells;
+           
+           sum_ncells += icells.ncells;
+           sum_ncells += ocells.ncells;
            
            if (icells.ibasesize != ocells.ibasesize) {
                 printf("Meshes of incompatible size. Exiting.\n");
@@ -350,7 +355,7 @@ int main (int argc, char** argv) {
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
            //printf("\n");
-           printf(" fine cells %lu ncells in %u ncells out %u\n",num_fine_cells,icells.ncells,ocells.ncells);
+           //printf(" fine cells %lu ncells in %u ncells out %u\n",num_fine_cells,icells.ncells,ocells.ncells);
 
 #ifdef _OPENMP
            icells_openmp.ncells    = icells.ncells;
@@ -411,7 +416,7 @@ int main (int argc, char** argv) {
             ocells.values = val_test_kdtree;
 
             cpu_timer_start(&timer);
-            remap_kDtree2d(icells, ocells);
+            //remap_kDtree2d(icells, ocells);
             kd_tree_time += cpu_timer_stop(timer);
 
             if (val_test_answer == NULL) {
@@ -680,15 +685,8 @@ int main (int argc, char** argv) {
     printf("\n");
     printf(" --------------------------------------------------------------------\n");
 
-    if (plot_file) {
-       char filename[40];
-       if (meshgen == ADAPT_MESHGEN){
-          sprintf(filename,"../RemapPaper/plots/rundata%3d.dat", mesh_size);
-       } else {
-          sprintf(filename,"../RemapPaper/plots/rundata%3d.dat", i_level_diff);
-       }
-
-       FILE *fout = fopen(filename,"a");
+    if (plot_file_bool) {
+       FILE *fout = fopen(plot_file,"a");
        fprintf(fout,"%2d,\t", levmax);
        if (run_brute) {
           fprintf(fout,"%9.3f,\t", brute_force_time/num_rep*1000);

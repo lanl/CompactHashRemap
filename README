@@ -59,7 +59,7 @@ Running the code
    sample: 2 10 2 10 10
    sample: 8 50000 9 200000 1
 
-   ./AMR_remap_openMP 6 1000000 6 1000000 10 -no-brute
+   ./AMR_remap_openMP 6 1000000 6 1000000 10 -no-brute -no-tree
    
    An alternate mesh generation is available that can better explore more realistic
    AMR meshes. To run it add -adapt-meshgen and the input options are the size of the base mesh, the number of
