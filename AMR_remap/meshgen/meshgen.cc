@@ -313,7 +313,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
   //unsigned int iseed = (unsigned int)time(NULL);
   //srand (iseed);
   //srand (0);
-  for(int ii = levmax; ii >= 0; ii--) {
+  for(int ii = levmax-1; ii >= 0; ii--) {
     float lev_threshold = threshold*(float)ii/(float)levmax;
     for(ic = 0; ic < ncells; ic++) {
       float jj = (100.0*(float)rand() / ((float)RAND_MAX));
@@ -396,7 +396,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
         uint jcount = 0;
         while (increase_count > 0 && jcount < ncells) {
           uint jj = 1 + (uint)((float)ncells*rand() / (RAND_MAX+1.0));
-          if(jj>0 && jj<ncells && level[jj] < levmax) {
+          if(jj>0 && jj<ncells && level[jj] < levmax-1) {
             increase_count-=4;
             level[jj]++;
           }
@@ -455,7 +455,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
   //printf("Refinement smoothed.\n");
   int small_cells = 0;
   for(ic = 0; ic < ncells; ic++) {
-    if (level[ic] == (uint)levmax) {
+    if (level[ic] == (uint)levmax-1) {
       small_cells++;
     }
   }
@@ -463,10 +463,10 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
 
 #ifdef CHECK_LEV
   int *lev_check = (int *)malloc(sizeof(int)*(levmax+1));
-  for(int lev = 0; lev <= levmax; lev++) {
+  for(int lev = 0; lev < levmax; lev++) {
      lev_check[lev] = 0;
   }
-  for(int lev = 0; lev <= levmax; lev++) {
+  for(int lev = 0; lev < levmax; lev++) {
     for(ic = 0; ic < ncells; ic++) {
        if (level[ic] == lev) {
          lev_check[lev]++;
@@ -474,7 +474,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
     }
   }
   printf("\n");
-  for(int lev = 0; lev <= levmax; lev++) {
+  for(int lev = 0; lev < levmax; lev++) {
      printf("For level %d, numcells is %d\n",lev,lev_check[lev]);
   }
   free(lev_check);
