@@ -247,11 +247,12 @@ double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests,
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 1, sizeof(cl_uint), &ocells.ibasesize);
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 2, sizeof(cl_uint), &ocells.levmax);
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 3, sizeof(cl_mem),  &hash_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 4, sizeof(cl_mem),  &ival_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 5, sizeof(cl_mem),  &ocelli_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 6, sizeof(cl_mem),  &ocellj_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 7, sizeof(cl_mem),  &olevel_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 8, sizeof(cl_mem),  &oval_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 4, sizeof(cl_mem),  &ilevel_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 5, sizeof(cl_mem),  &ival_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 6, sizeof(cl_mem),  &ocelli_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 7, sizeof(cl_mem),  &ocellj_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 8, sizeof(cl_mem),  &olevel_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 9, sizeof(cl_mem),  &oval_buffer);
 
 #ifdef DETAILED_TIMING
     cl_event hash_query_event;

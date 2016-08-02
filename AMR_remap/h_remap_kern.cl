@@ -162,45 +162,89 @@ __kernel void full_perfect_hash_2part_setup2 (
     }
 }
 
+inline double avg_sub_cells (
+                 uint   ji,
+                 uint   ii,
+                 uint   level,
+                 uint   max_lev,
+                 uint   mesh_size,
+        __global const uint   *icells_level,
+        __global const double *icellsVal,
+        __global const int    *hash) {
+
+    double sum = 0.0;
+    uint i_max = two_to_the(max_lev);
+    uint jump = two_to_the(max_lev - level - 1);
+
+    // Needed for the stride in hashval macro
+    int imaxsize = mesh_size*two_to_the(max_lev);
+
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < 2; i++) {
+            int ic = hashval(ji + (j*jump), ii + (i*jump));
+            if (icells_level[ic] == (level + 1)) {
+                sum += icellsVal[ic];
+            } else {
+                sum += avg_sub_cells(ji + (j*jump), ii + (i*jump), level + 1,
+                       max_lev, mesh_size, icells_level, icellsVal, hash);
+            }
+        }
+    }
+
+    return sum/4.0;
+}
+
 __kernel void full_perfect_hash_query (
                  const uint   ncells,
                  const uint   mesh_size,
                  const uint   max_lev,
         __global const int    *hash,
+        __global const uint   *icells_level,
         __global const double *icells_values,
         __global const uint   *ocells_i,
         __global const uint   *ocells_j,
         __global const uint   *ocells_level,
         __global       double *ocells_values){
 
-    const int ic = get_global_id(0);
+    const int i = get_global_id(0);
 
-    if(ic >= ncells) return;
+    if(i >= ncells) return;
 
     // Needed for the stride in hashval macro
     int imaxsize = mesh_size*two_to_the(max_lev);
 
-    uint lev = ocells_level[ic];
-    uint i = ocells_i[ic];
-    uint j = ocells_j[ic];
-    
-    // If at the finest level, get the index number and
-    // get the value of the input mesh at that index
-    if (lev == max_lev) {
-        ocells_values[ic] = icells_values[hashval(j,i)];
-    } else {
-        // Sum up the values in the underlying block of
-        // cells at the finest level and average
-        uint lev_mod = two_to_the(max_lev - lev);
+    uint io = ocells_i[i];
+    uint jo = ocells_j[i];
+    uint lev = ocells_level[i];
 
-        ocells_values[ic] = 0.0;
-        for (    uint jj = j*lev_mod; jj < (j+1)*lev_mod; jj++) {
-            for (uint ii = i*lev_mod; ii < (i+1)*lev_mod; ii++) {
-                ocells_values[ic] += icells_values[hashval(jj,ii)];
-            }
-        }
-        // Get average by dividing by number of cells
-        ocells_values[ic] /= (double)(lev_mod*lev_mod);
+    uint ii, ji;
+    if (lev < max_lev) {
+        uint lev_mod = two_to_the(max_lev - lev);
+        ii = io*lev_mod;
+        ji = jo*lev_mod;
+    } else {
+        uint lev_mod = two_to_the(lev - max_lev);
+        ii = io/lev_mod;
+        ji = jo/lev_mod;
+    }
+
+    int ic = hashval(ji, ii);
+
+    if (lev > max_lev) lev = max_lev;
+    while (ic < 0 && lev > 0) {
+        lev--;
+        uint lev_diff = max_lev - lev;
+        ii >>= lev_diff;
+        ii <<= lev_diff;
+        ji >>= lev_diff;
+        ji <<= lev_diff;
+        ic = hashval(ji, ii);
+    }
+    if (lev >= icells_level[ic]) {
+        ocells_values[i] = icells_values[ic];
+    } else {
+        ocells_values[i] = avg_sub_cells(ji, ii, lev, max_lev, mesh_size,
+                           icells_level, icells_values, hash);
     }
 }
 
@@ -236,38 +280,6 @@ __kernel void singlewrite_hash_setup (
     int jjj =  j[ic]*imult;
 
     hashval(jjj, iii) = ic;
-}
-
-inline double avg_sub_cells (
-                 uint   ji,
-                 uint   ii,
-                 uint   level,
-                 uint   max_lev,
-                 uint   mesh_size,
-        __global const uint   *icells_level,
-        __global const double *icellsVal,
-        __global const int    *hash) {
-
-    double sum = 0.0;
-    uint i_max = two_to_the(max_lev);
-    uint jump = two_to_the(max_lev - level - 1);
-
-    // Needed for the stride in hashval macro
-    int imaxsize = mesh_size*two_to_the(max_lev);
-
-    for (int j = 0; j < 2; j++) {
-        for (int i = 0; i < 2; i++) {
-            int ic = hashval(ji + (j*jump), ii + (i*jump));
-            if (icells_level[ic] == (level + 1)) {
-                sum += icellsVal[ic];
-            } else {
-                sum += avg_sub_cells(ji + (j*jump), ii + (i*jump), level + 1,
-                       max_lev, mesh_size, icells_level, icellsVal, hash);
-            }
-        }
-    }
-
-    return sum/4.0;
 }
 
 __kernel void singlewrite_hash_query (
