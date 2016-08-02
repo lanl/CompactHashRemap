@@ -36,7 +36,7 @@
 void setup_cl ();
 void cleanup_cl();
 
-double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests);
+double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests, int use2stepinit);
 double cl_singlewrite_remap (cell_list icells, cell_list ocells, int run_tests);
 double cl_compact_singlewrite_remap (cell_list icells, cell_list ocells, int run_tests);
 double cl_hierarchical_remap (cell_list icells, cell_list ocells, int run_tests);

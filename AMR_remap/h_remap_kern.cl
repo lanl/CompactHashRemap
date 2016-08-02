@@ -68,7 +68,98 @@ __kernel void full_perfect_hash_setup (
             hashval(jjj, iii) = ic;
         }
     }
+}
 
+__kernel void full_perfect_hash_2part_setup1 (
+                 const uint ncells,
+                 const uint mesh_size,
+                 const uint max_lev,
+        __global const uint *i,
+        __global const uint *j,
+        __global const uint *level,
+        __global       int  *hash){
+
+    const int ic = get_global_id(0);
+
+    if(ic >= ncells) return;
+
+    // Needed for the stride in hashval macro
+    int imaxsize = mesh_size*two_to_the(max_lev);
+
+    int lev = level[ic];
+    int ii = i[ic];
+    int jj = j[ic];
+
+    int imult = two_to_the(max_lev - lev);
+
+    int iimin =  ii   *imult;
+    int jjmin =  jj   *imult;
+    
+    hashval(jjmin, iimin) = ic;
+}
+
+__kernel void full_perfect_hash_2part_setup2 (
+                 const uint ncells,
+                 const uint mesh_size,
+                 const uint max_lev,
+        __global const uint *i,
+        __global const uint *j,
+        __global const uint *level,
+        __global       int  *hash){
+
+    const int ic = get_global_id(0);
+    
+    const int maxcellsize = two_to_the(max_lev);
+    
+    const int imaxsize = mesh_size*maxcellsize;
+    
+    if (ic>imaxsize*imaxsize) return;
+    
+    
+    int jj = ic/imaxsize;
+    int ii = ic%imaxsize;
+    
+    // these are the ij of the cell as if rounded to the largest possible cell
+    // that could contain it
+    int jb = (jj/maxcellsize)*maxcellsize;
+    int ib = (ii/maxcellsize)*maxcellsize;
+    
+    int basekey = jb*imaxsize + ib;
+    
+    if (basekey == ic) return;
+    
+    if (level[hash[basekey]] == 0){
+            hash[ic] = hash[basekey];
+            return;
+    }
+    
+    
+    
+    for (int lev = 0; lev < max_lev; lev++){
+        // we need to know which quadrant to check next.
+        int imult = two_to_the(max_lev-lev);
+        
+        
+        
+        // jr and ir together forming the far corner of a bounding box of base
+        int jr = jb+imult;
+        int ir = ib+imult;
+        
+        if (jr <= jj){
+            jb+=imult;
+        }
+        if (ir <= ii){
+            ib+=imult;
+        }
+        basekey = jb*imaxsize + ib;
+        if (basekey == ic) return;
+        // if we have the correct level, we look to write
+        if (level[hash[basekey]] == lev){
+            hash[ic] = hash[basekey];
+            return;
+        }
+        //hash[ic] = ib;
+    }
 }
 
 __kernel void full_perfect_hash_query (
@@ -92,7 +183,7 @@ __kernel void full_perfect_hash_query (
     uint lev = ocells_level[ic];
     uint i = ocells_i[ic];
     uint j = ocells_j[ic];
-
+    
     // If at the finest level, get the index number and
     // get the value of the input mesh at that index
     if (lev == max_lev) {
