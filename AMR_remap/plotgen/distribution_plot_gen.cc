@@ -4,7 +4,7 @@
 
 typedef unsigned int uint;
 
-uint basesize = 64;
+uint basesize = 2;
 uint levmax = 6;
 float adapt_threshhold = 20.0f;
 uint numcells = 16399;
@@ -136,9 +136,9 @@ int main (int argc, char** argv){
         
             uint ilength = numcells;
             uint i_max_level;
-            ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, sparsity);
+            ocells = mesh_maker(ocells, levmax, &ilength, &i_max_level, sparsity, basesize);
             numcells = ocells.ncells;
-            //ocells = shuffle_cell_list(ocells, ilength*0xFF);
+            ocells = shuffle_cell_list(ocells, ilength*0xFF);
             //printf("Max lev: %u\n", i_max_level);
             levmin = 0;
             //levmin = ocells.level[0];
