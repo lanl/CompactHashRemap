@@ -234,7 +234,7 @@ void PrintMesh (cell_list icells){
         for (uint jj = 0; jj < fine_size; jj++){    
             uint key = ii + jj*fine_size;
             
-            printf ("%u ", hash[key]);
+            printf ("%u ", (icells.level[hash[key]]*icells.ncells*7/6)+hash[key]);
             // if the number has too few digits, add space
             if(hash[key]/100 == 0){
                 printf (" ");

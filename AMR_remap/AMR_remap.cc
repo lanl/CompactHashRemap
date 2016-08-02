@@ -72,6 +72,7 @@ intintHash_Factory *OpenMPfactory;
 intintHash_Factory *CLFactory;
 
 double sparsity = 0.1;
+int min_base_size = 2;
 
 struct timeval timer;
 
@@ -137,6 +138,10 @@ int main (int argc, char** argv) {
             if (strcmp(arg,"-sparsity")==0){
                 i++;
                 sparsity = atof(argv[i]);
+            } else
+            if (strcmp(arg,"-min-base")==0){
+                i++;
+                min_base_size = atof(argv[i]);
             } else
             printf ("Invalid Argument: %s\n", arg);
         }
@@ -293,14 +298,14 @@ int main (int argc, char** argv) {
            o_level_diff = atoi (argv[3]);
 
            //srand(0xDEADBEEF);
-           icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, sparsity);
+           icells = mesh_maker(icells, i_level_diff, &ilength, &i_max_level, sparsity, min_base_size);
            printf("%u\n", icells.ibasesize);
            size_t num_fine_cells = (size_t)four_to_the(i_max_level) * (size_t)icells.ibasesize * (size_t)icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-icells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)icells.ncells);
            //printf("Trying ocells construction\n");
            
-           ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, sparsity);
+           ocells = mesh_maker(ocells, o_level_diff, &olength, &o_max_level, sparsity, min_base_size);
            printf("%u\n", ocells.ibasesize);
            num_fine_cells = (size_t)four_to_the(i_max_level) * (size_t)icells.ibasesize * (size_t)icells.ibasesize;
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
@@ -311,6 +316,9 @@ int main (int argc, char** argv) {
            
            sum_ncells += icells.ncells;
            sum_ncells += ocells.ncells;
+           
+           levmax = icells.levmax;
+           if (ocells.levmax > icells.levmax){levmax = ocells.levmax;}
            
            if (icells.ibasesize != ocells.ibasesize) {
                 printf("Meshes of incompatible size. Exiting.\n");
@@ -354,7 +362,7 @@ int main (int argc, char** argv) {
 
            printf("         %f",(float)(num_fine_cells-ocells.ncells)/(float)num_fine_cells*100.0);
            printf("         %f",(float)num_fine_cells/(float)ocells.ncells);
-           //printf("\n");
+           printf("\n");
            //printf(" fine cells %lu ncells in %u ncells out %u\n",num_fine_cells,icells.ncells,ocells.ncells);
 
 #ifdef _OPENMP
@@ -416,7 +424,7 @@ int main (int argc, char** argv) {
             ocells.values = val_test_kdtree;
 
             cpu_timer_start(&timer);
-            //remap_kDtree2d(icells, ocells);
+            remap_kDtree2d(icells, ocells);
             kd_tree_time += cpu_timer_stop(timer);
 
             if (val_test_answer == NULL) {
@@ -712,7 +720,7 @@ int main (int argc, char** argv) {
 #endif
        fprintf(fout,"%9.3f,\t", gpu_full_perfect_remap_time/num_rep*1000);
        fprintf(fout,"%9.3f,\t", gpu_singlewrite_remap_time/num_rep*1000);
-       //fprintf(fout,"%9.3f,\t", gpu_hierarchical_remap_time/num_rep*1000);
+       fprintf(fout,"%9.3f,\t", gpu_hierarchical_remap_time/num_rep*1000);
        //fprintf(fout,"%9.3f,\t", gpu_compact_singlewrite_remap_time/num_rep*1000);
 
        fprintf(fout,"%8lu,\t",average_ncells);
