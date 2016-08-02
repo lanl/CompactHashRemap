@@ -630,7 +630,7 @@ int main (int argc, char** argv) {
 // Full Perfect Remap GPU
         memset(ocells.values,  0xFFFFFFFF, olength*sizeof(double));
 
-        gpu_full_perfect_remap_time+=cl_full_perfect_remap(icells, ocells, run_tests);
+        gpu_full_perfect_remap_time+=cl_full_perfect_remap(icells, ocells, run_tests,1);
 
         if (run_tests) check_output("GPU Full Perfect Remap", ocells.ncells, ocells.values, val_test_answer);
         

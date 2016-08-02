@@ -62,6 +62,8 @@ cl_device_id device_id;
 cl_context context;
 cl_command_queue queue;
 cl_kernel full_perfect_hash_setup_kernel;
+cl_kernel full_perfect_hash_2part_setup1_kernel;
+cl_kernel full_perfect_hash_2part_setup2_kernel;
 cl_kernel full_perfect_hash_query_kernel;
 cl_kernel singlewrite_hash_init_kernel;
 cl_kernel singlewrite_hash_setup_kernel;
@@ -93,6 +95,8 @@ void setup_cl (){
     cl_program program = ezcl_create_program_wsource(context, NULL, (const char *)all_sources);
 
     full_perfect_hash_setup_kernel      = ezcl_create_kernel_wprogram(program, "full_perfect_hash_setup");
+    full_perfect_hash_2part_setup1_kernel      = ezcl_create_kernel_wprogram(program, "full_perfect_hash_2part_setup1");
+    full_perfect_hash_2part_setup2_kernel      = ezcl_create_kernel_wprogram(program, "full_perfect_hash_2part_setup2");
     full_perfect_hash_query_kernel      = ezcl_create_kernel_wprogram(program, "full_perfect_hash_query");
     singlewrite_hash_init_kernel          = ezcl_create_kernel_wprogram(program, "singlewrite_hash_init");
     singlewrite_hash_setup_kernel         = ezcl_create_kernel_wprogram(program, "singlewrite_hash_setup");
@@ -113,6 +117,8 @@ void setup_cl (){
 
 void cleanup_cl(){
     ezcl_kernel_release(full_perfect_hash_setup_kernel);
+    ezcl_kernel_release(full_perfect_hash_2part_setup1_kernel);
+    ezcl_kernel_release(full_perfect_hash_2part_setup2_kernel);
     ezcl_kernel_release(full_perfect_hash_query_kernel);
     ezcl_kernel_release(singlewrite_hash_init_kernel);
     ezcl_kernel_release(singlewrite_hash_setup_kernel);
@@ -128,7 +134,7 @@ void cleanup_cl(){
  }
 
 // returns the timing and the results in oval if run_tests flag is set
-double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests){
+double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests, int use2stepinit){
                  
     cl_context       context = ezcl_get_context();
     cl_command_queue queue   = ezcl_get_command_queue();
@@ -164,49 +170,89 @@ double cl_full_perfect_remap (cell_list icells, cell_list ocells, int run_tests)
 #ifdef DETAILED_TIMING
     cpu_timer_start(&timer1);
 #endif
-    
     size_t global_work_size[1];
     size_t local_work_size[1];
     
-    local_work_size[0] = TILE_SIZE;
-
-    global_work_size[0] = ((local_work_size[0]+icells.ncells-1)/local_work_size[0])*local_work_size[0];
-
-    // The hash is the size of the sum of all the points in the array - so enough to hold all the scanned powers of 4
     uint hash_size = icells.ibasesize*two_to_the(icells.levmax)*icells.ibasesize*two_to_the(icells.levmax);
     cl_mem hash_buffer = ezcl_device_memory_malloc(context, NULL, "hash", hash_size, sizeof(int), CL_MEM_READ_WRITE, 0);
+    if (!use2stepinit){
+        
+        
+        local_work_size[0] = TILE_SIZE;
 
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 0, sizeof(cl_uint), &icells.ncells);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 1, sizeof(cl_uint), &icells.ibasesize);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 2, sizeof(cl_uint), &icells.levmax);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 3, sizeof(cl_mem),  &icelli_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 4, sizeof(cl_mem),  &icellj_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 5, sizeof(cl_mem),  &ilevel_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 6, sizeof(cl_mem),  &hash_buffer);
+        global_work_size[0] = ((local_work_size[0]+icells.ncells-1)/local_work_size[0])*local_work_size[0];
+
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 0, sizeof(cl_uint), &icells.ncells);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 1, sizeof(cl_uint), &icells.ibasesize);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 2, sizeof(cl_uint), &icells.levmax);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 3, sizeof(cl_mem),  &icelli_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 4, sizeof(cl_mem),  &icellj_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 5, sizeof(cl_mem),  &ilevel_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_setup_kernel, 6, sizeof(cl_mem),  &hash_buffer);
 
 #ifdef DETAILED_TIMING
-    cl_event hash_setup_event;
-    ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_setup_kernel, 1, 0, global_work_size, local_work_size, &hash_setup_event);
-    long long gpu_time = ezcl_timer_calc(&hash_setup_event, &hash_setup_event);
-    double setup_time = cpu_timer_stop(timer1);
-    printf("setup time is %8.4f ms %8.4f ms\n",1.0e-6*(double)gpu_time, setup_time*1000.0);
-    cpu_timer_start(&timer1);
-    //clReleaseEvent(hash_setup_event);
+        cl_event hash_setup_event;
+        ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_setup_kernel, 1, 0, global_work_size, local_work_size, &hash_setup_event);
+        long long gpu_time = ezcl_timer_calc(&hash_setup_event, &hash_setup_event);
+        double setup_time = cpu_timer_stop(timer1);
+        printf("setup time is %8.4f ms %8.4f ms\n",1.0e-6*(double)gpu_time, setup_time*1000.0);
+        cpu_timer_start(&timer1);
+        //clReleaseEvent(hash_setup_event);
 #else
-    ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_setup_kernel, 1, 0, global_work_size, local_work_size, NULL);
+        ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_setup_kernel, 1, 0, global_work_size, local_work_size, NULL);
 #endif
+    }else{ // use 2 step setup
+    
+        // ***** part 1 *****
+        local_work_size[0] = TILE_SIZE;
 
+        global_work_size[0] = ((local_work_size[0]+icells.ncells-1)/local_work_size[0])*local_work_size[0];
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 0, sizeof(cl_uint), &icells.ncells);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 1, sizeof(cl_uint), &icells.ibasesize);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 2, sizeof(cl_uint), &icells.levmax);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 3, sizeof(cl_mem),  &icelli_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 4, sizeof(cl_mem),  &icellj_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 5, sizeof(cl_mem),  &ilevel_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup1_kernel, 6, sizeof(cl_mem),  &hash_buffer);
+        
+        ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_2part_setup1_kernel, 1, 0, global_work_size, local_work_size, NULL);
+        
+        // ***** part 2 *****
+        global_work_size[0] = ((local_work_size[0]+hash_size-1)/local_work_size[0])*local_work_size[0];
+        
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 0, sizeof(cl_uint), &icells.ncells);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 1, sizeof(cl_uint), &icells.ibasesize);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 2, sizeof(cl_uint), &icells.levmax);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 3, sizeof(cl_mem),  &icelli_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 4, sizeof(cl_mem),  &icellj_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 5, sizeof(cl_mem),  &ilevel_buffer);
+        ezcl_set_kernel_arg(full_perfect_hash_2part_setup2_kernel, 6, sizeof(cl_mem),  &hash_buffer);
+        
+#ifdef DETAILED_TIMING
+        cl_event hash_setup_event;
+        ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_2part_setup2_kernel, 1, 0, global_work_size, local_work_size, &hash_setup_event);
+        long long gpu_time = ezcl_timer_calc(&hash_setup_event, &hash_setup_event);
+        double setup_time = cpu_timer_stop(timer1);
+        printf("setup time is %8.4f ms %8.4f ms\n",1.0e-6*(double)gpu_time, setup_time*1000.0);
+        cpu_timer_start(&timer1);
+        //clReleaseEvent(hash_setup_event);
+#else
+        ezcl_enqueue_ndrange_kernel(queue, full_perfect_hash_2part_setup2_kernel, 1, 0, global_work_size, local_work_size, NULL);
+#endif     
+    }
+    
     global_work_size[0] = ((local_work_size[0]+ocells.ncells-1)/local_work_size[0])*local_work_size[0];
     
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 0, sizeof(cl_uint), &ocells.ncells);
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 1, sizeof(cl_uint), &ocells.ibasesize);
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 2, sizeof(cl_uint), &ocells.levmax);
     ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 3, sizeof(cl_mem),  &hash_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 4, sizeof(cl_mem),  &ival_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 5, sizeof(cl_mem),  &ocelli_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 6, sizeof(cl_mem),  &ocellj_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 7, sizeof(cl_mem),  &olevel_buffer);
-    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 8, sizeof(cl_mem),  &oval_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 4, sizeof(cl_mem),  &ilevel_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 5, sizeof(cl_mem),  &ival_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 6, sizeof(cl_mem),  &ocelli_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 7, sizeof(cl_mem),  &ocellj_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 8, sizeof(cl_mem),  &olevel_buffer);
+    ezcl_set_kernel_arg(full_perfect_hash_query_kernel, 9, sizeof(cl_mem),  &oval_buffer);
 
 #ifdef DETAILED_TIMING
     cl_event hash_query_event;
