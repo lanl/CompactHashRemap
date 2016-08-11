@@ -94,7 +94,7 @@ void destroy(cell_list a) {
 }
 
 cell_list mesh_maker(cell_list clist, uint num_levels, uint *length, 
-                                uint *max_level, double sparsity, int min_base_size) {
+                                uint *max_level, double sparsity, uint min_base_size) {
     *max_level = num_levels-1;
     uint cell_count;
     

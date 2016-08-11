@@ -72,7 +72,7 @@ intintHash_Factory *OpenMPfactory;
 intintHash_Factory *CLFactory;
 
 double sparsity = 0.1;
-int min_base_size = 2;
+uint min_base_size = 2;
 
 struct timeval timer;
 

@@ -62,7 +62,7 @@ cell_list create_cell_list(cell_list a, int length);
 void destroy(cell_list a);
 
 cell_list mesh_maker (cell_list clist, uint levels_diff, uint *length,
-    uint *max_level, double sparsity, int min_base_size);
+    uint *max_level, double sparsity, uint min_base_size);
 cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint levmax, float threshold,
     uint target_ncells);
 void divide_cell (uint super_i, uint super_j, uint super_level, cell_list cells, 
