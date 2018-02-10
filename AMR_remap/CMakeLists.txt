@@ -66,7 +66,7 @@ if (OPENMP_FOUND)
       set_target_properties(AMR_remap_openMP PROPERTIES COMPILE_DEFINITIONS "HAVE_OPENCL")
       target_link_libraries(AMR_remap_openMP ezcl)
       target_link_libraries(AMR_remap_openMP ${OPENCL_LIBRARIES})
-      add_dependencies(AMR_remap h_remap_kernel_source)
+      add_dependencies(AMR_remap_openMP h_remap_kernel_source)
    endif(OPENCL_FOUND)
 endif (OPENMP_FOUND)
 

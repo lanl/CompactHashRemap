@@ -98,7 +98,15 @@ endif (MIC_NATIVE)
 #endif (MPI_FOUND)
 
 #if (BF_CLANG-NOTFOUND)
+   if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 3.6.0)
+     cmake_policy(PUSH)
+     # Suppress warnings in FindOpenMP
+     cmake_policy(SET CMP0012 NEW)
+   endif (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 3.6.0)
    find_package( OpenMP)
+   if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 3.6.0)
+     cmake_policy(POP)
+   endif (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER 3.6.0)
 #endif()
 
 add_subdirectory(AMR_remap)
