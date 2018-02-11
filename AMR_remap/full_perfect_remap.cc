@@ -98,15 +98,9 @@ void full_perfect_remap (cell_list icells, cell_list ocells) {
         uint j = ocells.j[ic];
         uint lev = ocells.level[ic];
 
-        if (lev < ocells.levmax) {
-            lev_mod = two_to_the(ocells.levmax - lev);
-            ii = i*lev_mod;
-            jj = j*lev_mod;
-        } else {
-            lev_mod = two_to_the(lev - ocells.levmax);
-            ii = i/lev_mod;
-            jj = j/lev_mod;
-        }
+        lev_mod = two_to_the(ocells.levmax - lev);
+        ii = i*lev_mod;
+        jj = j*lev_mod;
 
         uint key = hash[(jj*i_max)+ii];
         
@@ -167,15 +161,9 @@ void full_perfect_remap_openMP (cell_list icells, cell_list ocells) {
             uint j = ocells.j[ic];
             uint ii, jj;
             
-            if (lev < ocells.levmax) {
-                lev_mod = two_to_the(ocells.levmax - lev);
-                ii = i*lev_mod;
-                jj = j*lev_mod;
-            } else {
-                lev_mod = two_to_the(lev - ocells.levmax);
-                ii = i/lev_mod;
-                jj = j/lev_mod;
-            }
+            lev_mod = two_to_the(ocells.levmax - lev);
+            ii = i*lev_mod;
+            jj = j*lev_mod;
             
             uint key = hash[(jj*i_max)+ii];
         

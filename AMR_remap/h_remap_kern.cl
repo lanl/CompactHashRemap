@@ -218,15 +218,9 @@ __kernel void full_perfect_hash_query (
     uint lev = ocells_level[i];
 
     uint ii, ji;
-    if (lev < max_lev) {
-        uint lev_mod = two_to_the(max_lev - lev);
-        ii = io*lev_mod;
-        ji = jo*lev_mod;
-    } else {
-        uint lev_mod = two_to_the(lev - max_lev);
-        ii = io/lev_mod;
-        ji = jo/lev_mod;
-    }
+    uint lev_mod = two_to_the(max_lev - lev);
+    ii = io*lev_mod;
+    ji = jo*lev_mod;
 
     int ic = hashval(ji, ii);
 

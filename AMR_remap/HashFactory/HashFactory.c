@@ -669,15 +669,15 @@ intintHash_Factory *intintHash_CreateFactory(int hashTypes, int *emptyValue,
 			clRetainCommandQueue(*queue);
 		}
 		cl_int error;
-		cl_device_id device;
+		cl_device_id device[3];
 		error =
 		    clGetContextInfo(factory->context, CL_CONTEXT_DEVICES,
-				     sizeof(device), &device, NULL);
+				     sizeof(device), device, NULL);
 		CLHash_Utilities_HandleError(error, "intintHash_CreateFactory",
 					     "clGetContextInfo");
 		factory->program =
 		    CLHash_Utilities_BuildProgramString(factory->context,
-							device,
+							device[0],
 							Hash_GetKernelSourceString
 							());
 	}
@@ -1381,10 +1381,10 @@ int intintIdentityPerfectCLHash_CreateFactory(intintHash_Factory * factory,
 	factory->destroyFunc[hashIndex] =
 	    &intintIdentityPerfectCLHash_DestroyFactory;
 	cl_int error;
-	cl_device_id device;
+	cl_device_id device[3];
 	error =
 	    clGetContextInfo(factory->context, CL_CONTEXT_DEVICES,
-			     sizeof(device), &device, NULL);
+			     sizeof(device), device, NULL);
 	CLHash_Utilities_HandleError(error, "intintHash_CreateFactory",
 				     "clGetContextInfo");
 	factory->querySingleKernel[hashIndex] =
@@ -1409,7 +1409,7 @@ int intintIdentityPerfectCLHash_CreateFactory(intintHash_Factory * factory,
 				     "intintIdentityPerfectCLHash_CreateFactory",
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
-	    CLHash_Utilities_BuildProgramString(factory->context, device,
+	    CLHash_Utilities_BuildProgramString(factory->context, device[0],
 						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
@@ -1418,7 +1418,7 @@ int intintIdentityPerfectCLHash_CreateFactory(intintHash_Factory * factory,
 				     "intintIdentityPerfectCLHash_CreateFactory",
 				     "clCreateKernel");
 	error =
-	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device,
+	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device[0],
 				     CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t),
 				     &factory->
 				     emptyKernelLocalWorkSize[hashIndex], NULL);
@@ -2532,10 +2532,10 @@ int intintIdentitySentinelPerfectCLHash_CreateFactory(intintHash_Factory *
 	factory->destroyFunc[hashIndex] =
 	    &intintIdentitySentinelPerfectCLHash_DestroyFactory;
 	cl_int error;
-	cl_device_id device;
+	cl_device_id device[3];
 	error =
 	    clGetContextInfo(factory->context, CL_CONTEXT_DEVICES,
-			     sizeof(device), &device, NULL);
+			     sizeof(device), device, NULL);
 	CLHash_Utilities_HandleError(error, "intintHash_CreateFactory",
 				     "clGetContextInfo");
 	factory->querySingleKernel[hashIndex] =
@@ -2560,7 +2560,7 @@ int intintIdentitySentinelPerfectCLHash_CreateFactory(intintHash_Factory *
 				     "intintIdentitySentinelPerfectCLHash_CreateFactory",
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
-	    CLHash_Utilities_BuildProgramString(factory->context, device,
+	    CLHash_Utilities_BuildProgramString(factory->context, device[0],
 						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
@@ -2569,7 +2569,7 @@ int intintIdentitySentinelPerfectCLHash_CreateFactory(intintHash_Factory *
 				     "intintIdentitySentinelPerfectCLHash_CreateFactory",
 				     "clCreateKernel");
 	error =
-	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device,
+	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device[0],
 				     CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t),
 				     &factory->
 				     emptyKernelLocalWorkSize[hashIndex], NULL);
@@ -3823,10 +3823,10 @@ int intintLCGLinearOpenCompactCLHash_CreateFactory(intintHash_Factory * factory,
 	factory->destroyFunc[hashIndex] =
 	    &intintLCGLinearOpenCompactCLHash_DestroyFactory;
 	cl_int error;
-	cl_device_id device;
+	cl_device_id device[3];
 	error =
 	    clGetContextInfo(factory->context, CL_CONTEXT_DEVICES,
-			     sizeof(device), &device, NULL);
+			     sizeof(device), device, NULL);
 	CLHash_Utilities_HandleError(error, "intintHash_CreateFactory",
 				     "clGetContextInfo");
 	factory->querySingleKernel[hashIndex] =
@@ -3851,7 +3851,7 @@ int intintLCGLinearOpenCompactCLHash_CreateFactory(intintHash_Factory * factory,
 				     "intintLCGLinearOpenCompactCLHash_CreateFactory",
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
-	    CLHash_Utilities_BuildProgramString(factory->context, device,
+	    CLHash_Utilities_BuildProgramString(factory->context, device[0],
 						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
@@ -3860,7 +3860,7 @@ int intintLCGLinearOpenCompactCLHash_CreateFactory(intintHash_Factory * factory,
 				     "intintLCGLinearOpenCompactCLHash_CreateFactory",
 				     "clCreateKernel");
 	error =
-	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device,
+	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device[0],
 				     CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t),
 				     &factory->
 				     emptyKernelLocalWorkSize[hashIndex], NULL);
@@ -5230,10 +5230,10 @@ int intintLCGQuadraticOpenCompactCLHash_CreateFactory(intintHash_Factory *
 	factory->destroyFunc[hashIndex] =
 	    &intintLCGQuadraticOpenCompactCLHash_DestroyFactory;
 	cl_int error;
-	cl_device_id device;
+	cl_device_id device[3];
 	error =
 	    clGetContextInfo(factory->context, CL_CONTEXT_DEVICES,
-			     sizeof(device), &device, NULL);
+			     sizeof(device), device, NULL);
 	CLHash_Utilities_HandleError(error, "intintHash_CreateFactory",
 				     "clGetContextInfo");
 	factory->querySingleKernel[hashIndex] =
@@ -5258,7 +5258,7 @@ int intintLCGQuadraticOpenCompactCLHash_CreateFactory(intintHash_Factory *
 				     "intintLCGQuadraticOpenCompactCLHash_CreateFactory",
 				     "clCreateKernel");
 	factory->utilProgram[hashIndex] =
-	    CLHash_Utilities_BuildProgramString(factory->context, device,
+	    CLHash_Utilities_BuildProgramString(factory->context, device[0],
 						CLHash_Utilities_kern_source);
 	factory->emptyKernel[hashIndex] =
 	    clCreateKernel(factory->utilProgram[hashIndex],
@@ -5267,7 +5267,7 @@ int intintLCGQuadraticOpenCompactCLHash_CreateFactory(intintHash_Factory *
 				     "intintLCGQuadraticOpenCompactCLHash_CreateFactory",
 				     "clCreateKernel");
 	error =
-	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device,
+	    clGetKernelWorkGroupInfo(factory->emptyKernel[hashIndex], device[0],
 				     CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t),
 				     &factory->
 				     emptyKernelLocalWorkSize[hashIndex], NULL);
