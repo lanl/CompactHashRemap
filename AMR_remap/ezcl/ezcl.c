@@ -675,7 +675,6 @@ void ezcl_device_info_p(cl_device_id device, const char *file, const int line){
 cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype, const char *file, const int line){
    cl_device_id *device;
    int ierr;
-   cl_command_queue_properties queueProps;
 
    device = (cl_device_id *)malloc(nDevices*sizeof(cl_device_id));
 
@@ -690,8 +689,23 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
 
    if (DEVICE_DETECT_DEBUG) printf("%d: DEBUG -- running on device %d\n",mype,mype%nDevices);
 
-   queueProps = ezcl_flags.timing ? CL_QUEUE_PROFILING_ENABLE : 0;
-   command_queue = clCreateCommandQueue(context, device[mype%nDevices], queueProps, &ierr);
+// Old OpenCL API
+// cl_command_queue_properties queueProps;
+// queueProps = ezcl_flags.timing ? CL_QUEUE_PROFILING_ENABLE : 0;
+// command_queue = clCreateCommandQueue(context, device[mype%nDevices], queueProps, &ierr);
+
+   cl_command_queue_properties queueProps[3];
+   if (ezcl_flags.timing) {
+     queueProps[0] = CL_QUEUE_PROPERTIES;
+     queueProps[1] = CL_QUEUE_PROFILING_ENABLE;
+     queueProps[2] = 0;
+   } else {
+     queueProps[0] = 0;
+     queueProps[1] = 0;
+     queueProps[2] = 0;
+   }
+
+   command_queue = clCreateCommandQueueWithProperties(context, device[mype%nDevices], queueProps, &ierr);
    if (ierr != CL_SUCCESS) {
      /* Possible Errors
       *  CL_INVALID_CONTEXT:
