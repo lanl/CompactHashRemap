@@ -343,7 +343,7 @@ cl_int ezcl_devtype_init_p(cl_device_type device_type, const char *file, int lin
       if (ierr == CL_INVALID_VALUE){
          printf("Invalid value in clGetPlatformID call\n");
       }
-      exit(-1);
+      return(EZCL_NODEVICE);
    }
    if (nPlatforms == 0) {
       printf("EZCL_DEVTYPE_INIT: Error -- No opencl platforms detected in file %s at line %d\n", file, line);

@@ -718,9 +718,11 @@ int main (int argc, char** argv) {
        fprintf(fout,"%9.3f,\t", compact_singlewrite_remap_openMP_time/num_rep*1000);
        fprintf(fout,"%9.3f,\t", compact_h_remap_openMP_time/num_rep*1000);
 #endif
+#ifdef _OPENCL
        fprintf(fout,"%9.3f,\t", gpu_full_perfect_remap_time/num_rep*1000);
        fprintf(fout,"%9.3f,\t", gpu_singlewrite_remap_time/num_rep*1000);
        fprintf(fout,"%9.3f,\t", gpu_hierarchical_remap_time/num_rep*1000);
+#endif
        //fprintf(fout,"%9.3f,\t", gpu_compact_singlewrite_remap_time/num_rep*1000);
 
        fprintf(fout,"%8lu,\t",average_ncells);
