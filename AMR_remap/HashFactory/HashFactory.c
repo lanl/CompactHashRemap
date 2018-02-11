@@ -462,9 +462,13 @@ int clFinish(int command_queue) {
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
 static int reportLevel = 0;
+#ifdef HAVE_OPENCL
 #include "HashFactory_source.inc"
+#endif
 const char *Hash_GetKernelSourceString() {
+#ifdef HAVE_OPENCL
 	return HashFactory_source;
+#endif
 }
 size_t roundUpToNearest(size_t x, size_t r) {
 	return (((x - 1) / r) + 1) * r;
