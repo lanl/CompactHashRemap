@@ -218,7 +218,11 @@ void CLHash_Utilities_CreateContext_p(cl_context *context, cl_command_queue *com
    *context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
    if(err != CL_SUCCESS) CLHash_Utilities_PrintError_p(err, "CLHash_Utilities_CreateContext", "clCreateContext", file, line);
 
-   *command_queue = clCreateCommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE, &err);
+// Deprecated version
+// *command_queue = clCreateCommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE, &err);
+
+   cl_queue_properties props[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
+   *command_queue = clCreateCommandQueueWithProperties(*context, device, props, &err);
    if(err != CL_SUCCESS) CLHash_Utilities_PrintError_p(err, "CLHash_Utilities_CreateContext", "clCreateCommandQueue", file, line);
 
    free(platforms);

@@ -367,7 +367,7 @@ cell_list adaptiveMeshConstructorWij(cell_list icells, const uint n, const uint 
     uint newcount = 0;
     for(ic = 0; ic < ncells; ic++) {newcount += (powerOfFour(level[ic]) - 1);}
 
-    while ( (uint)abs((ncells+newcount) - target_ncells) > MAX(5u,target_ncells/10000u) && icount < 40u) {
+    while ( (ncells+newcount) - target_ncells > MAX(5u,target_ncells/10000u) && icount < 40u) {
       icount++;
       //printf("DEBUG -- Adjusting cell count %ld target %ld diff %ld\n",ncells+newcount, target_ncells, abs(ncells+newcount - target_ncells));
 

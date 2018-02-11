@@ -48,6 +48,7 @@ if (OPENMP_FOUND)
    set_target_properties(HashFactory_openmp PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS}")
    if (OPENCL_FOUND)
       set_target_properties(HashFactory_openmp PROPERTIES COMPILE_DEFINITIONS "HAVE_OPENCL")
+      add_dependencies(HashFactory_openmp HashFactory_source.inc)
    endif (OPENCL_FOUND)
 endif (OPENMP_FOUND)
 
