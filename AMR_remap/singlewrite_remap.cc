@@ -147,15 +147,9 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
         uint jo = ocells.j[i];
         uint lev = ocells.level[i];
         
-        if (lev < ocells.levmax) {
-            uint lev_mod = two_to_the(ocells.levmax - lev);
-            ii = io*lev_mod;
-            ji = jo*lev_mod;
-        } else {
-            uint lev_mod = two_to_the(lev - ocells.levmax);
-            ii = io/lev_mod;
-            ji = jo/lev_mod;
-        }
+        uint lev_mod = two_to_the(ocells.levmax - lev);
+        ii = io*lev_mod;
+        ji = jo*lev_mod;
         
         uint key = ji*i_max + ii;
         int probe = hash[key];
@@ -233,15 +227,9 @@ void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
         uint jo = ocells.j[i];
         int lev = ocells.level[i];
         
-        if (lev < (int)ocells.levmax) {
-            uint lev_mod = two_to_the(ocells.levmax - lev);
-            ii = io*lev_mod;
-            ji = jo*lev_mod;
-        } else {
-            uint lev_mod = two_to_the(lev - ocells.levmax);
-            ii = io/lev_mod;
-            ji = jo/lev_mod;
-        }
+        uint lev_mod = two_to_the(ocells.levmax - lev);
+        ii = io*lev_mod;
+        ji = jo*lev_mod;
         
         uint key = ji*i_max + ii;
         int ic = read_hash(key, hash);

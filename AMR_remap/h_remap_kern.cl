@@ -299,16 +299,9 @@ __kernel void singlewrite_hash_query (
     uint jo = ocells_j[i];
     uint lev = ocells_level[i];
 
-    uint ii, ji;
-    if (lev < max_lev) {
-        uint lev_mod = two_to_the(max_lev - lev);
-        ii = io*lev_mod;
-        ji = jo*lev_mod;
-    } else {
-        uint lev_mod = two_to_the(lev - max_lev);
-        ii = io/lev_mod;
-        ji = jo/lev_mod;
-    }
+    uint lev_mod = two_to_the(max_lev - lev);
+    uint ii = io*lev_mod;
+    uint ji = jo*lev_mod;
 
     int ic = hashval(ji, ii);
 
@@ -426,16 +419,9 @@ __kernel void compact_singlewrite_hash_query (
     uint jo = ocells_j[i];
     uint lev = ocells_level[i];
 
-    uint ii, ji;
-    if (lev < max_lev) {
-        uint lev_mod = two_to_the(max_lev - lev);
-        ii = io*lev_mod;
-        ji = jo*lev_mod;
-    } else {
-        uint lev_mod = two_to_the(lev - max_lev);
-        ii = io/lev_mod;
-        ji = jo/lev_mod;
-    }
+    uint lev_mod = two_to_the(max_lev - lev);
+    uint ii = io*lev_mod;
+    uint ji = jo*lev_mod;
 
     int ic = read_hash(hash_method, hash_table_size, AA, BB, ji*imaxsize+ii, hash);
 
@@ -491,16 +477,10 @@ inline uint translate_cell (uint i, uint j, uint lev, uint newLev) {
     uint newKey;
     uint ycomp, xcomp;
 
-    // different cases for moving finer/coarser levels
-    if (newLev < lev){
-        // coarser
-        ycomp = j / two_to_the(lev-newLev);
-        xcomp = i / two_to_the(lev-newLev);
-    } else {
-        // finer
-        ycomp = j * two_to_the(newLev - lev);
-        xcomp = i * two_to_the(newLev - lev);
-    }
+    // moving finer/coarser levels
+    ycomp = j * two_to_the(newLev - lev);
+    xcomp = i * two_to_the(newLev - lev);
+
     newKey = (ycomp * two_to_the(newLev)) + xcomp;
     return newKey;
 }
