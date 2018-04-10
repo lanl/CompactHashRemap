@@ -702,6 +702,8 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
 // queueProps = ezcl_flags.timing ? CL_QUEUE_PROFILING_ENABLE : 0;
 // command_queue = clCreateCommandQueue(context, device[mype%nDevices], queueProps, &ierr);
 
+
+#if OPENCL_VERSION_MAJOR >= 2
    cl_command_queue_properties queueProps[3];
    if (ezcl_flags.timing) {
      queueProps[0] = CL_QUEUE_PROPERTIES;
@@ -713,7 +715,6 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
      queueProps[2] = 0;
    }
 
-#if OPENCL_VERSION_MAJOR >= 2
    command_queue = clCreateCommandQueueWithProperties(context, device[mype%nDevices], queueProps, &ierr);
    if (ierr != CL_SUCCESS) {
      /* Possible Errors
@@ -725,6 +726,11 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
      ezcl_print_error(ierr, "EZCL_CREATE_COMMAND_QUEUE", "clCreateCommandQueue", file, line);
    }
 #else
+   int queueProps = 0;
+   if (ezcl_flags.timing) {
+     queueProps = CL_QUEUE_PROPERTIES | CL_QUEUE_PROFILING_ENABLE;
+   }
+
    command_queue = clCreateCommandQueue(context, device[mype%nDevices], queueProps, &ierr);
    if (ierr != CL_SUCCESS) {
      /* Possible Errors
