@@ -223,8 +223,12 @@ void CLHash_Utilities_CreateContext_p(cl_context *context, cl_command_queue *com
 // *command_queue = clCreateCommandQueue(*context, device, CL_QUEUE_PROFILING_ENABLE, &err);
 
 #ifdef HAVE_OPENCL
-   cl_queue_properties props[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
+   cl_command_queue_properties props[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
+#if OPENCL_VERSION_MAJOR >= 2
    *command_queue = clCreateCommandQueueWithProperties(*context, device, props, &err);
+#else
+   *command_queue = clCreateCommandQueue(*context, device, props, &err);
+#endif
    if(err != CL_SUCCESS) CLHash_Utilities_PrintError_p(err, "CLHash_Utilities_CreateContext", "clCreateCommandQueue", file, line);
 #endif
 

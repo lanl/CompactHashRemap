@@ -14,11 +14,15 @@ project (EZCL)
 set (EZCL_VERSION_MAJOR 2)
 set (EZCL_VERSION_MINOR 0.7)
 set (EZCL_VERSION "${EZCL_VERSION_MAJOR}.${EZCL_VERSION_MINOR}")
- 
+
 include_directories(${PROJECT_SOURCE_DIR})
 
 ########### global settings ###############
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${OPENCL_INCLUDE_DIRS}")
+if (OpenCL_FOUND)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOPENCL_VERSION_MAJOR=${OpenCL_VERSION_MAJOR} -DOPENCL_VERSION_MINOR=${OpenCL_VERSION_MINOR} -I${OpenCL_INCLUDE_DIRS}")
+else (OpenCL_FOUND)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${OpenCL_INCLUDE_DIRS}")
+endif (OpenCL_FOUND)
 
 set(H_SRCS ezcl.h)
 set(C_SRCS ezcl.c)
@@ -29,7 +33,7 @@ set(ezcl_LIB_SRCS ${C_SRCS} ${H_SRCS})
 add_library(ezcl SHARED ${ezcl_LIB_SRCS})
 
 set_target_properties(ezcl PROPERTIES VERSION ${EZCL_VERSION} SOVERSION ${EZCL_VERSION_MAJOR})
-target_link_libraries(ezcl ${OPENCL_LIBRARIES})
+target_link_libraries(ezcl ${OpenCL_LIBRARIES})
 install(TARGETS ezcl DESTINATION lib)
 
 ########### install files ###############

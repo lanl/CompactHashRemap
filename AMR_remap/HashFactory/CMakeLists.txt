@@ -25,31 +25,32 @@ set(CPREPROCESSOR cpp)
 #                  COMMAND cpp -P -CC -x c -imacros HashFactory.cm HashFactory.clp | indent -linux -brf -o HashFactory.cl)
 
 ########### embed source target ###############
-add_custom_target(HashFactory_source.inc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/HashFactory.cl
+add_custom_target(HashFactory_source.inc ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/HashFactory.cl
                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl
                      ${CMAKE_CURRENT_SOURCE_DIR}/HashFactory.cl > ${CMAKE_CURRENT_BINARY_DIR}/HashFactory_source.inc
                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/HashFactory.cl ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl)
                   
-add_custom_target(CLHash_Utilities_kern_source.inc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/CLHash_Utilities_kern.cl
+add_custom_target(CLHash_Utilities_kern_source.inc ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CLHash_Utilities_kern.cl
                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl
                      ${CMAKE_CURRENT_SOURCE_DIR}/CLHash_Utilities_kern.cl > ${CMAKE_CURRENT_BINARY_DIR}/CLHash_Utilities_kern_source.inc
                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CLHash_Utilities_kern.cl ${CMAKE_CURRENT_SOURCE_DIR}/embed_source.pl)
 
 ########## HashFactory target ##############
 add_library(HashFactory STATIC ${libHashFactory_LIB_SRCS})
-if (OPENCL_FOUND)
+if (OpenCL_FOUND)
+   set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -DOPENCL_VERSION_MAJOR=${OpenCL_VERSION_MAJOR} -DOPENCL_VERSION_MINOR=${OpenCL_VERSION_MINOR}")
    set_target_properties(HashFactory PROPERTIES COMPILE_DEFINITIONS "HAVE_OPENCL")
    add_dependencies(HashFactory HashFactory_source.inc)
-endif (OPENCL_FOUND)
+endif (OpenCL_FOUND)
 
 ########## HashFactory_openmp target ##############
 if (OPENMP_FOUND)
    add_library(HashFactory_openmp STATIC ${libHashFactory_LIB_SRCS})
    set_target_properties(HashFactory_openmp PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS}")
-   if (OPENCL_FOUND)
+   if (OpenCL_FOUND)
       set_target_properties(HashFactory_openmp PROPERTIES COMPILE_DEFINITIONS "HAVE_OPENCL")
       add_dependencies(HashFactory_openmp HashFactory_source.inc)
-   endif (OPENCL_FOUND)
+   endif (OpenCL_FOUND)
 endif (OPENMP_FOUND)
 
 ########### clean files ################

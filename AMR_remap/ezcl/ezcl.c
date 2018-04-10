@@ -61,6 +61,14 @@
 #define DEVICE_DETECT_DEBUG 0
 #endif
 
+#ifndef OPENCL_VERSION_MAJOR
+#define OPENCL_VERSION_MAJOR 0
+#endif
+
+#ifndef OPENCL_VERSION_MINOR
+#define OPENCL_VERSION_MINOR 0
+#endif
+
 #define EZCL_MEM_FACTOR 1.6
 #define SUPPRESS_WARNING 1
 
@@ -705,6 +713,7 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
      queueProps[2] = 0;
    }
 
+#if OPENCL_VERSION_MAJOR >= 2
    command_queue = clCreateCommandQueueWithProperties(context, device[mype%nDevices], queueProps, &ierr);
    if (ierr != CL_SUCCESS) {
      /* Possible Errors
@@ -715,6 +724,18 @@ cl_command_queue ezcl_create_command_queue_p(cl_context context, const int mype,
       */
      ezcl_print_error(ierr, "EZCL_CREATE_COMMAND_QUEUE", "clCreateCommandQueue", file, line);
    }
+#else
+   command_queue = clCreateCommandQueue(context, device[mype%nDevices], queueProps, &ierr);
+   if (ierr != CL_SUCCESS) {
+     /* Possible Errors
+      *  CL_INVALID_CONTEXT:
+      *  CL_INVALID_DEVICE:
+      *  CL_INVALID_VALUE:
+      *  CL_OUT_OF_HOST_MEMORY:
+      */
+     ezcl_print_error(ierr, "EZCL_CREATE_COMMAND_QUEUE", "clCreateCommandQueue", file, line);
+   }
+#endif
 
    free(device);
 
