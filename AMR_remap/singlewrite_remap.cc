@@ -120,41 +120,27 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
     size_t hash_size = icells.ibasesize*two_to_the(icells.levmax)*
                        icells.ibasesize*two_to_the(icells.levmax);
     int *hash = (int *) malloc(hash_size * sizeof(int));
-    uint lev_mod;
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
     
     memset(hash, 0xFFFFFFFF, hash_size*sizeof(uint));
-//  for (uint i = 0; i < hash_size; i++) {
-//          hash[i] = -1;
-//  }
     
     for (uint i = 0; i < icells.ncells; i++) {
-        lev_mod = two_to_the(icells.levmax - icells.level[i]);
+        uint lev_mod = two_to_the(icells.levmax - icells.level[i]);
         hash[((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod)] = i;
     }
     
-    /*for (int j = i_max-1; j >= 0; j--) {
-        for (int i = 0; i < i_max; i ++) {
-            printf("%i\t", hash[j*(i_max) + i]);
-        }
-        printf("\n");
-    }
-    printf("\n");*/
-
     for (uint i = 0; i < ocells.ncells; i++) {
-        uint ii, ji;
         uint io = ocells.i[i];
         uint jo = ocells.j[i];
         uint lev = ocells.level[i];
         
         uint lev_mod = two_to_the(ocells.levmax - lev);
-        ii = io*lev_mod;
-        ji = jo*lev_mod;
+        uint ii = io*lev_mod;
+        uint ji = jo*lev_mod;
         
         uint key = ji*i_max + ii;
         int probe = hash[key];
 
-        //What is this for?
         if (lev > ocells.levmax){lev = ocells.levmax;}
         
         while(probe < 0 && lev > 0) {
@@ -172,10 +158,7 @@ void singlewrite_remap (cell_list icells, cell_list ocells) {
         } else {
             ocells.values[i] = avg_sub_cells(icells, ji, ii, lev, hash);
         }
-        //printf("%i\t%i\t%i\t%f\n", ocells[i].i, ocells[i].j, ocells[i].lev, ocells[i].values);
-        //print_cell(ocells[i]);
     }
-    //printf("\n");
     free(hash);
 }
 
@@ -183,42 +166,14 @@ void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
     
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
     uint j_max = icells.ibasesize*two_to_the(icells.levmax);
-    //size_t hash_size = i_max*j_max;
     int *hash = compact_hash_init(icells.ncells, i_max, j_max, 1, 0);
-    uint lev_mod;
 
-//  for (int j = 0; j<21; j++){
-//     printf("debug j is %d hash key %d value %d\n",j,hash[j*2],hash[j*2+1]);
-//  }
-    
 //  compact_hash_initializes the keys to -1 (not the values)
-//  memset(hash, 0xFFFFFFFF, 2*hash_size*sizeof(uint));
-//  for (uint i = 0; i < i_max * i_max; i++) {
-//          hash[i] = -1;
-//  }
     
     for (uint i = 0; i < icells.ncells; i++) {
-        lev_mod = two_to_the(icells.levmax - icells.level[i]);
+        uint lev_mod = two_to_the(icells.levmax - icells.level[i]);
         write_hash(i, ((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod), hash);
-//      printf("DEBUG -- write hash: key %ld value %ld\n",((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod), i);
     }
-/*
-    for (int j = 0; j<21; j++){
-       if (hash[j*2] >= 0) {
-          printf("debug j is %d hash key %d value %d\n",j,hash[j*2],hash[j*2+1]);
-       } else {
-          printf("debug j is %d hash key %d\n",j,hash[j*2]);
-       }
-    }
-*/
-    
-    /*for (int j = i_max-1; j >= 0; j--) {
-        for (int i = 0; i < i_max; i ++) {
-            printf("%i\t", hash[j*(i_max) + i]);
-        }
-        printf("\n");
-    }
-    printf("\n");*/
     
     i_max = ocells.ibasesize*two_to_the(ocells.levmax);
     for (uint i = 0; i < ocells.ncells; i++) {
@@ -250,10 +205,7 @@ void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
         } else {
             ocells.values[i] = avg_sub_cells_compact(icells, ji, ii, lev, hash);
         }
-        //printf("%d: %i\t%i\t%i\t%f\n", i,ocells.i[i], ocells.j[i], ocells.level[i], ocells.values[i]);
-        //print_cell(ocells[i]);
     }
-    //printf("\n");
     compact_hash_delete(hash);
 }
 
@@ -283,14 +235,6 @@ void singlewrite_remap_openMP (cell_list icells, cell_list ocells) {
             hash[((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod)] = i;
         }
     
-        /*for (int j = i_max-1; j >= 0; j--) {
-            for (int i = 0; i < i_max; i ++) {
-                printf("%i\t", hash[j*(i_max) + i]);
-            }
-            printf("\n");
-        }
-        printf("\n");*/
-
 #pragma omp for
         for (uint i = 0; i < olength; i++) {
             uint ii, ji, lev_mod;
