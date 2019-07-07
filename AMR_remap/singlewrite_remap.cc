@@ -166,12 +166,12 @@ void singlewrite_remap_compact (cell_list icells, cell_list ocells) {
     
     uint i_max = icells.ibasesize*two_to_the(icells.levmax);
     uint j_max = icells.ibasesize*two_to_the(icells.levmax);
-    //size_t hash_size = i_max*j_max;
     int *hash = compact_hash_init(icells.ncells, i_max, j_max, 1, 0);
-    uint lev_mod;
 
+//  compact_hash_initializes the keys to -1 (not the values)
+    
     for (uint i = 0; i < icells.ncells; i++) {
-        lev_mod = two_to_the(icells.levmax - icells.level[i]);
+        uint lev_mod = two_to_the(icells.levmax - icells.level[i]);
         write_hash(i, ((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod), hash);
     }
     
@@ -235,14 +235,6 @@ void singlewrite_remap_openMP (cell_list icells, cell_list ocells) {
             hash[((icells.j[i] * lev_mod) * i_max) + (icells.i[i] * lev_mod)] = i;
         }
     
-        /*for (int j = i_max-1; j >= 0; j--) {
-            for (int i = 0; i < i_max; i ++) {
-                printf("%i\t", hash[j*(i_max) + i]);
-            }
-            printf("\n");
-        }
-        printf("\n");*/
-
 #pragma omp for
         for (uint i = 0; i < olength; i++) {
             uint ii, ji, lev_mod;
