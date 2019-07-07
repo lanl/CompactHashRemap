@@ -26,9 +26,9 @@
 /* wchar_t uses ISO/IEC 10646 (2nd ed., published 2011-03-15) /
    Unicode 6.0.  */
 /* We do not support C11 <threads.h>.  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -151,9 +151,9 @@ int clFinish(int command_queue) {
 #define PRIME_NUM_CHECKS 20
 #include <math.h>
 #include "CLHash_Utilities_kern_source.inc"
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -182,9 +182,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -213,9 +213,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -244,9 +244,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -275,9 +275,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -306,9 +306,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -337,9 +337,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -368,9 +368,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -399,9 +399,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
@@ -430,9 +430,9 @@ int clFinish(int command_queue) {
  *
  * This is LANL Copyright Disclosure C14043/LA-CC-14-003
  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
  * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR

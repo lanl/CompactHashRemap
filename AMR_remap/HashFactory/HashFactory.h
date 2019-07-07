@@ -26,9 +26,9 @@
 /* wchar_t uses ISO/IEC 10646 (2nd ed., published 2011-03-15) /
    Unicode 6.0.  */
 /* We do not support C11 <threads.h>.  */
-/* Copyright 2013-14.  Los Alamos National Security, LLC. This material was produced
- * under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National 
- * Laboratory (LANL), which is operated by Los Alamos National Security, LLC
+/* Copyright 2013-14.  Triad National Security, LLC. This material was produced
+ * under U.S. Government contract 89233218CNA000001 for Los Alamos National 
+ * Laboratory (LANL), which is operated by Triad National Security, LLC
  * for the U.S. Department of Energy. The U.S. Government has rights to use,
  * reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS
  * ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR
